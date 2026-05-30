@@ -498,6 +498,8 @@ To obtain unbiased estimates of the genetic variances and to quantify how much o
 
     *   `cross:env`  — SCA × Environment
 
+This is the standard partition for combining-ability designs evaluated across environments — separating additive (GCA×E) from non-additive (SCA×E) interaction variance — and matches Eq. 5.4 of Isik, Holland & Maltecca (2017), where female and male GCA-by-location terms (`LG_ik`, `LG_il`) and an SCA-by-location term (`LS_ikl`) appear as distinct random effects. See [References](#references).
+
 ```{r}
 #| label: gxe-model
 
@@ -643,3 +645,11 @@ To complete the GCA and SCA analysis for his PhD, Stelio should follow these str
     *   Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.
 
 6.  **Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.
+
+***
+
+# References {#references}
+
+*   Isik, F., Holland, J., & Maltecca, C. (2017). *Genetic Data Analysis for Plant and Animal Breeding*. Springer. — Chapter on diallel mating designs introduces the multi-environment model with GCA×location (`LG_ik`, `LG_il`) and SCA×location (`LS_ikl`) variance components (Eq. 5.4), the canonical partition adopted here. The text also shows empirically that splitting GCA×E out of the residual produces a smaller plot-error variance and a cleaner additive-by-environment estimate.
+
+*   Comstock, R. E., & Robinson, H. F. (1948). The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. *Biometrics*, 4(4), 254–266. — Original derivation of the North Carolina Design II (Line × Tester) variance partition that underlies this analysis.

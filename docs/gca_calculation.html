@@ -2610,6 +2610,7 @@ window.Quarto = {
   <li><a href="#entry-mean-heritability-formulas-across-environments" id="toc-entry-mean-heritability-formulas-across-environments" class="nav-link" data-scroll-target="#entry-mean-heritability-formulas-across-environments"><span class="header-section-number">8.2</span> Entry-Mean Heritability Formulas (Across Environments)</a></li>
   </ul></li>
   <li><a href="#step-by-step-checklist-for-stelio" id="toc-step-by-step-checklist-for-stelio" class="nav-link" data-scroll-target="#step-by-step-checklist-for-stelio"><span class="header-section-number">9</span> Step-by-Step Checklist for Stelio</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">10</span> References</a></li>
   </ul>
 </nav>
 </div>
@@ -3781,6 +3782,7 @@ window.Quarto = {
 <li><p><code>cross:env</code> — SCA × Environment</p></li>
 </ul></li>
 </ul>
+<p>This is the standard partition for combining-ability designs evaluated across environments — separating additive (GCA×E) from non-additive (SCA×E) interaction variance — and matches Eq. 5.4 of Isik, Holland &amp; Maltecca (2017), where female and male GCA-by-location terms (<code>LG_ik</code>, <code>LG_il</code>) and an SCA-by-location term (<code>LS_ikl</code>) appear as distinct random effects. See <a href="#references">References</a>.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -4052,6 +4054,14 @@ window.Quarto = {
 </ul></li>
 <li><p><strong>Estimate Heritability:</strong> Extract variance components and apply the Line × Tester formulas to check selection accuracy.</p></li>
 </ol>
+<hr>
+</section>
+<section id="references" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> References</h1>
+<ul>
+<li><p>Isik, F., Holland, J., &amp; Maltecca, C. (2017). <em>Genetic Data Analysis for Plant and Animal Breeding</em>. Springer. — Chapter on diallel mating designs introduces the multi-environment model with GCA×location (<code>LG_ik</code>, <code>LG_il</code>) and SCA×location (<code>LS_ikl</code>) variance components (Eq. 5.4), the canonical partition adopted here. The text also shows empirically that splitting GCA×E out of the residual produces a smaller plot-error variance and a cleaner additive-by-environment estimate.</p></li>
+<li><p>Comstock, R. E., &amp; Robinson, H. F. (1948). The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. <em>Biometrics</em>, 4(4), 254–266. — Original derivation of the North Carolina Design II (Line × Tester) variance partition that underlies this analysis.</p></li>
+</ul>
 <!-- -->
 
 </section>
@@ -5009,151 +5019,161 @@ window.Quarto = {
 <span id="cb14-516"><a href="#cb14-516" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-517"><a href="#cb14-517" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span><span class="in">`cross:env`</span>  — SCA × Environment</span>
 <span id="cb14-518"><a href="#cb14-518" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-521"><a href="#cb14-521" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-522"><a href="#cb14-522" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gxe-model</span></span>
-<span id="cb14-523"><a href="#cb14-523" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-524"><a href="#cb14-524" aria-hidden="true" tabindex="-1"></a>data_gxe <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
-<span id="cb14-525"><a href="#cb14-525" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb14-526"><a href="#cb14-526" aria-hidden="true" tabindex="-1"></a>    <span class="at">env    =</span> <span class="fu">as.factor</span>(env),</span>
-<span id="cb14-527"><a href="#cb14-527" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
-<span id="cb14-528"><a href="#cb14-528" aria-hidden="true" tabindex="-1"></a>    <span class="at">male   =</span> <span class="fu">as.factor</span>(male),</span>
-<span id="cb14-529"><a href="#cb14-529" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross  =</span> <span class="fu">as.factor</span>(cross),</span>
-<span id="cb14-530"><a href="#cb14-530" aria-hidden="true" tabindex="-1"></a>    <span class="at">block  =</span> <span class="fu">as.factor</span>(block)</span>
-<span id="cb14-531"><a href="#cb14-531" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-532"><a href="#cb14-532" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-533"><a href="#cb14-533" aria-hidden="true" tabindex="-1"></a>fit_gxe <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
-<span id="cb14-534"><a href="#cb14-534" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed  =</span> yield <span class="sc">~</span> env,</span>
-<span id="cb14-535"><a href="#cb14-535" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> female <span class="sc">+</span> male <span class="sc">+</span> cross <span class="sc">+</span></span>
-<span id="cb14-536"><a href="#cb14-536" aria-hidden="true" tabindex="-1"></a>             female<span class="sc">:</span>env <span class="sc">+</span> male<span class="sc">:</span>env <span class="sc">+</span> cross<span class="sc">:</span>env <span class="sc">+</span></span>
-<span id="cb14-537"><a href="#cb14-537" aria-hidden="true" tabindex="-1"></a>             env<span class="sc">:</span>block,</span>
-<span id="cb14-538"><a href="#cb14-538" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> data_gxe,</span>
-<span id="cb14-539"><a href="#cb14-539" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb14-540"><a href="#cb14-540" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-541"><a href="#cb14-541" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-542"><a href="#cb14-542" aria-hidden="true" tabindex="-1"></a>var_comps_gxe <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_gxe)<span class="sc">$</span>varcomp</span>
-<span id="cb14-543"><a href="#cb14-543" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps_gxe, <span class="at">caption =</span> <span class="st">&quot;Variance Components — Joint Model across env1 and env2&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-544"><a href="#cb14-544" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>))</span>
-<span id="cb14-545"><a href="#cb14-545" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-546"><a href="#cb14-546" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-547"><a href="#cb14-547" aria-hidden="true" tabindex="-1"></a><span class="fu">## Entry-Mean Heritability Formulas (Across Environments)</span></span>
+<span id="cb14-519"><a href="#cb14-519" aria-hidden="true" tabindex="-1"></a>This is the standard partition for combining-ability designs evaluated across environments — separating additive (GCA×E) from non-additive (SCA×E) interaction variance — and matches Eq. 5.4 of Isik, Holland &amp; Maltecca (2017), where female and male GCA-by-location terms (<span class="in">`LG_ik`</span>, <span class="in">`LG_il`</span>) and an SCA-by-location term (<span class="in">`LS_ikl`</span>) appear as distinct random effects. See <span class="co">[</span><span class="ot">References</span><span class="co">](#references)</span>.</span>
+<span id="cb14-520"><a href="#cb14-520" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-523"><a href="#cb14-523" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-524"><a href="#cb14-524" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gxe-model</span></span>
+<span id="cb14-525"><a href="#cb14-525" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-526"><a href="#cb14-526" aria-hidden="true" tabindex="-1"></a>data_gxe <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
+<span id="cb14-527"><a href="#cb14-527" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-528"><a href="#cb14-528" aria-hidden="true" tabindex="-1"></a>    <span class="at">env    =</span> <span class="fu">as.factor</span>(env),</span>
+<span id="cb14-529"><a href="#cb14-529" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
+<span id="cb14-530"><a href="#cb14-530" aria-hidden="true" tabindex="-1"></a>    <span class="at">male   =</span> <span class="fu">as.factor</span>(male),</span>
+<span id="cb14-531"><a href="#cb14-531" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross  =</span> <span class="fu">as.factor</span>(cross),</span>
+<span id="cb14-532"><a href="#cb14-532" aria-hidden="true" tabindex="-1"></a>    <span class="at">block  =</span> <span class="fu">as.factor</span>(block)</span>
+<span id="cb14-533"><a href="#cb14-533" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-534"><a href="#cb14-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-535"><a href="#cb14-535" aria-hidden="true" tabindex="-1"></a>fit_gxe <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
+<span id="cb14-536"><a href="#cb14-536" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed  =</span> yield <span class="sc">~</span> env,</span>
+<span id="cb14-537"><a href="#cb14-537" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> female <span class="sc">+</span> male <span class="sc">+</span> cross <span class="sc">+</span></span>
+<span id="cb14-538"><a href="#cb14-538" aria-hidden="true" tabindex="-1"></a>             female<span class="sc">:</span>env <span class="sc">+</span> male<span class="sc">:</span>env <span class="sc">+</span> cross<span class="sc">:</span>env <span class="sc">+</span></span>
+<span id="cb14-539"><a href="#cb14-539" aria-hidden="true" tabindex="-1"></a>             env<span class="sc">:</span>block,</span>
+<span id="cb14-540"><a href="#cb14-540" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> data_gxe,</span>
+<span id="cb14-541"><a href="#cb14-541" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb14-542"><a href="#cb14-542" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-543"><a href="#cb14-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-544"><a href="#cb14-544" aria-hidden="true" tabindex="-1"></a>var_comps_gxe <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_gxe)<span class="sc">$</span>varcomp</span>
+<span id="cb14-545"><a href="#cb14-545" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps_gxe, <span class="at">caption =</span> <span class="st">&quot;Variance Components — Joint Model across env1 and env2&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-546"><a href="#cb14-546" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>))</span>
+<span id="cb14-547"><a href="#cb14-547" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb14-548"><a href="#cb14-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-549"><a href="#cb14-549" aria-hidden="true" tabindex="-1"></a>We report **entry-mean (full-sib family-mean) heritability** — the accuracy with which cross rankings can be selected based on their mean across replicates and environments. This is the most useful statistic for multi-environment breeding decisions, and it extends the <span class="in">`h²_FS`</span> formula from §8 to multiple environments. With $e$ environments and $r$ reps per environment:</span>
+<span id="cb14-549"><a href="#cb14-549" aria-hidden="true" tabindex="-1"></a><span class="fu">## Entry-Mean Heritability Formulas (Across Environments)</span></span>
 <span id="cb14-550"><a href="#cb14-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-551"><a href="#cb14-551" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Genetic variance of cross means:**</span>
+<span id="cb14-551"><a href="#cb14-551" aria-hidden="true" tabindex="-1"></a>We report **entry-mean (full-sib family-mean) heritability** — the accuracy with which cross rankings can be selected based on their mean across replicates and environments. This is the most useful statistic for multi-environment breeding decisions, and it extends the <span class="in">`h²_FS`</span> formula from §8 to multiple environments. With $e$ environments and $r$ reps per environment:</span>
 <span id="cb14-552"><a href="#cb14-552" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-553"><a href="#cb14-553" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_G = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$$</span>
+<span id="cb14-553"><a href="#cb14-553" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Genetic variance of cross means:**</span>
 <span id="cb14-554"><a href="#cb14-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-555"><a href="#cb14-555" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive component (entry mean):**</span>
+<span id="cb14-555"><a href="#cb14-555" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_G = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$$</span>
 <span id="cb14-556"><a href="#cb14-556" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-557"><a href="#cb14-557" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{A,\bar{x}} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M}$$</span>
+<span id="cb14-557"><a href="#cb14-557" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive component (entry mean):**</span>
 <span id="cb14-558"><a href="#cb14-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-559"><a href="#cb14-559" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance component (entry mean):**</span>
+<span id="cb14-559"><a href="#cb14-559" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{A,\bar{x}} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M}$$</span>
 <span id="cb14-560"><a href="#cb14-560" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-561"><a href="#cb14-561" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{D,\bar{x}} = \sigma^2_{SCA}$$</span>
+<span id="cb14-561"><a href="#cb14-561" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance component (entry mean):**</span>
 <span id="cb14-562"><a href="#cb14-562" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-563"><a href="#cb14-563" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Total G × E variance:**</span>
+<span id="cb14-563"><a href="#cb14-563" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{D,\bar{x}} = \sigma^2_{SCA}$$</span>
 <span id="cb14-564"><a href="#cb14-564" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-565"><a href="#cb14-565" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{GE} = \sigma^2_{GCA_F \times E} + \sigma^2_{GCA_M \times E} + \sigma^2_{SCA \times E}$$</span>
+<span id="cb14-565"><a href="#cb14-565" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Total G × E variance:**</span>
 <span id="cb14-566"><a href="#cb14-566" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-567"><a href="#cb14-567" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Entry-mean phenotypic variance:**</span>
+<span id="cb14-567"><a href="#cb14-567" aria-hidden="true" tabindex="-1"></a>$$\sigma^2_{GE} = \sigma^2_{GCA_F \times E} + \sigma^2_{GCA_M \times E} + \sigma^2_{SCA \times E}$$</span>
 <span id="cb14-568"><a href="#cb14-568" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-569"><a href="#cb14-569" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{P,\bar{x}} = \sigma^2_G + \frac{\sigma^2_{GE}}{e} + \frac{\sigma^2_{\text{res}}}{e \cdot r}$$</span>
+<span id="cb14-569"><a href="#cb14-569" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Entry-mean phenotypic variance:**</span>
 <span id="cb14-570"><a href="#cb14-570" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-571"><a href="#cb14-571" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Narrow-sense entry-mean heritability:**</span>
+<span id="cb14-571"><a href="#cb14-571" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{P,\bar{x}} = \sigma^2_G + \frac{\sigma^2_{GE}}{e} + \frac{\sigma^2_{\text{res}}}{e \cdot r}$$</span>
 <span id="cb14-572"><a href="#cb14-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-573"><a href="#cb14-573" aria-hidden="true" tabindex="-1"></a>$$h^2_{\bar{x}} = \sigma^2_{A,\bar{x}} / \sigma^2_{P,\bar{x}}$$</span>
+<span id="cb14-573"><a href="#cb14-573" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Narrow-sense entry-mean heritability:**</span>
 <span id="cb14-574"><a href="#cb14-574" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-575"><a href="#cb14-575" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Broad-sense entry-mean heritability:**</span>
+<span id="cb14-575"><a href="#cb14-575" aria-hidden="true" tabindex="-1"></a>$$h^2_{\bar{x}} = \sigma^2_{A,\bar{x}} / \sigma^2_{P,\bar{x}}$$</span>
 <span id="cb14-576"><a href="#cb14-576" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-577"><a href="#cb14-577" aria-hidden="true" tabindex="-1"></a>$$H^2_{\bar{x}} = \sigma^2_G / \sigma^2_{P,\bar{x}}$$</span>
+<span id="cb14-577"><a href="#cb14-577" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Broad-sense entry-mean heritability:**</span>
 <span id="cb14-578"><a href="#cb14-578" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-579"><a href="#cb14-579" aria-hidden="true" tabindex="-1"></a>Both heritabilities are bounded in $<span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$, which is what we expect from a properly specified entry-mean form.</span>
+<span id="cb14-579"><a href="#cb14-579" aria-hidden="true" tabindex="-1"></a>$$H^2_{\bar{x}} = \sigma^2_G / \sigma^2_{P,\bar{x}}$$</span>
 <span id="cb14-580"><a href="#cb14-580" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-583"><a href="#cb14-583" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb14-584"><a href="#cb14-584" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gxe-heritability</span></span>
-<span id="cb14-585"><a href="#cb14-585" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-586"><a href="#cb14-586" aria-hidden="true" tabindex="-1"></a><span class="co"># Pick variance components by regex on rowname (interaction terms can appear as</span></span>
-<span id="cb14-587"><a href="#cb14-587" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;female:env&quot; or &quot;env:female&quot; depending on sommer&#39;s term ordering; we match both).</span></span>
-<span id="cb14-588"><a href="#cb14-588" aria-hidden="true" tabindex="-1"></a>pick_vc <span class="ot">&lt;-</span> <span class="cf">function</span>(vc, pat) {</span>
-<span id="cb14-589"><a href="#cb14-589" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(pat, <span class="fu">rownames</span>(vc))</span>
-<span id="cb14-590"><a href="#cb14-590" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(idx) <span class="sc">==</span> <span class="dv">0</span>) <span class="dv">0</span> <span class="cf">else</span> <span class="fu">sum</span>(vc[idx, <span class="st">&quot;VarComp&quot;</span>])</span>
-<span id="cb14-591"><a href="#cb14-591" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb14-592"><a href="#cb14-592" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-593"><a href="#cb14-593" aria-hidden="true" tabindex="-1"></a>var_gca_f_g <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^female</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
-<span id="cb14-594"><a href="#cb14-594" aria-hidden="true" tabindex="-1"></a>var_gca_m_g <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^male</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
-<span id="cb14-595"><a href="#cb14-595" aria-hidden="true" tabindex="-1"></a>var_sca_g   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^cross</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
-<span id="cb14-596"><a href="#cb14-596" aria-hidden="true" tabindex="-1"></a>var_gca_f_e <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;female:env|env:female&quot;</span>)</span>
-<span id="cb14-597"><a href="#cb14-597" aria-hidden="true" tabindex="-1"></a>var_gca_m_e <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;male:env|env:male&quot;</span>)</span>
-<span id="cb14-598"><a href="#cb14-598" aria-hidden="true" tabindex="-1"></a>var_sca_e   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;cross:env|env:cross&quot;</span>)</span>
-<span id="cb14-599"><a href="#cb14-599" aria-hidden="true" tabindex="-1"></a>var_res_g   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^units</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
-<span id="cb14-600"><a href="#cb14-600" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-601"><a href="#cb14-601" aria-hidden="true" tabindex="-1"></a>e_env <span class="ot">&lt;-</span> <span class="dv">2</span>   <span class="co"># number of environments</span></span>
-<span id="cb14-602"><a href="#cb14-602" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span>   <span class="co"># reps per environment</span></span>
-<span id="cb14-603"><a href="#cb14-603" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-604"><a href="#cb14-604" aria-hidden="true" tabindex="-1"></a>var_G_mean  <span class="ot">&lt;-</span> var_gca_f_g <span class="sc">+</span> var_gca_m_g <span class="sc">+</span> var_sca_g</span>
-<span id="cb14-605"><a href="#cb14-605" aria-hidden="true" tabindex="-1"></a>var_A_mean  <span class="ot">&lt;-</span> var_gca_f_g <span class="sc">+</span> var_gca_m_g</span>
-<span id="cb14-606"><a href="#cb14-606" aria-hidden="true" tabindex="-1"></a>var_D_mean  <span class="ot">&lt;-</span> var_sca_g</span>
-<span id="cb14-607"><a href="#cb14-607" aria-hidden="true" tabindex="-1"></a>var_GE      <span class="ot">&lt;-</span> var_gca_f_e <span class="sc">+</span> var_gca_m_e <span class="sc">+</span> var_sca_e</span>
-<span id="cb14-608"><a href="#cb14-608" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-609"><a href="#cb14-609" aria-hidden="true" tabindex="-1"></a>var_phen_mean_g <span class="ot">&lt;-</span> var_G_mean <span class="sc">+</span> var_GE <span class="sc">/</span> e_env <span class="sc">+</span> var_res_g <span class="sc">/</span> (e_env <span class="sc">*</span> r_rep)</span>
+<span id="cb14-581"><a href="#cb14-581" aria-hidden="true" tabindex="-1"></a>Both heritabilities are bounded in $<span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$, which is what we expect from a properly specified entry-mean form.</span>
+<span id="cb14-582"><a href="#cb14-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-585"><a href="#cb14-585" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb14-586"><a href="#cb14-586" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gxe-heritability</span></span>
+<span id="cb14-587"><a href="#cb14-587" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-588"><a href="#cb14-588" aria-hidden="true" tabindex="-1"></a><span class="co"># Pick variance components by regex on rowname (interaction terms can appear as</span></span>
+<span id="cb14-589"><a href="#cb14-589" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;female:env&quot; or &quot;env:female&quot; depending on sommer&#39;s term ordering; we match both).</span></span>
+<span id="cb14-590"><a href="#cb14-590" aria-hidden="true" tabindex="-1"></a>pick_vc <span class="ot">&lt;-</span> <span class="cf">function</span>(vc, pat) {</span>
+<span id="cb14-591"><a href="#cb14-591" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">grep</span>(pat, <span class="fu">rownames</span>(vc))</span>
+<span id="cb14-592"><a href="#cb14-592" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(idx) <span class="sc">==</span> <span class="dv">0</span>) <span class="dv">0</span> <span class="cf">else</span> <span class="fu">sum</span>(vc[idx, <span class="st">&quot;VarComp&quot;</span>])</span>
+<span id="cb14-593"><a href="#cb14-593" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-594"><a href="#cb14-594" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-595"><a href="#cb14-595" aria-hidden="true" tabindex="-1"></a>var_gca_f_g <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^female</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
+<span id="cb14-596"><a href="#cb14-596" aria-hidden="true" tabindex="-1"></a>var_gca_m_g <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^male</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
+<span id="cb14-597"><a href="#cb14-597" aria-hidden="true" tabindex="-1"></a>var_sca_g   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^cross</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
+<span id="cb14-598"><a href="#cb14-598" aria-hidden="true" tabindex="-1"></a>var_gca_f_e <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;female:env|env:female&quot;</span>)</span>
+<span id="cb14-599"><a href="#cb14-599" aria-hidden="true" tabindex="-1"></a>var_gca_m_e <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;male:env|env:male&quot;</span>)</span>
+<span id="cb14-600"><a href="#cb14-600" aria-hidden="true" tabindex="-1"></a>var_sca_e   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;cross:env|env:cross&quot;</span>)</span>
+<span id="cb14-601"><a href="#cb14-601" aria-hidden="true" tabindex="-1"></a>var_res_g   <span class="ot">&lt;-</span> <span class="fu">pick_vc</span>(var_comps_gxe, <span class="st">&quot;^units</span><span class="sc">\\</span><span class="st">.&quot;</span>)</span>
+<span id="cb14-602"><a href="#cb14-602" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-603"><a href="#cb14-603" aria-hidden="true" tabindex="-1"></a>e_env <span class="ot">&lt;-</span> <span class="dv">2</span>   <span class="co"># number of environments</span></span>
+<span id="cb14-604"><a href="#cb14-604" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span>   <span class="co"># reps per environment</span></span>
+<span id="cb14-605"><a href="#cb14-605" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-606"><a href="#cb14-606" aria-hidden="true" tabindex="-1"></a>var_G_mean  <span class="ot">&lt;-</span> var_gca_f_g <span class="sc">+</span> var_gca_m_g <span class="sc">+</span> var_sca_g</span>
+<span id="cb14-607"><a href="#cb14-607" aria-hidden="true" tabindex="-1"></a>var_A_mean  <span class="ot">&lt;-</span> var_gca_f_g <span class="sc">+</span> var_gca_m_g</span>
+<span id="cb14-608"><a href="#cb14-608" aria-hidden="true" tabindex="-1"></a>var_D_mean  <span class="ot">&lt;-</span> var_sca_g</span>
+<span id="cb14-609"><a href="#cb14-609" aria-hidden="true" tabindex="-1"></a>var_GE      <span class="ot">&lt;-</span> var_gca_f_e <span class="sc">+</span> var_gca_m_e <span class="sc">+</span> var_sca_e</span>
 <span id="cb14-610"><a href="#cb14-610" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-611"><a href="#cb14-611" aria-hidden="true" tabindex="-1"></a>h2_mean_g <span class="ot">&lt;-</span> var_A_mean <span class="sc">/</span> var_phen_mean_g</span>
-<span id="cb14-612"><a href="#cb14-612" aria-hidden="true" tabindex="-1"></a>H2_mean_g <span class="ot">&lt;-</span> var_G_mean <span class="sc">/</span> var_phen_mean_g</span>
-<span id="cb14-613"><a href="#cb14-613" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-614"><a href="#cb14-614" aria-hidden="true" tabindex="-1"></a>gxe_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb14-615"><a href="#cb14-615" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
-<span id="cb14-616"><a href="#cb14-616" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA Female variance&quot;</span>,</span>
-<span id="cb14-617"><a href="#cb14-617" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA Male variance&quot;</span>,</span>
-<span id="cb14-618"><a href="#cb14-618" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SCA variance&quot;</span>,</span>
-<span id="cb14-619"><a href="#cb14-619" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA_F × Env variance&quot;</span>,</span>
-<span id="cb14-620"><a href="#cb14-620" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA_M × Env variance&quot;</span>,</span>
-<span id="cb14-621"><a href="#cb14-621" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SCA × Env variance&quot;</span>,</span>
-<span id="cb14-622"><a href="#cb14-622" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Total G × E variance&quot;</span>,</span>
-<span id="cb14-623"><a href="#cb14-623" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Residual variance&quot;</span>,</span>
-<span id="cb14-624"><a href="#cb14-624" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Genetic variance of cross means (Vg)&quot;</span>,</span>
-<span id="cb14-625"><a href="#cb14-625" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Entry-mean phenotypic variance (Vp_mean)&quot;</span>,</span>
-<span id="cb14-626"><a href="#cb14-626" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-sense h² (entry mean across envs)&quot;</span>,</span>
-<span id="cb14-627"><a href="#cb14-627" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Broad-sense H² (entry mean across envs)&quot;</span></span>
-<span id="cb14-628"><a href="#cb14-628" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-629"><a href="#cb14-629" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
-<span id="cb14-630"><a href="#cb14-630" aria-hidden="true" tabindex="-1"></a>    var_gca_f_g, var_gca_m_g, var_sca_g,</span>
-<span id="cb14-631"><a href="#cb14-631" aria-hidden="true" tabindex="-1"></a>    var_gca_f_e, var_gca_m_e, var_sca_e,</span>
-<span id="cb14-632"><a href="#cb14-632" aria-hidden="true" tabindex="-1"></a>    var_GE, var_res_g,</span>
-<span id="cb14-633"><a href="#cb14-633" aria-hidden="true" tabindex="-1"></a>    var_G_mean, var_phen_mean_g,</span>
-<span id="cb14-634"><a href="#cb14-634" aria-hidden="true" tabindex="-1"></a>    h2_mean_g, H2_mean_g</span>
-<span id="cb14-635"><a href="#cb14-635" aria-hidden="true" tabindex="-1"></a>  ), <span class="dv">4</span>)</span>
-<span id="cb14-636"><a href="#cb14-636" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-637"><a href="#cb14-637" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-638"><a href="#cb14-638" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gxe_results, <span class="at">caption =</span> <span class="st">&quot;Genetic Variances, G × E, and Entry-Mean Heritabilities — Joint Two-Environment Model&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb14-639"><a href="#cb14-639" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb14-640"><a href="#cb14-640" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb14-641"><a href="#cb14-641" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-642"><a href="#cb14-642" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
-<span id="cb14-643"><a href="#cb14-643" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   If $\sigma^2_{GE}$ is a substantial fraction of $\sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$, the ranking of parents and crosses is **environment-dependent** — selection should be done within target environments (e.g., Low P) rather than on across-environment means.</span></span>
-<span id="cb14-644"><a href="#cb14-644" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
-<span id="cb14-645"><a href="#cb14-645" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   Compare the within-Low-P heritabilities from §8 with the entry-mean heritabilities here. A drop signals that part of what looked like genetic variance in §8 was actually G×E.</span></span>
-<span id="cb14-646"><a href="#cb14-646" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-647"><a href="#cb14-647" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb14-611"><a href="#cb14-611" aria-hidden="true" tabindex="-1"></a>var_phen_mean_g <span class="ot">&lt;-</span> var_G_mean <span class="sc">+</span> var_GE <span class="sc">/</span> e_env <span class="sc">+</span> var_res_g <span class="sc">/</span> (e_env <span class="sc">*</span> r_rep)</span>
+<span id="cb14-612"><a href="#cb14-612" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-613"><a href="#cb14-613" aria-hidden="true" tabindex="-1"></a>h2_mean_g <span class="ot">&lt;-</span> var_A_mean <span class="sc">/</span> var_phen_mean_g</span>
+<span id="cb14-614"><a href="#cb14-614" aria-hidden="true" tabindex="-1"></a>H2_mean_g <span class="ot">&lt;-</span> var_G_mean <span class="sc">/</span> var_phen_mean_g</span>
+<span id="cb14-615"><a href="#cb14-615" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-616"><a href="#cb14-616" aria-hidden="true" tabindex="-1"></a>gxe_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-617"><a href="#cb14-617" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
+<span id="cb14-618"><a href="#cb14-618" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA Female variance&quot;</span>,</span>
+<span id="cb14-619"><a href="#cb14-619" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA Male variance&quot;</span>,</span>
+<span id="cb14-620"><a href="#cb14-620" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SCA variance&quot;</span>,</span>
+<span id="cb14-621"><a href="#cb14-621" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA_F × Env variance&quot;</span>,</span>
+<span id="cb14-622"><a href="#cb14-622" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;GCA_M × Env variance&quot;</span>,</span>
+<span id="cb14-623"><a href="#cb14-623" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;SCA × Env variance&quot;</span>,</span>
+<span id="cb14-624"><a href="#cb14-624" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Total G × E variance&quot;</span>,</span>
+<span id="cb14-625"><a href="#cb14-625" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Residual variance&quot;</span>,</span>
+<span id="cb14-626"><a href="#cb14-626" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Genetic variance of cross means (Vg)&quot;</span>,</span>
+<span id="cb14-627"><a href="#cb14-627" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Entry-mean phenotypic variance (Vp_mean)&quot;</span>,</span>
+<span id="cb14-628"><a href="#cb14-628" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-sense h² (entry mean across envs)&quot;</span>,</span>
+<span id="cb14-629"><a href="#cb14-629" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Broad-sense H² (entry mean across envs)&quot;</span></span>
+<span id="cb14-630"><a href="#cb14-630" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb14-631"><a href="#cb14-631" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb14-632"><a href="#cb14-632" aria-hidden="true" tabindex="-1"></a>    var_gca_f_g, var_gca_m_g, var_sca_g,</span>
+<span id="cb14-633"><a href="#cb14-633" aria-hidden="true" tabindex="-1"></a>    var_gca_f_e, var_gca_m_e, var_sca_e,</span>
+<span id="cb14-634"><a href="#cb14-634" aria-hidden="true" tabindex="-1"></a>    var_GE, var_res_g,</span>
+<span id="cb14-635"><a href="#cb14-635" aria-hidden="true" tabindex="-1"></a>    var_G_mean, var_phen_mean_g,</span>
+<span id="cb14-636"><a href="#cb14-636" aria-hidden="true" tabindex="-1"></a>    h2_mean_g, H2_mean_g</span>
+<span id="cb14-637"><a href="#cb14-637" aria-hidden="true" tabindex="-1"></a>  ), <span class="dv">4</span>)</span>
+<span id="cb14-638"><a href="#cb14-638" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-639"><a href="#cb14-639" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-640"><a href="#cb14-640" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gxe_results, <span class="at">caption =</span> <span class="st">&quot;Genetic Variances, G × E, and Entry-Mean Heritabilities — Joint Two-Environment Model&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-641"><a href="#cb14-641" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb14-642"><a href="#cb14-642" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb14-643"><a href="#cb14-643" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-644"><a href="#cb14-644" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
+<span id="cb14-645"><a href="#cb14-645" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   If $\sigma^2_{GE}$ is a substantial fraction of $\sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$, the ranking of parents and crosses is **environment-dependent** — selection should be done within target environments (e.g., Low P) rather than on across-environment means.</span></span>
+<span id="cb14-646"><a href="#cb14-646" aria-hidden="true" tabindex="-1"></a><span class="at">&gt;</span></span>
+<span id="cb14-647"><a href="#cb14-647" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   Compare the within-Low-P heritabilities from §8 with the entry-mean heritabilities here. A drop signals that part of what looked like genetic variance in §8 was actually G×E.</span></span>
 <span id="cb14-648"><a href="#cb14-648" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-649"><a href="#cb14-649" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step-by-Step Checklist for Stelio</span></span>
+<span id="cb14-649"><a href="#cb14-649" aria-hidden="true" tabindex="-1"></a>***</span>
 <span id="cb14-650"><a href="#cb14-650" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-651"><a href="#cb14-651" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
+<span id="cb14-651"><a href="#cb14-651" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step-by-Step Checklist for Stelio</span></span>
 <span id="cb14-652"><a href="#cb14-652" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-653"><a href="#cb14-653" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Prepare the Data:** Format the dataset with columns <span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span> (CIMMYT lines), <span class="in">`male`</span> (local testers), <span class="in">`cross`</span> (female_male sorted ID), and <span class="in">`yield`</span>.</span>
+<span id="cb14-653"><a href="#cb14-653" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
 <span id="cb14-654"><a href="#cb14-654" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-655"><a href="#cb14-655" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Import to R:** Load <span class="in">`tidyverse`</span> and <span class="in">`sommer`</span>, and import the data from a CSV file.</span>
+<span id="cb14-655"><a href="#cb14-655" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Prepare the Data:** Format the dataset with columns <span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span> (CIMMYT lines), <span class="in">`male`</span> (local testers), <span class="in">`cross`</span> (female_male sorted ID), and <span class="in">`yield`</span>.</span>
 <span id="cb14-656"><a href="#cb14-656" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-657"><a href="#cb14-657" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset&#39;s general performance.</span>
+<span id="cb14-657"><a href="#cb14-657" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Import to R:** Load <span class="in">`tidyverse`</span> and <span class="in">`sommer`</span>, and import the data from a CSV file.</span>
 <span id="cb14-658"><a href="#cb14-658" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-659"><a href="#cb14-659" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Fit a mixed model using <span class="in">`sommer::mmer`</span>. Model <span class="in">`female`</span> and <span class="in">`male`</span> as separate random effects, and <span class="in">`cross`</span> as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.</span>
+<span id="cb14-659"><a href="#cb14-659" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset&#39;s general performance.</span>
 <span id="cb14-660"><a href="#cb14-660" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-661"><a href="#cb14-661" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Calculate Breeding Values and Genotypic Values:**</span>
+<span id="cb14-661"><a href="#cb14-661" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Fit a mixed model using <span class="in">`sommer::mmer`</span>. Model <span class="in">`female`</span> and <span class="in">`male`</span> as separate random effects, and <span class="in">`cross`</span> as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.</span>
 <span id="cb14-662"><a href="#cb14-662" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-663"><a href="#cb14-663" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.</span>
+<span id="cb14-663"><a href="#cb14-663" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Calculate Breeding Values and Genotypic Values:**</span>
 <span id="cb14-664"><a href="#cb14-664" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-665"><a href="#cb14-665" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.</span>
+<span id="cb14-665"><a href="#cb14-665" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.</span>
 <span id="cb14-666"><a href="#cb14-666" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-667"><a href="#cb14-667" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.</span>
+<span id="cb14-667"><a href="#cb14-667" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.</span>
+<span id="cb14-668"><a href="#cb14-668" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-669"><a href="#cb14-669" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.</span>
+<span id="cb14-670"><a href="#cb14-670" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-671"><a href="#cb14-671" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb14-672"><a href="#cb14-672" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-673"><a href="#cb14-673" aria-hidden="true" tabindex="-1"></a><span class="fu"># References {#references}</span></span>
+<span id="cb14-674"><a href="#cb14-674" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-675"><a href="#cb14-675" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Isik, F., Holland, J., &amp; Maltecca, C. (2017). *Genetic Data Analysis for Plant and Animal Breeding*. Springer. — Chapter on diallel mating designs introduces the multi-environment model with GCA×location (<span class="in">`LG_ik`</span>, <span class="in">`LG_il`</span>) and SCA×location (<span class="in">`LS_ikl`</span>) variance components (Eq. 5.4), the canonical partition adopted here. The text also shows empirically that splitting GCA×E out of the residual produces a smaller plot-error variance and a cleaner additive-by-environment estimate.</span>
+<span id="cb14-676"><a href="#cb14-676" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-677"><a href="#cb14-677" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>Comstock, R. E., &amp; Robinson, H. F. (1948). The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. *Biometrics*, 4(4), 254–266. — Original derivation of the North Carolina Design II (Line × Tester) variance partition that underlies this analysis.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

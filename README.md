@@ -101,3 +101,11 @@ quarto render gca_calculation.qmd
 ```
 
 *(Alternatively, you can open the `.qmd` files in RStudio or Positron and run the code chunks interactively).*
+
+***
+
+## References
+
+*   **Isik, F., Holland, J., & Maltecca, C. (2017).** *Genetic Data Analysis for Plant and Animal Breeding*. Springer. — The diallel-mating-designs chapter (Eq. 5.4) is the source of the G×E partition used in `gca_calculation.qmd`: separate `LG_ik` / `LG_il` (female and male GCA × location) and `LS_ikl` (SCA × location) random effects instead of a single cross-by-environment term.
+
+*   **Comstock, R. E., & Robinson, H. F. (1948).** The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. *Biometrics*, 4(4), 254–266. — Original North Carolina Design II / Line × Tester variance partition.
