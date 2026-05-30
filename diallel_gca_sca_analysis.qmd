@@ -1,0 +1,536 @@
+---
+title: "Combining Ability Analysis (GCA and SCA) in Maize"
+subtitle: "A Step-by-Step R Quarto Tutorial for Diallel Crosses"
+author: "Antigravity Genetics & Breeding Lab (NCSU)"
+date: "2026-05-30"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    css: custom.css
+---
+
+> [!NOTE]
+> This step-by-step Quarto notebook is designed for Stelio Boaventura Nuvunga to demonstrate the calculation of General Combining Ability (GCA) and Specific Combining Ability (SCA) using a simulated maize dataset. It starts with the experimental design, simulates realistic yield data for a 7x7 diallel across two environments (representing normal and low-phosphorus conditions), and provides both fixed-effects and mixed-effects R implementations.
+
+***
+
+# R Environment Setup
+
+To begin, we will load the standard R packages. We use the `tidyverse` suite for data manipulation and visualization, and the `sommer` package (mmer solver), which is the industry standard in R for plant breeding and quantitative genetics, as it supports overlaying female and male random design matrices to estimate GCA.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+# Load required libraries
+library(tidyverse)    # For data manipulation and plotting
+library(sommer)       # Standard plant breeding mixed-model package
+library(knitr)        # For beautiful table rendering
+library(kableExtra)   # For premium table formatting
+
+# Set seed for perfect reproducibility of the simulated dataset
+set.seed(42)
+```
+
+***
+
+# Simulating a 7 × 7 Diallel Maize Dataset
+
+To prepare for real data analysis, we will simulate a **7 × 7 full diallel cross** evaluated for a single trait (**Yield**, in tons per hectare) in **two environments**:
+1.  **env1:** Normal Phosphorus (optimal conditions)
+2.  **env2:** Low Phosphorus Stress (phosphorus-deficient conditions)
+
+The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 blocks (replications)** in each environment.
+
+## Biological Parameters of the Simulation
+To make this simulation biologically realistic for maize, we incorporate:
+*   **A Base Yield ($\mu$):** 8.5 tons/ha.
+*   **Environmental Stress Effect ($E$):** Normal P (`env1`) adds $+1.0$ t/ha, while Low P (`env2`) reduces yield by $-1.2$ t/ha.
+*   **Deterministic GCA Effects ($g$):** Parent `Line1` is a highly tolerant CIMMYT line, whereas `Line7` is a highly susceptible local line. The true GCA values are:
+    *   $\text{Line1} = +1.5$ (superior additive breeding value)
+    *   $\text{Line2} = +0.8$
+    *   $\text{Line3} = +0.3$
+    *   $\text{Line4} = 0.0$
+    *   $\text{Line5} = -0.4$
+    *   $\text{Line6} = -0.8$
+    *   $\text{Line7} = -1.4$ (inferior breeding value)
+*   **Specific Combining Ability ($s$):** Specific crosses exhibit positive heterosis (e.g., $\text{Line1} \times \text{Line4} = +0.6$), while others show poor compatibility (e.g., $\text{Line2} \times \text{Line6} = -0.5$).
+*   **Inbreeding Depression (Selfing):** Maize is highly sensitive to selfing. We apply a severe **selfing depression effect of $-1.8$ t/ha** on the diagonal of the diallel (where $\text{female} == \text{male}$).
+*   **Reciprocal maternal effect:** A small maternal effect is added when `Line3` is used as a female ($+0.25$ t/ha).
+*   **GCA × Environment Interaction ($G \times E$):** Under Low P stress (`env2`), the tolerance alleles of `Line1` and `Line2` are expressed even more strongly (enhancing their GCA by $+30\%$), whereas susceptible lines perform even worse.
+*   **Residual Error ($\epsilon$):** Standard plot-level noise ($\sigma_{\epsilon} = 0.35$ t/ha).
+
+## R Code to Generate the Dataset
+We build the complete dataset of $2 \text{ envs} \times 3 \text{ blocks} \times 49 \text{ crosses} = 294$ plot observations.
+
+```{r}
+#| label: data-simulation
+
+# Define parental lines
+parents <- paste0("Line", 1:7)
+n_parents <- length(parents)
+
+# Define GCA and Environment parameters
+gca_effects <- c(Line1=1.5, Line2=0.8, Line3=0.3, Line4=0.0, Line5=-0.4, Line6=-0.8, Line7=-1.4)
+env_effects <- c(env1=1.0, env2=-1.2)
+
+# Define SCA matrix (symmetric, with diagonal showing selfing depression)
+sca_matrix <- matrix(0, nrow=7, ncol=7, dimnames=list(parents, parents))
+sca_matrix["Line1", "Line4"] <- 0.6; sca_matrix["Line4", "Line1"] <- 0.6
+sca_matrix["Line2", "Line6"] <- -0.5; sca_matrix["Line6", "Line2"] <- -0.5
+sca_matrix["Line3", "Line7"] <- 0.4; sca_matrix["Line7", "Line3"] <- 0.4
+sca_matrix["Line5", "Line7"] <- -0.3; sca_matrix["Line7", "Line5"] <- -0.3
+diag(sca_matrix) <- -1.8 # Inbreeding depression for selfs
+
+# Build complete observation grid
+sim_data <- expand.grid(
+  env = c("env1", "env2"),
+  block = c("B1", "B2", "B3"),
+  female = parents,
+  male = parents,
+  stringsAsFactors = FALSE
+)
+
+# Define unique cross ID (order-independent) and reciprocal indicator
+sim_data <- sim_data %>%
+  mutate(
+    cross = map2_chr(female, male, ~ {
+      p_sorted <- sort(c(.x, .y))
+      paste(p_sorted[1], p_sorted[2], sep = "_")
+    }),
+    r_cov = case_when(
+      as.numeric(gsub("Line", "", female)) < as.numeric(gsub("Line", "", male)) ~ 1,
+      as.numeric(gsub("Line", "", female)) > as.numeric(gsub("Line", "", male)) ~ -1,
+      TRUE ~ 0
+    )
+  )
+
+# Calculate simulated yield using biological parameters
+sim_data$yield <- apply(sim_data, 1, function(row) {
+  env <- row["env"]
+  blk <- row["block"]
+  fem <- row["female"]
+  mal <- row["male"]
+  crs <- row["cross"]
+  
+  # Base mean yield
+  mu <- 8.5
+  
+  # Block effect (unique seed per block nested in environment)
+  set.seed(which(parents == fem)*10 + which(parents == mal) + which(c("env1", "env2") == env)*100 + which(c("B1", "B2", "B3") == blk)*1000)
+  b_eff <- rnorm(1, mean = 0, sd = 0.20)
+  
+  # Environmental effect
+  e_eff <- env_effects[env]
+  
+  # GCA parental effects
+  gca_fem <- gca_effects[fem]
+  gca_mal <- gca_effects[mal]
+  
+  # SCA effect
+  sca_val <- sca_matrix[fem, mal]
+  
+  # GCA x Env interaction (Low P stress amplifies GCA effects by 30%)
+  ge_fem <- if(env == "env2") gca_fem * 0.3 else -gca_fem * 0.3
+  ge_mal <- if(env == "env2") gca_mal * 0.3 else -gca_mal * 0.3
+  
+  # SCA x Env interaction (specific hybrid adaptability)
+  se_val <- rnorm(1, mean = 0, sd = 0.12)
+  
+  # Reciprocal maternal effect (positive maternal effect for Line3)
+  r_val <- if(fem != mal) {
+    mat_eff <- 0
+    if(fem == "Line3") mat_eff <- mat_eff + 0.25
+    if(mal == "Line3") mat_eff <- mat_eff - 0.25
+    mat_eff
+  } else 0
+  
+  # Residual Plot Error
+  err <- rnorm(1, mean = 0, sd = 0.35)
+  
+  # Combine to get phenotypic yield
+  y <- mu + e_eff + b_eff + gca_fem + gca_mal + sca_val + ge_fem + ge_mal + se_val + r_val + err
+  return(round(y, 3))
+})
+
+# Display first few rows of the generated dataset
+kable(head(sim_data, 10), caption = "First 10 Observations of the Simulated Maize Diallel Dataset") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+***
+
+# Exploratory Data Analysis & Visualizations
+
+Before running mathematical models, we visualize the dataset to verify that the simulation reflects biological realities (e.g., lower yields in `env2`, inbreeding depression in selfs, and positive GCA in `Line1`).
+
+## Diallel Cross Yield Grid
+Let's construct a 7x7 grid of mean yields across all replications and environments to inspect the crossing table.
+
+```{r}
+#| label: eda-grid
+
+# Calculate mean yield for each female x male combination across all blocks and envs
+diallel_summary <- sim_data %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = round(mean(yield), 2), .groups = 'drop') %>%
+  pivot_wider(names_from = male, values_from = mean_yield)
+
+kable(diallel_summary, caption = "7x7 Maize Diallel Mean Yield Grid (Combined Environments, tons/ha)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#cc0000", color = "white")
+```
+
+> [!TIP]
+> Notice the diagonal of the matrix! The yields of selfed lines (e.g., $\text{Line1} \times \text{Line1} = 7.74$ t/ha) are substantially lower than their hybrid crosses (e.g., $\text{Line1} \times \text{Line2} = 9.87$ t/ha). This demonstrates severe **inbreeding depression**, which is typical of maize parental inbreds compared to $F_1$ single-cross hybrids.
+
+## Performance Across Environments
+Let's plot parental and hybrid yields across the two environments to see the impact of Low Phosphorus stress (`env2`) and check for GCA-by-environment interactions.
+
+```{r}
+#| label: eda-plot
+#| fig.width: 10
+#| fig.height: 6
+
+# Classify entries as Hybrid or Self
+sim_data_plot <- sim_data %>%
+  mutate(Type = if_else(female == male, "Self (Inbred)", "Hybrid (Cross)"))
+
+# Plot yields
+ggplot(sim_data_plot, aes(x = env, y = yield, fill = Type)) +
+  geom_boxplot(outlier.color = "red", alpha = 0.8) +
+  scale_fill_manual(values = c("Hybrid (Cross)" = "#cc0000", "Self (Inbred)" = "#4a5568")) +
+  labs(
+    title = "Maize Grain Yield Distribution under Normal vs. Low Phosphorus",
+    subtitle = "Comparing F1 Hybrids vs. Parental Selfs",
+    x = "Environment (Treatment)",
+    y = "Yield (tons/ha)",
+    fill = "Genetic Entry Type"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", color = "#1a202c"),
+    legend.position = "bottom"
+  )
+```
+
+***
+
+# Fixed-Effects Calculations: Griffing's Method 1
+
+In quantitative genetics, **Griffing's Method 1** (incorporating parents, $F_1$ hybrids, and reciprocal crosses) is the classical fixed-effects method used to partition family means into general combining ability (GCA), specific combining ability (SCA), and reciprocal effects. 
+
+We will demonstrate the direct arithmetic calculations from family means. This provides Stelio with an intuitive, hands-on understanding of the underlying genetic algebra before using mixed-model solvers.
+
+## Arithmetic Formulas
+Let $Y_{ij}$ be the mean of the cross between female $i$ and male $j$ across replications and environments.
+*   **Grand Mean ($\mu$):** The overall mean of the $p \times p$ diallel table.
+    $$\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}$$
+*   **Parental Average Means:** The row mean ($\bar{Y}_{i.}$) and column mean ($\bar{Y}_{.i}$) represent the average performance of parent $i$ as a female and male, respectively.
+*   **GCA Effect of Parent $i$ ($g_i$):**
+    $$g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}$$
+*   **Reciprocal Effect of Cross $ij$ ($r_{ij}$):**
+    $$r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}$$
+*   **SCA Effect of Cross $ij$ ($s_{ij}$):**
+    $$s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)$$
+    $$s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)$$
+
+## Direct R Implementation
+Let's compute these values arithmetically using the simulated dataset.
+
+```{r}
+#| label: griffing-arithmetic
+
+# 1. Calculate family means across all observations
+family_means <- sim_data %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = mean(yield), .groups = 'drop')
+
+# 2. Convert to a 7x7 matrix for matrix operations
+Y_matrix <- matrix(0, nrow = n_parents, ncol = n_parents, dimnames = list(parents, parents))
+for(i in 1:nrow(family_means)) {
+  Y_matrix[family_means$female[i], family_means$male[i]] <- family_means$mean_yield[i]
+}
+
+# 3. Compute Grand Mean
+mu_hat <- mean(Y_matrix)
+
+# 4. Compute Row and Column Means
+row_means <- rowMeans(Y_matrix)
+col_means <- colMeans(Y_matrix)
+
+# 5. Calculate GCA effects
+gca_effects_fixed <- 0.5 * (row_means + col_means) - mu_hat
+
+# 6. Calculate Reciprocal effects
+recip_effects_fixed <- matrix(0, nrow = n_parents, ncol = n_parents, dimnames = list(parents, parents))
+for(i in 1:n_parents) {
+  for(j in 1:n_parents) {
+    recip_effects_fixed[i, j] <- 0.5 * (Y_matrix[i, j] - Y_matrix[j, i])
+  }
+}
+
+# 7. Calculate SCA effects
+sca_effects_fixed <- matrix(0, nrow = n_parents, ncol = n_parents, dimnames = list(parents, parents))
+for(i in 1:n_parents) {
+  for(j in 1:n_parents) {
+    if(i == j) {
+      # Selfs
+      sca_effects_fixed[i, j] <- Y_matrix[i, j] - (2 * gca_effects_fixed[i]) - mu_hat
+    } else {
+      # Crosses
+      sca_effects_fixed[i, j] <- 0.5 * (Y_matrix[i, j] + Y_matrix[j, i]) - gca_effects_fixed[i] - gca_effects_fixed[j] - mu_hat
+    }
+  }
+}
+
+# Print the calculated GCA effects in a premium table
+gca_fixed_df <- tibble(
+  Parent = names(gca_effects_fixed),
+  True_GCA = gca_effects[Parent],
+  Estimated_GCA_Fixed = round(gca_effects_fixed, 4)
+)
+
+kable(gca_fixed_df, caption = "Arithmetically Calculated GCA Effects (Griffing Method 1)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!TIP]
+> Notice how close the arithmetically estimated GCA effects are to the true programmed parameters! This illustrates the robustness of Griffing's arithmetic approach in balanced diallel experiments.
+
+***
+
+# Mixed-Effects Calculations: Overlay Matrix Modeling
+
+While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on **Linear Mixed Models (LMMs)**. Mixed models:
+1.  Handle unbalanced datasets (e.g., missing crosses).
+2.  Incorporate pedigree relationship matrices ($A$-matrix).
+3.  Directly estimate genetic variance components ($\sigma^2_A$ and $\sigma^2_D$).
+4.  Shrink predictions (BLUPs) to minimize prediction errors.
+
+## The Challenge of Diallel Mixed Models in R
+In a diallel design, the same individual appears as both `female` and `male`. 
+*   If we fit standard random effects like `(1|female) + (1|male)` in `lme4`, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.
+*   To estimate a single, consistent GCA effect for each parent, we must **overlay** the random incidence matrices $Z_{\text{female}}$ and $Z_{\text{male}}$ so that the statistical model restricts their distributions to be identical.
+
+## Option A: Elegant Mixed Modeling with `sommer`
+The R package `sommer` has a built-in `overlay()` function designed specifically for overlaying genetic design matrices, functioning identically to ASReml's `and()` functionality.
+
+We will fit the mixed model for **`env2` (Low Phosphorus Stress)**.
+
+```{r}
+#| label: mixed-model-sommer
+#| warning: false
+
+# Subset data for the Low Phosphorus environment (env2)
+data_env2 <- sim_data %>%
+  filter(env == "env2") %>%
+  mutate(
+    female = as.factor(female),
+    male = as.factor(male),
+    cross = as.factor(cross),
+    block = as.factor(block)
+  )
+
+# Fit mixed model in sommer
+# yield = fixed intercept + random overlaid GCA + random SCA (cross) + random block
+fit_env2 <- mmer(
+  fixed = yield ~ 1,
+  random = ~ overlay(female, male) + cross + block,
+  data = data_env2,
+  verbose = FALSE
+)
+
+# Extract variance components
+var_comps <- summary(fit_env2)$varcomp
+kable(var_comps, caption = "Estimated Variance Components in Low Phosphorus (env2)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Extracting GCA BLUPs (sommer)
+We extract the General Combining Ability predictions (BLUPs) for each of the 7 parents.
+
+```{r}
+#| label: blups-sommer
+
+# Extract GCA random effect predictions (BLUPs)
+gca_blups <- fit_env2$U$`overlay(female, male)`$yield
+
+# Clean up names to get Line1, Line2, etc.
+gca_blups_df <- tibble(
+  Parent = gsub("overlay\\(female, male\\)", "", names(gca_blups)),
+  GCA_BLUP = round(as.numeric(gca_blups), 4)
+)
+
+kable(gca_blups_df, caption = "General Combining Ability (GCA) BLUPs under Low Phosphorus Stress") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!NOTE]
+> `Line1` and `Line2` have strong positive GCA BLUPs under Low P stress, indicating they carry superior, inheritable alleles for phosphorus efficiency that they transmit reliably to their offspring. Conversely, `Line7` is highly susceptible.
+
+***
+
+# Calculations for Specific Combining Ability (SCA)
+
+While GCA represents parental additive values, the Specific Combining Ability (SCA) represents **dominance deviations** from the expected parental sum, representing how specific cross combinations perform compared to expectations.
+
+## Reconstructing SCA Matrix
+We extract the random cross effects from our mixed model. These represent the SCA predictions. We format them into a symmetric 7x7 matrix.
+
+```{r}
+#| label: sca-matrix-mixed
+
+# Extract SCA random effects (cross)
+sca_blups <- fit_env2$U$cross$yield
+
+# Build SCA table
+sca_df <- tibble(
+  Cross = gsub("cross", "", names(sca_blups)),
+  SCA_BLUP = as.numeric(sca_blups)
+)
+
+# Parse female/male from cross name to form a symmetric matrix
+sca_matrix_blup <- matrix(0, nrow=7, ncol=7, dimnames=list(parents, parents))
+
+for(i in 1:nrow(sca_df)) {
+  cross_name <- sca_df$Cross[i]
+  pts <- strsplit(cross_name, "_")[[1]]
+  p1 <- pts[1]
+  p2 <- pts[2]
+  val <- sca_df$SCA_BLUP[i]
+  
+  sca_matrix_blup[p1, p2] <- val
+  sca_matrix_blup[p2, p1] <- val
+}
+
+kable(round(sca_matrix_blup, 4), caption = "Symmetric 7x7 Specific Combining Ability (SCA) BLUP Matrix (env2)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#4a5568", color = "white")
+```
+
+***
+
+# Calculating Breeding Values (BV) and Genotypic Values (GV)
+
+A key task for breeding students is to calculate and distinguish the **Breeding Value (BV)** and the **Genotypic Value (GV)** of individual crosses.
+
+According to Chapter 5 of Isik et al. (2017):
+1.  **Expected Breeding Value ($BV$):** The sum of the parent general combining abilities. Breeding value is completely additive and determines the response to selection when parents are recombined:
+    $$BV_{\text{Cross } AB} = g_A + g_B$$
+2.  **Genotypic Value ($GV$):** The total genetic value of the cross, equal to the Breeding Value plus the dominance Specific Combining Ability deviation. GV determines the commercial performance of the $F_1$ hybrid:
+    $$GV_{\text{Cross } AB} = BV_{\text{Cross } AB} + SCA_{AB} = g_A + g_B + s_{AB}$$
+
+Let's calculate both for all crosses under Low Phosphorus stress (`env2`) using our mixed model results.
+
+```{r}
+#| label: bv-gv-calc
+
+# Calculate BV and GV for all crosses
+genetic_values <- expand.grid(Female = parents, Male = parents, stringsAsFactors = FALSE) %>%
+  filter(as.numeric(gsub("Line", "", Female)) <= as.numeric(gsub("Line", "", Male))) %>% # unique crosses
+  mutate(
+    GCA_Female = map_dbl(Female, ~ gca_blups_df$GCA_BLUP[gca_blups_df$Parent == .x]),
+    GCA_Male = map_dbl(Male, ~ gca_blups_df$GCA_BLUP[gca_blups_df$Parent == .x]),
+    SCA = map2_dbl(Female, Male, ~ sca_matrix_blup[.x, .y]),
+    Breeding_Value_BV = GCA_Female + GCA_Male,
+    Genotypic_Value_GV = Breeding_Value_BV + SCA
+  )
+
+kable(head(genetic_values, 15), caption = "Breeding Values (BV) and Genotypic Values (GV) of Maize Crosses (Top 15)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+***
+
+# Heritability Estimation from Variance Components
+
+Finally, we use the estimated variance components from the mixed model to calculate narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities. 
+
+## Heritability Formulas for Individuals
+From Equation 5.7 and 5.8 in the NCSU curriculum (`isik2017_chapter4.txt`):
+*   **Additive Variance:** $\sigma^2_A = 4 \times \sigma^2_{GCA}$
+*   **Dominance Variance:** $\sigma^2_D = 4 \times \sigma^2_{SCA}$
+*   **Phenotypic Variance among Individuals:**
+    $$\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
+*   **Individual Narrow-Sense Heritability ($h^2_i$):**
+    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+*   **Individual Broad-Sense Heritability ($H^2_{bs}$):**
+    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+
+## Heritability of Family Means
+For a breeder selecting based on whole-family means:
+*   **Phenotypic Variance of Full-Sib Family Means ($\sigma^2_{FS}$):**
+    $$\sigma^2_{FS} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$
+    where $r = 3$ is the number of replications.
+*   **Full-Sib Family Heritability ($h^2_{FS}$):**
+    $$h^2_{FS} = \frac{2\sigma^2_{GCA}}{\sigma^2_{FS}}$$
+
+## Heritability Calculations in R
+
+Let's execute these calculations in R using the variance components retrieved from `fit_env2`.
+
+```{r}
+#| label: heritability
+
+# Extract individual variance components from sommer output
+var_gca <- var_comps["overlay(female, male):yield:yield", "VarComp"]
+var_sca <- var_comps["cross:yield:yield", "VarComp"]
+var_res <- var_comps["units:yield:yield", "VarComp"]
+
+# Calculate Genetic Variances
+var_A <- 4 * var_gca
+var_D <- 4 * var_sca
+
+# Individual Phenotypic Variance
+var_phen_ind <- 2 * var_gca + var_sca + var_res
+
+# Calculate Individual Heritabilities
+h2_individual_ns <- var_A / var_phen_ind
+H2_individual_bs <- (var_A + var_D) / var_phen_ind
+
+# Full-Sib Family Phenotypic Variance (r = 3 blocks)
+r_rep <- 3
+var_phen_fs <- 2 * var_gca + var_sca + (var_res / r_rep)
+
+# Calculate Family Heritability
+h2_family_fs <- (2 * var_gca) / var_phen_fs
+
+# Print results
+heritability_results <- tibble(
+  Parameter = c(
+    "Additive Genetic Variance (Va)", 
+    "Dominance Genetic Variance (Vd)", 
+    "Individual Phenotypic Variance (Vp_ind)",
+    "Narrow-Sense Individual Heritability (h2_i)", 
+    "Broad-Sense Individual Heritability (H2_bs)",
+    "Narrow-Sense Full-Sib Family Heritability (h2_FS)"
+  ),
+  Value = round(c(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), 4)
+)
+
+kable(heritability_results, caption = "Estimated Genetic Variances and Heritabilities under Low P Stress") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+***
+
+# Tutorial Summary & Checklist for Stelio
+
+To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:
+
+1.  **Format the Dataset:** Ensure column names are set (`env`, `block`, `female`, `male`, `yield`) and that the `cross` field is created in a female/male sorted manner.
+2.  **Define Reciprocals:** Code a reciprocal covariate (`r_cov` set to $1, -1, 0$) if reciprocal maternal effects are to be analyzed.
+3.  **Run Griffing's Arithmetic:** Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.
+4.  **Perform Mixed Modeling:** Use the `sommer::mmer` package in R. Fit the model using `overlay(female, male)` for the parental GCA, `cross` for the SCA, and nest blocks within environment (`env:block`).
+5.  **Extract BLUPs:** Extract the predictions and use the equations:
+    *   $BV = g_A + g_B$ (for parental selection)
+    *   $GV = g_A + g_B + s_{AB}$ (for commercial hybrid selection)
+6.  **Calculate Heritabilities:** Extract variance components to calculate narrow-sense heritability ($h^2$) to evaluate genetic gain potential.

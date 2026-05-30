@@ -1,0 +1,325 @@
+---
+title: "Analyzing Iris Petal Length: ANOVA and Compact Letter Display (CLD)"
+subtitle: "A modern, publication-ready statistical workflow in R using Quarto"
+author: "Antigravity Analytics"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme:
+      light: flatly
+      dark: darkly
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    fig-width: 8
+    fig-height: 6
+    fig-align: center
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  warning = FALSE, 
+  message = FALSE, 
+  fig.retina = 3,
+  out.width = "100%"
+)
+
+# Automated package installer for reproducibility
+required_packages <- c("ggplot2", "emmeans", "multcomp", "multcompView", "gt", "car")
+new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
+if (length(new_packages)) {
+  install.packages(new_packages, repos = "http://cran.us.r-project.org")
+}
+
+library(ggplot2)
+library(emmeans)
+library(multcomp)
+library(multcompView)
+library(gt)
+library(car)
+```
+
+::: {.callout-note}
+## Overview
+In comparative biology and experimental research, a standard **Analysis of Variance (ANOVA)** determines if group means differ significantly. However, ANOVA alone does not pinpoint *which* specific groups differ. To resolve this, we perform post-hoc pairwise comparisons (such as Tukey's HSD) and represent the resulting patterns of significance elegantly using a **Compact Letter Display (CLD)**. 
+
+This notebook provides a complete, step-by-step pipeline to run an ANOVA on the `Petal.Length` of the classic `iris` dataset and visualize the results with a publication-quality CLD boxplot.
+:::
+
+---
+
+## 1. Exploratory Data Analysis (EDA)
+
+Before diving into statistical testing, let's explore our data. The `iris` dataset contains 150 observations of three iris species: *setosa*, *versicolor*, and *virginica*. We want to understand the distribution of `Petal.Length` across these species.
+
+```{r eda-plot}
+# Define a premium, cohesive color palette
+species_palette <- c(
+  "setosa" = "#FF6B6B",      # Soft Coral
+  "versicolor" = "#4D96FF",  # Slate Blue
+  "virginica" = "#6BCB77"   # Mint Green
+)
+
+# Custom premium theme
+theme_premium <- function() {
+  theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(face = "bold", size = 18, color = "#2D3748", margin = margin(b = 8)),
+      plot.subtitle = element_text(size = 13, color = "#718096", margin = margin(b = 15)),
+      plot.caption = element_text(size = 10, color = "#A0AEC0", hjust = 1),
+      axis.title = element_text(face = "bold", color = "#2D3748"),
+      axis.title.x = element_text(margin = margin(t = 10)),
+      axis.title.y = element_text(margin = margin(r = 10)),
+      axis.text = element_text(color = "#4A5568"),
+      panel.grid.major = element_line(color = "#E2E8F0"),
+      panel.grid.minor = element_blank(),
+      legend.position = "none"
+    )
+}
+
+# Create a combined Boxplot + Violin Plot to see distributions and raw data points
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_violin(alpha = 0.2, color = NA) +
+  geom_boxplot(width = 0.3, alpha = 0.8, outlier.shape = NA, color = "#2D3748", lwd = 0.7) +
+  geom_jitter(width = 0.1, alpha = 0.3, size = 1.5, aes(color = Species)) +
+  scale_fill_manual(values = species_palette) +
+  scale_color_manual(values = species_palette) +
+  labs(
+    title = "Distribution of Petal Length by Species",
+    subtitle = "Initial visual inspection shows strong segregation between all three species",
+    x = "Species",
+    y = "Petal Length (cm)",
+    caption = "Source: Edgar Anderson's Iris Data"
+  ) +
+  theme_premium()
+```
+
+---
+
+## 2. Fitting the One-Way ANOVA Model
+
+We formulate our statistical hypothesis as follows:
+*   **Null Hypothesis ($H_0$):** The mean petal length is identical across all three species ($\mu_{\text{setosa}} = \mu_{\text{versicolor}} = \mu_{\text{virginica}}$).
+*   **Alternative Hypothesis ($H_1$):** At least one species has a mean petal length that differs from the others.
+
+We fit a standard one-way ANOVA model using R's built-in `aov()` function:
+
+```{r fit-anova}
+# Fit the ANOVA model
+iris_anova <- aov(Petal.Length ~ Species, data = iris)
+
+# Summary of the ANOVA model
+anova_summary <- summary(iris_anova)
+anova_summary
+```
+
+### Visualizing the ANOVA Table in Style
+
+Let's convert this standard console output into a highly polished, professional table using the `gt` package.
+
+```{r anova-table}
+# Convert ANOVA summary to data frame for gt table
+anova_df <- as.data.frame(anova_summary[[1]])
+rownames(anova_df) <- c("Species (Between Groups)", "Residuals (Within Groups)")
+colnames(anova_df) <- c("Df", "Sum Sq", "Mean Sq", "F value", "Pr(>F)")
+
+# Render with gt
+anova_df %>%
+  gt(rownames_to_stub = TRUE) %>%
+  tab_header(
+    title = "ANOVA Table: Petal Length across Iris Species",
+    subtitle = "Testing the statistical significance of species-level mean differences"
+  ) %>%
+  fmt_number(
+    columns = c("Sum Sq", "Mean Sq", "F value"),
+    decimals = 2
+  ) %>%
+  fmt_scientific(
+    columns = "Pr(>F)",
+    decimals = 3
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "Pr(>F)", rows = `Pr(>F)` < 0.05)
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = everything()
+  ) %>%
+  tab_options(
+    table.border.top.color = "#2D3748",
+    heading.background.color = "#F7FAFC",
+    table.width = pct(100)
+  )
+```
+
+The $p$-value is extremely small ($< 2 \times 10^{-16}$), meaning we reject the Null Hypothesis ($H_0$). There is a highly statistically significant difference in mean petal length between the species.
+
+---
+
+## 3. Checking ANOVA Assumptions
+
+To ensure our ANOVA results are valid, we should verify the two core assumptions: **normality of residuals** and **homogeneity of variances**.
+
+### 3.1. Normality of Residuals
+We plot the Q-Q plot and run the Shapiro-Wilk test on the residuals.
+
+```{r diagnostic-plots}
+# Set up a side-by-side layout for diagnostics
+par(mfrow = c(1, 2))
+
+# Residuals vs Fitted
+plot(iris_anova, which = 1, col = "#4D96FF", pch = 16, lwd = 1.5)
+
+# Normal Q-Q Plot
+plot(iris_anova, which = 2, col = "#FF6B6B", pch = 16, lwd = 1.5)
+```
+
+Let's formalize this with the **Shapiro-Wilk test**:
+```{r shapiro-test}
+shapiro.test(residuals(iris_anova))
+```
+
+*   **Interpretation:** The Shapiro-Wilk test returns a $p$-value $< 0.05$, which indicates a deviation from perfect normality. However, ANOVA is highly robust to deviations from normality, especially with balanced designs like the iris dataset ($n=50$ per group).
+
+### 3.2. Homogeneity of Variance
+We perform **Levene's Test** from the `car` package to check if variance is equal across species.
+
+```{r levene-test}
+leveneTest(Petal.Length ~ Species, data = iris)
+```
+
+*   **Interpretation:** Levene's test returns a highly significant $p$-value ($< 0.05$). This indicates that the assumption of equal variances is technically violated. In practice, biological datasets frequently show heterogeneous variance. While the F-test remains relatively robust, we can also perform a **Welch's ANOVA** (which does not assume equal variances) to confirm our results:
+
+```{r welch-anova}
+# Welch's ANOVA (robust to heteroscedasticity)
+oneway.test(Petal.Length ~ Species, data = iris, var.equal = FALSE)
+```
+
+Even after adjusting for unequal variances, the differences remain overwhelmingly significant ($p < 2.2 \times 10^{-16}$).
+
+---
+
+## 4. Post-Hoc Analysis & Compact Letter Display (CLD)
+
+Having established that at least one species differs, we now use **Tukey's Honest Significant Difference (HSD)** test to perform all pairwise comparisons. We'll extract the **Estimated Marginal Means (EMMs)** and generate a **Compact Letter Display (CLD)** to group the species.
+
+### 4.1. Generating the CLD with `emmeans`
+
+We use the modern standard `emmeans` package in conjunction with `multcomp` to compute the CLD.
+
+```{r compute-cld}
+# Compute Estimated Marginal Means
+iris_emms <- emmeans(iris_anova, ~ Species)
+
+# Generate the Compact Letter Display (CLD)
+# Groups sharing a letter are NOT significantly different
+iris_cld <- cld(iris_emms, Letters = letters, adjust = "tukey")
+
+# Convert to data frame and clean column names
+cld_df <- as.data.frame(iris_cld)
+cld_df$cld_letters <- trimws(cld_df$.group)
+
+# Show the resulting dataframe
+cld_df
+```
+
+### 4.2. Displaying the Post-Hoc Comparisons in a Beautiful Table
+
+Let's use `gt` to format the post-hoc results and estimated marginal means.
+
+```{r emms-table}
+cld_df[, c("Species", "emmean", "SE", "df", "lower.CL", "upper.CL", "cld_letters")] %>%
+  gt() %>%
+  tab_header(
+    title = "Estimated Marginal Means & Grouping",
+    subtitle = "Tukey's HSD pairwise adjustments. Groups sharing a letter are not significantly different."
+  ) %>%
+  cols_label(
+    emmean = "Mean (cm)",
+    SE = "Std. Error",
+    lower.CL = "95% Lower CI",
+    upper.CL = "95% Upper CI",
+    cld_letters = "CLD Group"
+  ) %>%
+  fmt_number(
+    columns = c(emmean, SE, lower.CL, upper.CL),
+    decimals = 3
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold", size = px(16), align = "center"),
+    locations = cells_body(columns = cld_letters)
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = everything()
+  ) %>%
+  tab_options(
+    table.border.top.color = "#2D3748",
+    heading.background.color = "#F7FAFC",
+    table.width = pct(100)
+  )
+```
+
+*   **Interpretation:** 
+    *   **setosa** belongs to group **a** (Mean = 1.462 cm).
+    *   **versicolor** belongs to group **b** (Mean = 4.260 cm).
+    *   **virginica** belongs to group **c** (Mean = 5.552 cm).
+    *   Since no species share any letters, all three species are **highly significantly different** from each other.
+
+---
+
+## 5. Visualizing the Final CLD on the Plot
+
+Now, we'll overlay the CLD letters onto our gorgeous boxplot. To position the letters dynamically and perfectly above each boxplot, we'll calculate the maximum value for each species and place the text slightly above that.
+
+```{r final-cld-plot}
+# Find the maximum petal length for each species to place letters dynamically
+max_values <- aggregate(Petal.Length ~ Species, data = iris, max)
+names(max_values)[2] <- "y_pos"
+
+# Merge coordinates with our CLD dataframe
+plot_labels <- merge(cld_df, max_values, by = "Species")
+
+# Generate the final publication-ready plot
+ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
+  # Violin plot underlay
+  geom_violin(alpha = 0.15, color = NA) +
+  # Main boxplots
+  geom_boxplot(width = 0.4, alpha = 0.85, outlier.shape = NA, color = "#2D3748", lwd = 0.8) +
+  # Jittered raw data points for transparency
+  geom_jitter(width = 0.1, alpha = 0.35, size = 1.8, aes(color = Species)) +
+  # Dynamic CLD Letters
+  geom_text(
+    data = plot_labels,
+    aes(x = Species, y = y_pos + 0.3, label = cld_letters),
+    size = 6,
+    fontface = "bold",
+    color = "#2D3748"
+  ) +
+  # Colors and styling
+  scale_fill_manual(values = species_palette) +
+  scale_color_manual(values = species_palette) +
+  labs(
+    title = "Petal Length Differences across Iris Species",
+    subtitle = "One-way ANOVA (p < 0.001) followed by Tukey's HSD test. Letters denote statistical groups (α = 0.05).",
+    x = "Species",
+    y = "Petal Length (cm)",
+    caption = "Different letters indicate statistically significant differences between species (Tukey's HSD, p < 0.05)."
+  ) +
+  theme_premium()
+```
+
+---
+
+## Conclusion
+
+In this workflow, we analyzed the differences in `Petal.Length` across three species of Iris. 
+
+1.  **Exploration:** Initial plots revealed clear structural separation between the species.
+2.  **ANOVA:** Standard and Welch-adjusted ANOVAs confirmed that these differences were highly statistically significant ($p < 2 \times 10^{-16}$).
+3.  **Post-hoc Testing:** Tukey's HSD test computed all pairwise differences.
+4.  **CLD Display:** The Compact Letter Display classified setosa (**a**), versicolor (**b**), and virginica (**c**) into three disjoint significance groups, demonstrating that every pairwise species comparison is statistically significant.

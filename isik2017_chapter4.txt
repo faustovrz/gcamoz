@@ -1,0 +1,1203 @@
+Specific Combining Ability (SCA) and Genetic Values
+An individual’s phenotype can be defined as a linear combination of additive (A), dominance (D) and environmental (e)
+effects:
+yi ¼ μ þ Ai þ Di þ ei ð5:1Þ
+Models based on parental general combining ability (GCA) effects, which are a function of additive genetic effects, were
+introduced in Chap. 4. In this chapter we introduce specific combining ability (SCA) effects that result from dominance
+effects (allelic interactions within loci). The mean genotypic value of offspring from a particular cross may deviate from
+value expected considering the population mean and the sum of the parental GCA effects (Falconer and MacKay 1996).
+This deviation is the specific combining ability for that cross. We can define the mean genotypic value (GAB) for the full-sib
+family produced by crossing parents A and B as the sum of the overall mean (μ), the GCAs of the two parents and the
+SCA value:
+GAB ¼ μ þ GCAA þ GCAB þ SCAAB ð5:2Þ
+The SCA effect for the cross can be derived by subtraction:
+SCAAB ¼ GAB μ þ GCAA þ GCAB ð Þ ð5:3Þ
+A classical method to estimate dominance genetic variance (D) is to estimate the variance associated with SCA effects of
+many crosses. The expected value of the observed SCA variance component is 1/4 of the dominance genetic variance in the
+reference population.
+There are several commonly used mating designs used to partition the observed variance into additive and dominance
+genetic effects, such as factorial mating designs, nested designs and diallels (Hallauer et al. 2010). Diallels are commonly
+used in plant breeding applications where individual plants can be used as both male and female parents; in addition to using
+diallels to estimate additive and dominance variances, certain diallel designs may allow estimation of reciprocal cross
+effects. Diallels cannot be used in dioecious species (female and male flowers occur in different plants), including mammals.
+However, factorial designs can be used in dioecious species to estimate dominance genetic variance. We will demonstrate
+one diallel and one factorial example then show an example of cloned progeny test data analysis for within-family selection.
+Diallel Mating Designs
+In monoecious plant species when the same individuals are used as females and males in breeding, the mating design is a
+diallel. Here are some commonly used diallel mating designs in plant breeding:
+Full diallels involve all the possible combinations of crosses among parents, including reciprocals and self-fertilization of
+the parents. For a sample of n parents, the full-diallel requires n n progenies, a number that quickly becomes
+unmanageable as more parents are sampled.
+Diallel Mating Designs 143
+Half diallels: Each parent is mated with every other parent, excluding selfs and reciprocals. This requires making n(n–1)/2
+crosses for n parents (Fig. 5.1a).
+Partial diallel: Not all the crosses are made. There are no reciprocals or selfs. The goal is to reduce the breeding workload for
+a given sample of parents by making less than n(n–1)/2 crosses for n parents (Fig. 5.1b).
+Connected diallels: Two groups (1–6 and 7–12) of individuals are used to form two diallels but they are connected by
+crossing 4 9, 7 1, 9 3 and 10 2. In the example below, the second diallel also includes some selfs (S) and
+reciprocals (R) (Fig. 5.2):
+If there are no connections between groups of parents, the design is a diallel in sets. Diallel mating designs provide good
+evaluation of parents and full-sib families. They also provide estimates of both additive and dominance genetic effects, and
+genetic gains due to additive and dominance genetic effects if we assume the sample of parents used is sufficient to represent
+the reference population (Baker 1978; Holland et al. 2003). One disadvantage of diallels is that the breeding and progeny
+evaluations can be costly due to large number of crosses required. For a full diallel with 6 parents, 36 crosses are required;
+Fig. 5.1 A half-diallel mating
+without selfs (left) and partial
+mating designs (right). There
+are many variations of diallels
+used in plant breeding
+a) b)
+F/
+M
+1 2 3 4 5 6
+F/
+M
+1 2 3 4 5 6
+1 . X X X X X
+1 . X X X
+2 . X X X X
+2 . X
+3 . X X X
+3 . X
+4 . X X
+4 . X
+5 . X
+5 . X
+6.
+6.
+Fig. 5.2 A connected diallel
+mating design of 12 parents.
+In the diagram crossings
+between different individuals
+are designed by X, reciprocals
+by R and selfing by S
+F/M 1 2 3 4 5 6 7 8 9 10 11 12
+1 . X X X
+2 . X
+3 . X
+4 . X
+5 .
+6 .
+7 X S X X X
+8 R S X X
+9 X R S X
+10 X R R.
+11 R S
+12 R S
+144 5 Genetic Values
+with 10 parents the number of crosses required is 100. While these numbers may be manageable, it may be questioned if a
+sample of 10 or so parents can really provide a useful estimate of the reference population genetic variances (Baker 1978).
+There are many other combinations of diallel mating designs. See White et al. (2007) and Hallauer and Miranda (1988) for
+details.
+Diallel Example
+Six pine trees were mated using a half-diallel mating design. There were no selfs or reciprocals in the mating. Pines are
+monoecious species, meaning that male (pollen catkins) and female (strobili) reproductive organs are found on the same tree.
+A tree can be used as male, female or both in the mating. One of the parental combinations was not made, so the half diallel
+was not complete. In total, 14 crosses (full-sib families) were obtained. The field experimental design was a randomized
+complete block design in which the experimental unit was a plot containing on average 4.3 trees per full-sib family. The
+experiment was replicated in four locations and there were six blocks per location. Wood density of trees was measured at
+age 10. The first five observations of the data set (in file‘diallel.csv’) are given below:
+Tree Female Male Cross Location Block density
+1A11 590 626 590626 1 1 424.9
+1A12 590 626 590626 1 1 414.5
+1A13 590 626 590626 1 1 394.3
+1A14 590 626 590626 1 1 352.4
+1A15 590 626 590626 1 1 438.8
+Linear mixed model
+It is imperative to write the statistical model correctly first before writing the model in ASReml or in another software. Given
+the mating design and the experimental design, we can use the following linear model to decompose phenotypic variance of
+a trait into genetic and environmental components:
+yijklm¼ μ þ Li þ Bj i ð Þ þ Gk þ Gl þ Skl þ LGik þ LGil þ LSikl þ εijkl þ wijklm ð5:4Þ
+where
+yijklm is the observation on the mth tree in the jth block of the ith location for the klth cross;
+μ is the overall mean;
+Li is the ith fixed location (environment) effect, i¼ 1 to t;
+Bj(i) is the random effect of the jth block nested within the ith location, j¼ 1 to b;
+Gk, Gl are the random general combining ability (GCA) effects of the kth female and the lth male, respectively. These are
+normally and independently distributed Gk and Gl NID 0; σ2
+G ;
+Skl is the random specific combining ability (SCA) effect of the kth and the lth parents k 6¼ l ð Þ NID 0; σ2
+S ;
+LGik, LGil are the random female and male parent GCA by location interactions NID 0; σ2
+LG ;
+LSikl is the random SCA by location interaction effect NID 0; σ2
+LS ;
+ɛijkl is the experimental error term for residual variation among plot mean values NID 0; σ2
+ε ;
+Wijklm is the experimental error term for residual variation among individual trees within a plot NID 0; σ2
+w .
+We show in the next sections how to fit the model for the diallel experiment established at multiple locations (Eq. 5.8) in
+ASReml.
+The GCA model
+We start with a simple reduced model to estimate genetic variance due to GCA effects. Unlike half-sib family data we saw
+in Chap. 4, writing the GCA effect for diallels is trickier, because the same parents are used as both female and male.
+Diallel Mating Designs 145
+We are going to model the parental GCA effects as identical whether they are transmitted through the male or female side of
+the parent. So, a progeny from parent A is modeled as having the GCA effect of parent A whether A was its male or female
+parent. We accomplish this restriction on the model by‘overlaying’ the design matrix Z for male and female parents in the
+linear mixed model. This will estimate one common GCA variance and one GCA estimate for each parent regardless of how
+the parents were used.
+The reduced linear model ignoring SCA effects is:
+yijkm¼ μ þ Li þ B L ð Þj i ð Þ þ Gk þ Gl þ εijkl þ wijklm ð5:5Þ
+Code example 5.1
+GCA model for half diallel. (Code 5-1_diallels.as)
+!AS and(male) !AS and and() is required to indicate that the level codes for female and male parent effects are identical.
+overlays the design matrix for model term male on the design matrix for the immediately preceding model term
+(in this case, female).
+used together ensure that we get a single consistent GCA effect estimate for each parent whether a parent is used
+as female, male or both.
+In the model, the block effect is nested within location effect because the block effect appears only with the location as
+location.block. There is no block main effect across locations.
+A partial output of Code 5-1_diallels.asr file is given below:
+Notice: ASReml assumes female and and(male)
+have the same levels in the same order.
+...
+- - - Results from analysis of density - - -
+Model_Term Gamma Sigma Sigma/SE % C
+location.block IDV_V 24 0.296193 125.872 2.83 0 P
+female IDV_V 6 0.221045 93.9369 1.55 0 P
+location.block.female.m IDV_V 864 0.134900 57.3279 4.38 0 P
+units 1440 effects
+Residual SCA_V 1440 1.00000 424.967 23.87 0 P
+146 5 Genetic Values
+• Notice the message in the output file about female and male having the same levels in the same order. ASReml assumes
+that a female parent coded‘1’ is the same individual as a male parent also coded‘1’. We used the !AS qualifier and the
+and() function to make sure this is the case.
+It is important to note that although only one parental GCA component of variance (‘female’) is reported in this output, our
+model includes GCA variances for both male and female parents. We restricted the model to force them to be equal, which is
+why only one of the two parental GCA variances is reported. The female variance component is expected to equal 1/4 of the
+additive genetic variance. The (unreported) male variance component is identical and also is expected to equal 1/4 of
+the additive genetic variance. Together, these two GCA variances represent half of the additive genetic variance, which is the
+proportion of additive genetic variance expected among full-sib families (Holland et al. 2003). The residual variance in this
+model is due to variation among trees within a plot, which includes both within-family genetic variation and extraneous
+non-genetic error variation. The within-family genetic variation includes the other half of the additive genetic variance and
+all of the non-additive genetic (SCA) variance.
+The solution (GCA estimates) for the parents used in the design are reported in the Code 5-1_diallels.sln file:
+...
+Model_Term Level Effect seEffect
+location 1 0.000 0.000
+location 2 -11.86 7.100
+location 3 14.37 6.751
+location 4 -13.59 6.759
+mu 1 410.1 9.242
+location.block 1.001 0.1467E-01 5.395
+female 590 -0.6103 4.139
+female 626 -5.062 4.164
+female 634 -12.13 4.140
+female 652 -1.542 4.143
+female 612 2.686 4.173
+female 649 16.66 4.138
+• A partial output of the solution file is presented here. Parent 649 has a large positive GCA effect estimate (16.66 with a
+standard error of 4.138), whereas parent 634 has a large negative value of 12.13 with a standard error of 4.14.
+Using pedigree in the GCA model
+In the model above, we assumed that the parents are unrelated, such that GCA effects are independent with no covariances:
+Gk and Gl NID 0; σ2
+G . If there are known pedigree relationships among the parents, however, we should include that
+information in the analysis to account for correlations among effects of related parents.
+Pedigree file Among the six parents used in the mating design, trees 590 and 626 have one common parent (333). The
+remaining parental pairs are unrelated. The first nine rows of the pedigree file are given below:
+TREE FEMALE MALE
+333 0 0
+590 333 0
+626 0 333
+634 0 0
+652 0 0
+612 0 0
+649 0 0
+1A11 590 626
+1A12 590 626
+...
+Diallel Mating Designs 147
+Although we do not have any observations for grandparent 333, we expand the vector a containing additive effects of
+individuals to include all ancestors back to the base population. Thus we will see a solution (GCA value) for 333 in the
+solution output file (.sln) for models that use this pedigree information.
+The ASReml command file used to incorporate the pedigree relationships among the parents takes the following form:
+Code example 5.2
+GCA model for half diallel using pedigree information on parents (Code 5-2_diallels_with_pedigree.as)
+A partial output from the primary output file is given below (Code 5-2_diallels_with_pedigree.asr). Before the variance
+components estimates, the .asr file contains information about the reading of the pedigree file. Notice that ASReml correctly
+identified that individual 333 was used as both father and mother in the pedigree and prints a warning (since this should not
+happen in a mammalian pedigree). Also, the .asr file reports seven unique identities (the six parents plus one known common
+grandparent) in the pedigrees of the phenotyped progenies.
+diallel_pedigree.txt !SKIP 1
+Reading pedigree file diallel_pedigree.txt: skipping 1 lines
+Pedigree Header Line: tree mother father
+Pedigree check: fath 333 previously occurred as a moth Now at line 3: 626 0 7 identities in the pedigree over 1 generations.
+For first parent labelled moth, second labelled fath
+moth moth_of_moth fath_of_moth fath moth_of_fath fath_of_fath
+1 0 0 1 0 0
+Using an adapted version of Meuwissen & Luo GSE 1992 305-313:
+PEDIGREE [diallel_pedigree.txt ] has 7 identities, 9 Non zero elements
+GIV0 NRM 7 7 -0.58
+333
+The variance components estimates are:
+Model_Term female Residual Gamma Sigma Sigma/SE % C
+location.block IDV_V 24 0.296185 125.868 2.83 0 P
+NRM_V 7 0.221136 93.9749 1.55 0 P
+location.block.female.m IDV_V 1176 0.134908 57.3310 4.38 0 P
+SCA_V 1440 1.00000 424.964 23.87 0 P
+148 5 Genetic Values
+• The variance explained by the GCA effect is 93.97. The female factor (overlaid with male factor) is associated with the
+pedigree, which models the variance-covariance structure of the parental effects according to the‘numerator relationship
+matrix’ (identified as‘NRM_V’ in the .asr output). The female variance component estimate from this pedigree-based
+model is slightly larger than in the previous model where we assumed no relationships among the parental effects. Some
+increase is expected since the GCA effects of parents with some pedigree relationship are not independent, so when we
+treated them as independent in the previous model, we were underestimating the true variance among the GCAs in the
+reference population.
+The solutions for parent GCA effects are given below (Code 5-2_diallels_with_pedigree.sln):
+Model_Term Level Effect seEffect
+...
+female 333 -2.437 8.219
+female 590 -0.8351 4.281
+female 626 -5.257 4.307
+female 634 -12.33 4.270
+female 652 -1.742 4.271
+female 612 2.489 4.302
+female 649 16.46 4.268
+Now the model predicts a GCA value for ancestor 333; otherwise the GCA predictions for the parents are similar to the
+model without pedigree.
+Adding GCA by location interaction term
+Since the crosses were evaluated at multiple locations, we can include GCA by location interaction effects LGik to the model:
+yijklm¼ μ þ Li þ B L ð Þj i ð Þ þ Gk þ Gl þ LGik þ LGil þ εijkl þ wijklm ð5:6Þ
+Modeling the GCA by location interaction for the diallel in ASReml requires some additional tricks. We want to overlay the
+design matrix for female by location interaction on to that for male by location interaction using the and() model
+specification. However, we cannot do this directly, because the interaction term‘location.male’ must be first defined before
+it is inserted inside the and() specification. This is best explained by example; the model in ASReml is as follows:
+Adding GCA-by-environment interaction to model for half diallel using pedigree information on parents (Continued
+Code 5-2_diallels_with_pedigree.as)
+• loc.female and(loc.male) would be the obvious way to write the last line of model code, but this would not
+work because the term inside the and() function is parsed before the interaction term is defined. So, any terms inside the
+and()function must be defined directly by a field definition or be explicitly declared previously.
+• The previous line of model code, female and (male) works because‘male’ is defined via the field definitions.
+However, loc.female and(loc.male) fails because the loc.male term that has not yet been defined.
+• To work around the strict parsing of the and() function, we write: loc.female -loc.male and(loc.male):
+-loc.male defines a term for the interaction of location and male without including it in the model so that it is
+recognized when the and() term is parsed.
+Diallel Mating Designs 149
+• Notice that location is shortened as loc. ASReml understands it is location by matching it to the first three letters of
+defined field names. Model terms should only be shortened when there is no chance of matching the wrong field.
+Variance components from the model are below:
+Model_Term Gamma Sigma Sigma/SE location.block IDV_V 24 0.295285 125.461 2.84 female NRM_V 7 0.220009 93.4776 1.52 loc.female IDV_V 28 0.210848E-01 8.95855 1.51 location.block.female.m IDV_V 1176 0.112914 47.9751 3.80 Residual SCA_V 1440 1.00000 424.881 23.87 female NRM 7
+% C
+0 P
+0 P
+0 P
+0 P
+0 P
+• Notice that the plot-level experimental error variance for this model (location.block.female.male¼ 47.97) is
+smaller than the plot error variance (57.33) for the model without the G E interaction term; the GCA-by-location
+variance has been modeled as a random effect instead of being combined with the plot variance. In contrast, the residual
+within-plot variance has hardly changed.
+Specific Combining Ability (SCA) Effect
+With the diallel mating design we can decompose total genetic variance into additive genetic variance (explained by the
+GCA effect) and dominance genetic variance (explained by the SCA effect). In the model below, the term cross defines
+SCA. In the data set, the levels of cross should code for a particular combination of parents without respect to which parent is
+male or female. In other words, the level for cross should be identical for reciprocals. SCA can also be defined as an
+interaction between female and male effects, but only if we are not treating male and female as pedigree-associated factors
+(since the pedigree information forces a specific variance-covariance matrix on the main effects that cannot be simply
+generalized to their interaction). Furthermore, to be sure we treat the effect of female k male l as identical to female
+k male l, we need to use the and() function again. Since there is no field defined as male.female, we would have to
+first define it in the model without fitting it, writing the part of the model coding for SCA as:
+female.male –male.female and(male.female)
+This would produce a single variance component estimate for female.male, and its value would be exactly half of the
+variance component estimate for cross, since we are implicitly partitioning the cross variance equally into female.male
+and male.female pieces. Considering these complications, it is generally easier to code the model and understand results
+if we just create a field for‘cross’ in the data set.
+Finally, we also add a term for SCA by location interaction (loc.cross) in the model:
+Adding SCA effects to model for half diallel using pedigree information on parents (Code 5-2_diallels_with_pedigree.as
+continued).
+150 5 Genetic Values
+Variance components from the primary output file (.asr) are given below:
+Model_Term Gamma Sigma Sigma/SE % C
+cross IDV_V 14 0.151500E-02 0.643664 0.18 0 P
+location.block IDV_V 24 0.295446 125.524 2.84 0 P
+female NRM_V 7 0.219946 93.4463 1.51 0 P
+loc.female IDV_V 28 0.211815E-01 8.99918 1.51 0 P
+loc.cross IDV_V 56 0.101193E-06 0.429929E-04 0.00 0 B
+location.block.cross IDV_V 336 0.111973 47.5728 3.73 0 P
+Residual SCA_V 1440 1.00000 424.861 23.87 0 P
+female NRM 7
+• SCA and SCA by location interaction variances are both very small. The ratios of the estimates to their standard errors are
+less than 1, suggesting that the dominance variance is likely not significant. There is almost no difference in log
+likelihoods between this model ( 5179.14) and the previous GCA model ( 5179.16). Therefore we cannot reject the
+null hypothesis that the SCA and SCA by location variances are both zero.
+The SCA effects for each level of‘cross’ are included in the solution file (.sln), and the effects are all very small, as expected
+if the SCA variance is close to zero:
+Model_Term Level Effect seEffect
+cross 590626 0.1036 0.7806
+cross 590634 0.5447E-02 0.7807
+cross 590652 0.1325 0.7790
+...
+cross 649652 0.2667 0.7802
+cross 652626 0.1141 0.7810
+cross 652634 -0.3850 0.7823
+...
+female 333 -2.414 8.234
+female 590 -0.7736 4.475
+female 626 -5.262 4.500
+female 634 -12.04 4.464
+female 652 -1.775 4.464
+female 612 2.365 4.494
+female 649 16.28 4.462
+What are the breeding value (BV) and genotypic value (GV) of cross 590 626? Parent 590 has a GCA value of 0.7736.
+Parent 626 has the GCA value of 5.262. The expected BV of 590 626 is simply the sum of its parental GCA values: BV
+(590 626)¼ ( 0.7736 – 5.262)¼ 6.04. The GV is simply the BV plus the SCA estimate for the cross. GV
+(590 626)¼ 6.04 + 0.1036¼ 5.94.
+Reciprocal Effects
+As discussed in the preceding section, the SCA effect for the cross between parents A and B is common between the two
+reciprocal ways of making the cross SCA(A B)¼ SCA(B A). If we have reciprocal crosses in the data, we can model
+the reciprocal SCA effect, which is due to differences between A B and B A. Furthermore, some part of the reciprocal
+effect may be due to differences in the GCA effect of a parent when used as male and female. We can augment the diallel
+model to include reciprocal effects of both GCA and SCA. To do this, we need to add a column to the data set for an indicator
+variable that distinguishes reciprocal crosses. This indicator variable can be a covariate set to 1 for crosses in one direction
+and 1 for crosses in the other direction, and it is arbitrary as to which cross direction is coded as 1.
+Diallel Mating Designs 151
+For example, the file maize_diallel.csv contains data from a partial diallel in sets in which 55 parent maize plants were
+crossed in many ways in 11 sets of five parents each. All possible crosses were attempted, although not all crosses succeeded.
+A sample of 3,500 progenies were measured in randomized single plant plots across 2 years. Some progeny data rows in the
+file are shown below:
+Year Progeny female male cross r DTA PltHt
+2013 1 171_11 170_1 170_1 171_11 -1 72 270
+2013 27 171_11 170_1 170_1 171_11 -1 73 225
+2013 44 170_1 171_11 170_1 171_11 1 73 240
+2013 76 170_1 171_11 170_1 171_11 1 81 220
+2013 131 170_1 167_6 167_6 170_1 -1 73 265
+2013 147 170_1 167_6 167_6 170_1 -1 72 255
+In the data set, you can see that when parents 170_1 and 171_11 were crossed, the progeny’s cross field level is set to
+170_1 171_11, irrespective of which parent was used as female. The variable‘r’ is the covariate that distinguishes the two
+reciprocals of this one combination. It is set at 1 when 171_11 was used as female and set at 1 when 170_1 was used as
+female. It is arbitrary which reciprocal is labeled as r ¼ 1 or 1 within a particular combination. For example, when 170_1 is
+used as a female in a cross with parent 167_6, the progeny value for r is set at 1.
+Having set up the data this way, we can then write the ASReml code to define the field for the‘r’ variable as a numeric
+covariate, and then fit interactions between GCA and SCA effects with this covariate to capture the reciprocal effects
+(Holland et al. 2003; M€ ohring et al. 2011; Piepho and M€ ohring 2007). The full model should also include reciprocal by
+environment interactions, which are really three-way interaction between genetic effects, the reciprocal covariate, and
+environment:
+Code example 5.3
+Model for diallel with reciprocal crosses. (see details in Code 5-3_reciprocal_effects.as)
+152 5 Genetic Values
+The variance components estimates from this analysis are:
+Model_Term Gamma Sigma Sigma/SE % C
+female IDV_V 53 0.107210 64.1576 2.93 0 P
+Year.female IDV_V 106 0.497229E-02 2.97556 0.78 0 P
+female.r IDV_V 53 0.297211E-03 0.177859 0.14 0 P
+Year.female.r IDV_V 106 0.101193E-06 0.605567E-04 0.00 0 B
+cross IDV_V 89 0.799283E-01 47.8314 2.07 0 P
+cross.r IDV_V 89 0.101193E-06 0.605567E-04 0.00 0 B
+Year.cross IDV_V 178 0.122755E-01 7.34601 0.86 0 P
+Year.cross.r IDV_V 178 0.101193E-06 0.605567E-04 0.00 0 B
+Residual SCA_V 3196 1.00000 598.429 38.86 0 P
+• These results show little evidence for reciprocal effects, the variance components corresponding to reciprocal effects are
+either very small ( female.r, corresponding to reciprocal GCA) or essentially zero.
+Interpretation of Observed Variances from Diallels
+Assuming that epistatic genetic effects are negligible, the variance component associated with the female effect (GCA) is 1/4
+of the additive genetic variance, and the variance component associated with the cross effect (SCA) is 1/4 of the dominance
+variance. If the experiment were established in one environment, these variances may also include contributions due to
+confounded genetic-by-environment variances. Variance associated with reciprocal GCA effects ( female.r,σ2
+GCAr Þ can be
+due to maternal effects and cytoplasmic genetic effects that are shared among all crosses with a common female parent, but
+not shared by crosses where that parent is used as male. The reciprocal SCA variance (cross.r, σ2
+SCAr) is due to any effects
+that are specific to a particular direction of a specific cross; this could occur due to interactions between cytoplasm of the
+maternal parent and nuclear alleles of the paternal parent.
+The interpretation of observed GCA and SCA variance components as equal to their expected values in terms of additive and
+dominance variance in the reference population has to be done with caution. As already mentioned, a major limitation to the
+use of diallels for estimating genetic variance components is their generally limited sampling of parents, resulting in
+potentially large variation among estimates from different parental samples (Isik et al. 2005). Small samples can also cause
+the assumption of independence among loci to be violated even when the reference population is in linkage equilibrium, and
+this will affect the estimated variance components (Baker 1978). In general, it is safer to treat the parents as a fixed factor and
+avoid estimating variance components (Hallauer and Miranda 1988), but the fixed effects approach may result in difficulties
+in estimability of GCA effects if some crosses are missing.
+We showed previously that relationships among the parents can be modeled by including pedigree information, which
+results in the GCA variance being properly adjusted to reflect the variance among unrelated samples of the reference
+population. ASReml internally makes this adjustment by using the numerator relationship matrix to model the additive
+effects of the parents. However, ASReml does not automatically adjust the SCA variance to account for the possibility that
+some progenies that appear to be half-sibs based on the immediate generation pedigree may in fact have a closer relationship
+and share dominance effects. Returning to the pine diallel example, progenies from the cross of parent 590 634 are closer
+than half-sibs to progenies from 626 634 (2θ¼ 0.3125) because parents 590 and 626 are both progenies of ancestor 333.
+Furthermore, progenies within the cross of 590 626 are more closely related than full-sibs, their additive relationship is
+2θ¼ 0.625. ASReml accounts for the increased additive relationships in these cases when it uses the pedigree information
+on the parents. It does not, however, account for the small covariance between the dominance effects of families 590 624
+and 626 624 (Δ¼ 0.0625), or the slightly increased dominance covariance between progenies within the 590 626
+family (Δ¼ 0.28125). Ignoring these relationships leads to biased estimates of the dominance variance based on the diallel
+SCA variance estimate. In the example shown, the bias is expected to be small since the changes in affected coefficients are
+small.
+Diallel Mating Designs 153
+Linear Combinations of Variances from Diallels
+Keeping in mind the caveats stated in the previous section, we still may want to use the estimated variance components from
+the diallel model to estimate heritability. Given the family structure inherent in the diallel design, we can estimate several
+different heritability values, which can be interpreted as being related to response to selection among individuals, half-sib
+families, or full-sib families, or combined selection among and within families (Holland et al. 2003).
+If we have data on individuals (rather than just mean or total values from plots containing multiple individuals from a
+common family), we can estimate phenotypic variance among individuals σ2
+i
+phen and the narrow-sense heritability h2
+from the diallel analysis results. The phenotypic variance among individuals within a block from a diallel without
+reciprocals replicated across several locations and with multiple individuals per experimental unit is:
+σ2
+phen¼ 2σ2
+G þ σ2
+S þ 2σ2
+LG þ σ2
+LS þ σ2
+ε þ σ2
+w ð5:7Þ
+Narrow-sense heritability is the ratio of additive genetic variance and phenotypic variance among individuals within a block:
+h2
+i ¼ σ2
+A=σ2
+phen¼ 4σ2
+G=σ2
+phen ð5:8Þ
+Broad-sense individual heritability (hbs2) is similar but includes both additive and dominance variance in the numerator:
+h2
+bs ¼ 4 σ2
+G þ σ2
+S =σ2
+phen ð5:9Þ
+The selection unit in diallels could be half-sib family means, in which case the relevant heritability to predict selection
+response would be a ratio of the amount of additive variance among families to the variance of half-sib family means. The
+variance of half-sib family means can be derived from the linear model and the observed variance components, as follows:
+the mean of half-sib family k is:
+Xp 1
+Gl
+Xp 1
+Skl
+Xp 1
+Xe
+LGil
+Xp 1
+Xe
+LSikl
+εijkl
+i
+i
+Y
+::k::
+¼ μ þ L
+: þ B
+l6¼k
+l6¼k
+l6¼k
+l6¼k
+:: þ Gk þ
+p 1 þ
+p 1 þ
+þ
+e
+e p 1 ð Þ þ
+e p 1 ð Þ þ
+Xp 1
+Xe
+Xr
+l6¼k
+i
+j
+er p 1 ð Þ þ
+Xp 1
+l6¼k
+er p 1 ð Þn
+pσ2
+σ2
+GCA
+SCA
+¼
+p 1 þ
+p 1 þ pσ2
+σ2
+σ2
+σ2
+LG
+LS
+e p 1 ð Þ þ
+e p 1 ð Þ þ
+ε
+er p 1 ð Þ þ
+w
+ern p 1 ð Þ
+Xe
+i
+LGik
+Xe
+i
+Xr
+j
+Xn
+m
+wijklm
+ð5:10Þ
+In this equation, p is the number of parents of the diallel, e is the number of environments (locations in this example), r is the
+number of replications or blocks per environment, and n is the number of individuals per plot. The half-sib family mean
+includes Gk, the GCA of the common female parent k, and averages over p – 1 GCA effects of male parents, p – 1 SCA
+effects of combinations between parent k and the other parents, and over the relevant genetic-by-environment interaction
+effects, plot effects, and plant within plot effects. If p is large (say, p > 20) then p/( p–1) is approximately 1 and the variance
+of family means (Var Y
+::k: ð Þ) is approximately:
+σ2
+σ2
+HS ¼ σ2
+SCA
+GCA þ
+p 1 þ
+σ2
+σ2
+σ2
+σ2
+LG
+LS
+þ
+e
+e p 1 ð Þ þ
+ε
+er p 1 ð Þ þ
+w
+ern p 1 ð Þ ð5:11Þ
+If the number of individuals per experimental unit varies, then we replace n in the equation above (which refers to a constant
+number of individuals per unit), with the harmonic mean of the number of individuals per experimental unit (nh) (Holland
+et al. 2003; Nyquist 1991). This equation will also hold for half-sib families derived from male parents.
+Heritability of half-sib family means is simply a ratio of the variance component due to GCA and the phenotypic variance of
+half-sib family means:
+154 5 Genetic Values
+σ2
+G
+h2
+HS ¼
+¼
+σ2
+HS
+1
+4 σ2
+A
+σ2
+HS
+ð5:12Þ
+Alternatively, breeders may select among full-sib family means. The mean of half-sib family kl is:
+Pe
+LGk
+Pe
+LGl
+Pe
+LSikl
+Pe
+Pr
+εijkl
+Pe
+Pr
+Pn
+wijklm
+Y
+::k:
+¼ μ þ L
+: þ B
+i
+i
+i
+i
+j
+i
+j
+m
+:: þ Gk þ Gl þ Skl þ
+þ
+þ
+þ
+þ
+e
+e
+e
+er
+ern ð5:13Þ
+and the variance of full-sib family means Var Y
+::k: ð Þ
+ð is:
+σ2
+σ2
+FS ¼ σ2
+GCA þ σ2
+GCA þ σ2
+LG
+SCA þ
+þ
+e
+2σ2
+¼ 2σ2
+GCA þ σ2
+LG
+SCA þ
+þ
+e
+σ2
+LG
+þ
+e
+σ2
+LS
+σ2
+ε
+þ
+e
+er
+σ2
+LS
+e
+þ
+σ2
+ε
+þ
+σ2
+w
+ern ð5:14Þ
+þ
+er
+σ2
+w
+ern ð5:15Þ
+If the breeder recombines individuals from selected full-sib families to create a new population, only the additive portion of
+the variance among full-sib families contributes to selection gain in the next generation. The dominance variance does not
+contribute to gain because the dominance interactions are disrupted by random mating among the selected families:
+h2
+FS ¼ 2σ2
+G=σ2
+FS ð5:16Þ
+In some species, it may be possible to reproduce seeds or progenies of a superior cross in sufficient quantity to serve as a unit
+of production, then the selected families could be used directly in production. The gain predicted from growing these
+selected families in independent environments compared to growing the original population involves the complete variation
+among full-sib family genotype values in the numerator, as the response units share dominance deviations with the selection
+units (Holland et al. 2003):
+2σ2
+G þ σ2
+S
+0:5σ2
+A þ 0:25σ2
+D
+H2
+FS ¼
+¼
+ð5:17Þ
+σ2
+FS
+σ2
+FS
+Breeders might also be interested in selection of the best crosses and the best progeny within crosses. This is simply an index
+of family and within family selection. The phenotypic variance within families is the difference between the total variance
+among individuals and the phenotypic variance among full-sib family means:
+σ2
+fsw¼ σ2
+phen σ2
+FS
+¼ 2σ2
+G þ σ2
+S þ 2σ2
+LG þ σ2
+LS þ σ2
+w
+ε þ σ2
+2σ2
+σ2
+σ2
+2σ2
+G þ σ2
+LG
+LS
+ε
+ern
+σ2
+S þ
+þ
+þ
+þ
+w
+e
+e
+er
+e 1 ð Þ2σ2
+LG
+e 1 ð Þσ2
+er 1 ð Þσ2
+LS
+ern 1 ð Þσ2
+¼
+þ
+þ
+ε
+þ
+w
+e
+e
+er
+ern
+e 1 ð Þ
+2σ2
+er 1 ð Þσ2
+ern 1 ð Þσ2
+¼
+LG þ σ2
+LS þ
+ε
+þ
+w
+e
+er
+ern
+The broad-sense and narrow sense within-family heritability estimates are:
+ð5:18Þ
+h2
+w
+¼ 2σ2
+G=σ2
+fsw ð5:19Þ
+Diallel Mating Designs 155
+H2
+w
+¼ 2σ2
+G þ 3σ2
+S =σ2
+fsw ð5:20Þ
+We can obtain estimates of these kinds of heritabilities as functions of the variance components from ASReml. For example,
+we can obtain the heritability estimators for the tree diallel example, by substituting the coefficients e ¼ 4, r ¼ 6, and p¼ 6
+into the equations above, and using the following VPREDICT !DEFINE function after the model including GCA and SCA
+and their interactions with environments. There is a slight complication that we also need to compute the harmonic mean of
+individuals per plot because the number of individuals per plot was not constant. We can compute the harmonic mean easily
+using a little bit of R code:
+Code example 5.4
+R script to compute the harmonic mean of the number of trees per plot in the diallel.csv data set
+(Code 5-4_Harmonic_mean.R):
+This returns 4.0017. So, we can use 4 as the value of nh in the family mean heritability computations.
+Code example calculating linear combinations of variance components from diallels (Code 5.2_diallels_with_pedigree. as).
+156 5 Genetic Values
+Output of the functions of variance components defined by VPREDICT is stored in the Code 5-2_diallels_with_pedigree.pvc
+file:
+- - - Results from analysis of density - - -
+1 cross V 14 0.643664 3.57591
+2 location.block V 24 125.524 44.1986
+3 female V 7 93.4463 61.8850
+4 loc.female V 28 8.99918 5.95972
+5 loc.cross V 56 0.429929E-04 0.00000
+6 location.block.cros V 336 47.5728 12.7541
+7 Residual V 1440 424.861 17.7990
+female NRM 7
+8 SCA 1 0.64366 3.6528
+9 GCA 3 93.446 61.768
+10 GCAxL 4 8.9992 5.9421
+11 SCAxL 5 0.42993E-04 0.18008E-05
+12 Error 6 47.573 12.766
+13 Within 7 424.86 17.796
+14 A_var 3 373.79 247.07
+15 D_var 1 2.5747 14.611
+16 GCA2 3 186.89 123.54
+17 SCA.GCA2 8 187.54 123.55
+18 SCA3.GCA2 8 188.82 123.91
+19 phen_i 9 677.97 125.11
+20 phen_hs 9 116.21 74.104
+21 phen_fs 9 198.44 123.53
+22 phen_wfs 10 479.70 19.794
+h2_i = A_var 3 14/phen_i 19= 0.5513 0.2648
+h2_hs = GCA 3 9/phen_hs 20= 0.8041 0.0232
+h2_fsns = GCA2 3 16/phen_fs 21= 0.9418 0.0429
+H2_fsbs = SCA.GCA2 17/phen_fs 21= 0.9451 0.0373
+h2_wfs = GCA2 3 16/phen_wfs 22= 0.3896 0.2582
+H2_wfs = SCA3.GCA 18/phen_wfs 22= 0.3936 0.2591
+Notice: The parameter estimates are followed by
+their approximate standard errors.
+• The estimate of dominance variance is much smaller than its standard error, so it is likely not different from zero. This is
+expected in this case, as we already noted that the SCA variance was not significant in these data.
+• As a consequence, the‘broad-sense’ heritability estimators that include dominance variance in their numerators are about
+equal to the corresponding‘narrow-sense’ heritability estimators.
+• The estimate of heritability among individual plants (h2_i) has a large standard error, but the heritabilities among family
+means are very high and have relatively small standard errors.
+• We caution the reader again that these estimates of heritability should not be considered reliable because of the very small
+sample of six parental plants used to establish the diallel.
+Factorial Mating Designs
+In factorial mating designs, a set of individuals are used as females and another set of individuals are used as males for
+mating. Like diallels, there are multiple versions of factorial mating designs (Hallauer and Miranda 1988; White et al. 2007).
+Single and double pair mating designs depicted in Fig. 5.3 are often used because the number of crosses required are greatly
+reduced compared to a complete factorial.
+Factorial Mating Designs 157
+Fig. 5.3 Single pair (left) and
+double pair factorial mating
+designs (right). A full factorial
+would produce N¼ f m,
+where f and m are the numbers of
+females and males, respectively
+Female parents
+Female parents
+5 6 7 8
+5 6 7 8
+1 X
+1 X X
+Male parents
+2 X
+3 X
+Male parents
+2 X X
+3 X X
+4 X
+4 X
+A linear model example for a factorial mating design
+A factorial mating design was used to cross three unrelated female and three unrelated male individuals. Nine full-sib
+families (crosses) were produced. A randomized complete block design with six blocks were used to establish a field test.
+The experiment was replicated in another location. Tree height is the response variable measured after six growing seasons.
+The statistical model is
+yijpqk¼ μ þ Li þ Bj i ð Þ þ Fp þ Mq þ FMpq þ LFip þ LMiq þ LFMipq þ εijpqk ð5:21Þ
+where yijpqk is the kth observation of the pqth cross the in the jth block in the ith site; μ is the overall mean; Li is the ith fixed
+site (environment) effect, i¼ 1 to t; Bj(i) is the fixed effect of the jth block nested within the ith site, j¼ 1 to b; Fp is
+the random general combining ability (GCA) effect of the pth female NID 0; σ2
+F ; Mq is the random general
+combining ability (GCA) effect of the qth male NID 0; σ2
+M ; FMpq is the random cross effect of the pth and the qth
+parents p 6¼ q ð Þ NID 0; σ2
+FM ; LFip is the random female by location Interaction NID 0; σ2
+LF ; LMiq is the random male
+by location Interaction NID 0; σ2
+LM ; LFMipq is the random cross by location interaction effect NID 0; σ2
+LFM ; εijpqk is
+the random error term NID 0; σ2
+ε .
+We can use ASReml models similar to diallel models for factorial mating designs. The difference is that male and female
+parents are distinct in the factorial mating design, so we would NOT use a field definition like‘male !AS female’ for the
+factorial mating because a male parent coded as‘1’ would not be the same parent as a female parent coded as‘1’. Similarly,
+we can fit male, female, and male*female interaction effects in the model, but the factorial model coding is much simpler
+since we do not need to use the and() function to overlay the design matrices. On the contrary, we want to allow the male
+and female factors to be distinct and we will obtain two different estimates of GCA variance, one for male and another for
+female parents.
+Similar to diallels, we can estimate causal genetic variances (additive, dominance) and derive linear combinations of
+variance components. Variance components observed for the female or male are 1/4 of additive genetic variance
+σ2
+F ¼ 1=4σ2
+A; and σ2
+M ¼ 1=4σ2
+A . These may be poor estimates since the number of female or males used in the mating are
+often small and the variance components associated with either the female and male effect may have large standard errors. A
+better estimate of the additive variance is the average of female and male variance components: σ2
+A ¼ 2 σ2
+F þ σ2
+M . The
+phenotypic variance σ2
+p is the sum of the all the variance components, except the variance component for the random block
+effect:
+σ2
+phen¼ σ2
+F þ σ2
+M þ σ2
+FM þ σ2
+SF þ σ2
+SM þ σ2
+SFM þ σ2
+ε ð5:22Þ
+The best estimate of narrow-sense heritability h2
+i is:
+h2
+i ¼ 2 σ2
+F þ σ2
+M =σ2
+phen ð5:23Þ
+158 5 Genetic Values
+The mean of a half-sib family means with a common female parent is:
+M
+Y
+::p::
+¼ μ þ L
+: þ B
+:: þ Fp þ
+:
+FMp:
+LF
+:p
+þ
+þ
+m
+l þ
+m
+LM
+::
+lm þ
+LFM
+:p:
+lm þ
+ε
+::p::
+lbmn ð5:24Þ
+The variance of maternal half-sib family means is:
+Var Y
+::p::
+¼ σ2
+phen f¼ σ2
+F þ
+σ2
+M
+σ2
+FM
+þ
+þ
+m
+m
+σ2
+LF
+l þ
+σ2
+LM
+lm þ
+σ2
+LFM
+lm þ
+σ2
+ε
+lbmn ð5:25Þ
+Notice that the contribution of the male effect to the phenotypic variance of female means is reduced by the number of males
+used to cross to each female parent.
+The mean and variance for paternal half-sib family means are analogous:
+F
+FM
+LF
+LM
+Y
+...q:
+¼ μ þ L
+: þ B
+:: þ
+:
+f þ Mq þ
+:q
+:q
+f þ
+::
+lf þ
+l þ
+σ2
+F
+f þ σ2
+M þ
+σ2
+FM
+f þ
+σ2
+LF
+lf þ
+σ2
+LM
+l þ
+ε
+...q:
+lbfn ð5:26Þ
+Var Y
+...q:
+¼ σ2
+phen f¼
+LFM
+::q
+lf þ
+σ2
+LFM
+lf þ
+σ2
+ε
+lbfn ð5:27Þ
+We can take the average of female and male parental mean phenotypic variances to get a pooled estimate of half-sib family
+phenotypic variance. Heritability estimates for maternal and paternal half-sib family means and a pooled average heritability
+can be obtained as:
+h2
+f¼ σ2
+F=σ2
+phen f or
+h2
+¼ σ2
+m
+M=σ2
+phen m or
+σ2
+M
+F þ σ2
+h2
+fm pooled¼ 1=2
+σ2
+phen pooled
+ð5:28Þ
+Analysis of Cloned Progeny Test Data
+In some plant and animal species, individuals can be cloned and their genetically identical copies can be tested in multiple
+environments. Cloning individuals for within family-selection is an especially common practice to develop varieties for
+deployment in eucalyptus species (Mullin et al. 2011) and many ornamental plants and vegetatively-propagated crops.
+Cloning allows breeders to capture hybrid vigor and non-additive genetic effects among and within crosses. Cloning
+individuals and testing in replicated field trials has the advantage of increasing the accuracy of genotypic value predictions
+compared to individual evaluations (Isik et al. 2004). With cloned progeny we can increase the heritability both by
+increasing the numerator (including all of the genotypic variance because broad-sense heritability is applicable to gain
+from selection) and by decreasing the denominator by averaging clonal means over more observations. If progenies from a
+mating design are cloned, we can also estimate total genotypic variance in addition to additive variance, providing a means
+to assess the relative importance of non-additive genetic variance.
+Data
+As an example of analysis of data from a clonal evaluation, we present a data set for loblolly pine (Pinus taeda) from the
+North Carolina State University Cooperative Tree Breeding Program. A single-pair mating design was used to produce eight
+full-sib families (crosses). Some of the parents used in crossing were related. Progeny from crosses were cloned via somatic
+embryogenesis. In total, 136 genetically unique progenies were cloned. Clones were field tested using an unbalanced
+incomplete block design at three locations. There were eight blocks at two of the locations and four blocks at the third. No
+Analysis of Cloned Progeny Test Data 159
+blocks included all entries, and some entries appeared twice within some blocks. On average, genotypes were represented by
+about 15 clonal copies in the experiment. At age 8 years after planting, tree height diamater (dia8) and stem diameter were
+measured. Stem forking was recorded as a binary trait, 0¼ no forking, 1¼ forked stem. The objective was to estimate
+variance components and predict genetic values of clones for strictly within family selection. The first five rows of the data
+file (Pine_clones.csv) are shown below, cloneid refers to the code for the individual progeny genotype (not to the specific
+clonal copy within a genotype):
+cloneid parent1 parent2 cross location block height dia8 18 14 16 J Hill 2 35.9 7.0 0
+18 14 16 J Hill 4 38.3 6.6 0
+18 14 16 J Hill 6 27.7 5.8 0
+18 14 16 J Hill 8 37.0 6.4 0
+18 14 16 J Orchard 2 35.7 5.4 0
+fork
+Statistical model
+The following linear mixed model was fit to the data to estimate variance components and predict genetic values of cloned
+individuals for tree height. We have pedigree information that provides information on the additive relationships among
+each cloneid, so we use a form of the individual model and apply the additive relationship matrix to model the variance-
+covariance relationships among the clones:
+yijk¼ μ þ Li þ Bj i ð Þ þ Gk þ LGik þ εijk ð5:29Þ
+where yijk is the kth genotype in the jth block of the ith location; μ is the overall mean; Li is the ith fixed location
+(environment) effect, i¼ 1 to t; Bj(i) is the random effect of the jth incomplete block nested within the ith location, j¼ 1
+to b; Gk is the random individual progeny genotype effect N 0; Aσ2
+A ; LGik is the random individual by location interaction
+effect N 0; Aσ2
+AL ; and εijk is the random error term NID 0; σ2
+ε . This model will provide estimates of additive and
+additive genetic – by – environment interaction variances.
+We can extend this model to include any genetic variation among genotypes that is not captured by the genetic term with
+variance-covariance modeled according to the additive genetic relationship matrix. This will include non-additive genetic
+variance, although we cannot be more specific about which non-additive variances contribute to this additional term. It could
+include epistatic variances and dominance variance. The extended model includes two additional terms:
+yijk¼ μ þ Li þ Bj i ð Þ þ Gk þ Grk þ LGik þ LGrik þ εijk ð5:30Þ
+The terms in this model are identical to the previous model, but we have added two additional factors: Grk, the residual
+genetic effects (non-additive) of the kth individual, Grk NID 0; σ2
+Gr ; and LGrik the interaction between residual genetic
+effects (non-additive) of the kth individual and the ith environment, LGrk NID 0; σ2
+LGr . So, this model includes two
+genetic effects for each individual k, one with a variance-covariance structure proportional to the A matrix, and the other
+with an independent effect distribution. Note that the sum of the variance components for additive variance and residual
+genetic variance does not necessarily equal the total genetic variance because the IID assumption of residual genetic effects
+is not correct if the progenies are related. Again, this is why we cannot attach a specific interpretation to the residual genetic
+variance other than to say it is non-additive variance.
+160 5 Genetic Values
+The ASReml code for these models is given below.
+Code example 5.5
+Code example analyzing cloned progeny test data (Code 5-5_clones.as)
+• The term nrm(cloneid) fits the additive effects of individuals according to the pedigree information supplied in the
+pedigree file.
+• Since the factor cloneid was defined as a pedigree factor in the field definitions, we need to use a special term to fit cloneid
+without the pedigree relationships. This is accomplished with the term ide(cloneid), which takes a copy of a
+pedigree factor cloneid and fits it without the genetic relationships using an identity matrix for its variance-covariance
+structure.
+• !NOREORDER qualifier keeps the variances in the order they are specified in the model.
+Analysis of Cloned Progeny Test Data 161
+The variance components estimates from above models are given below:
+PART 1
+8 LogL=-3824.59 S2= 13.050 2068 df
+- - - Results from analysis of height8 - - -
+Akaike Information Criterion 7657.18 (assuming 4 parameters).
+Bayesian Information Criterion 7679.72
+Model_Term Gamma Sigma Sigma/SE % C
+location.block IDV_V 24 0.108434 1.41509 2.67 0 P
+nrm(cloneid) NRM_V 153 0.438690 5.72501 6.15 0 P
+units 2071 effects
+Residual SCA_V 2071 1.00000 13.0502 30.94 0 P
+cloneid NRM 153
+nrm(cloneid).location 459 effects
+location ID_V 1 0.101193E-06 0.132059E-05 0.00 0 B
+• The variance associated with nrm(cloneid) is the additive genetic variance. The term nrm(cloneid).location refers to
+additive genetic – by – location interaction variance and has an estimated variance component of zero, so it could be
+dropped from the model.
+PART 2
+7 LogL=-3824.52 S2= 13.047 2068 df
+- - - Results from analysis of height8 - - -
+Akaike Information Criterion 7661.03 (assuming 6 parameters).
+Bayesian Information Criterion 7694.84
+Model_Term Gamma Sigma Sigma/SE % C
+location.block IDV_V 24 0.108445 1.41491 2.67 0 P
+nrm(cloneid) NRM_V 153 0.341199 4.45173 1.53 0 P
+ide(cloneid) IDV_V 153 0.528398E-01 0.689417 0.44 0 P
+ide(cloneid).location IDV_V 459 0.101193E-06 0.132030E-05 0.00 0 B
+units 2071 effects
+Residual SCA_V 2071 1.00000 13.0473 30.94 0 P
+cloneid NRM 153
+nrm(cloneid).location 459 effects
+location ID_V 1 0.101193E-06 0.132030E-05 0.00 0 B
+• The ide(cloneid) term explains very little variation (0.689), and the likelihood of this model is nearly identical to the
+previous model, so there is no evidence for significant non-additive genetic variance in this case.
+Despite the lack of evidence for non-additive variance, for completeness we demonstrate here how to estimate heritability
+for individual tree observations from model 2 as:
+h2
+σ2
+A
+¼
+ð5:31Þ
+σ2
+A þ σ2
+Gr þ σ2
+AL þ σ2
+LGr þ σ2
+ε
+162 5 Genetic Values
+and the heritability for mean cloneid values averaged across replicated clone trees as:
+σ2
+A
+h2
+cm
+¼
+ð5:32Þ
+σ2
+A þ σ2
+Gr þ σ2
+AL
+l þ σ2
+LGr
+ε
+l þ σ2
+n
+Where l is the number of locations, and n is the harmonic mean of the number of trees measured per cloneid.
+The syntax in ASReml is given in the VPREDICT !DEFINE statement following model 2, note that we did not include the
+genotype – by – location variances in the phenotypic variance estimates, since they were zero in this example:
+In the estimate of phenotypic variance for clone means, the residual term is multiplied by the reciprocal of the harmonic
+mean of the number of trees measured per cloneid (1/12.2¼ 0.082).
+The output of the VPREDICT directive is in Code 5-5_clones.pvc:
+- - - Results from analysis of height8 - - -
+1 location.block V 24 1.41491 0.52993
+2 nrm(cloneid) V 153 4.45173 2.90963
+3 ide(cloneid) V 153 0.689417 1.56686
+4 ide(cloneid).locatio V 459 0.132030E-05 0.00000
+units 2071 effects
+5 units;Residual cloneid NRM 153
+V 2071 13.0473 0.421697
+nrm(cloneid).location 459 effects
+6 location V 1 0.132030E-05 0.0000
+7 Va 2 4.4517 2.9031
+8 Vna 3 0.68942 1.5512
+9 Verr 5 13.047 0.42170
+10 Vp 7 18.188 1.5626
+11 Vp_m 7 6.2110 1.5136
+h2 = Va 2 7/Vp 7 10= 0.2448 0.1406
+h2_cm = Va 2 7/Vp_m 7 11= 0.7167 0.3074
+• The heritability of individual tree measurements is only 0.24, but the heritability of clone mean values (averaged over
+clonal copies in different replications and environments) is much higher (0.72).
+Analysis of Cloned Progeny Test Data A portion of solution from Code 5-5_clones.sln file is shown here:
+163
+Model_Term Level Effect seEffect
+...
+nrm(cloneid) 1 1.495 1.666
+nrm(cloneid) 2 -0.2138 2.012
+nrm(cloneid) 3 -0.1706 1.945
+...
+nrm(cloneid) 18 0.3146E-01 1.269
+nrm(cloneid) 19 -2.102 1.235
+nrm(cloneid) 20 -0.3655 1.147
+...
+ide(cloneid) 1 0.000 0.8304
+ide(cloneid) 2 0.000 0.8304
+ide(cloneid) 3 0.000 0.8304
+...
+ide(cloneid) 18 -0.1362 0.7665
+ide(cloneid) 19 -0.7971 0.7614
+ide(cloneid) 20 -0.2592 0.7492
+• Solutions for cloneid levels 1–17 are for parents. The nrm(cloneid) solutions are the additive genetic effects, and
+these can be estimated for parents as well as progeny because of their known pedigree relationships.
+• The solutions for cloneid levels 18 and higher are for the progenies that were directly measured in the experiment.
+• The solutions for ide(cloneid) are the residual non-additive genetic effects. Notice that solutions for ide
+(cloneid) for the parents (levels 1, 2 and 3) are zero because the ide() effects are modeled as independent and
+we have no direct measurements on the parents.
+• The ide(cloneid) values can be added to the nrm(cloneid) values for the progenies in order to estimate total
+genotypic value, which can be useful for selecting progenies to distribute clonally as new varieties for production.
+For selecting progenies with best predicted breeding values to intermate to produce a new generation, however, the nrm
+(cloneid) values would be appropriate for making selections.

@@ -1,0 +1,143 @@
+/* Custom CSS for Maize GCA & SCA Breeding Tutorials */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #2d3748;
+  background-color: #f7fafc;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: #1a202c;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  border-bottom: 3px solid #cc0000;
+  padding-bottom: 0.3em;
+  color: #cc0000; /* NCSU Crimson */
+}
+
+h2 {
+  color: #2d3748;
+  border-left: 4px solid #cc0000;
+  padding-left: 0.5em;
+}
+
+/* Links */
+a {
+  color: #cc0000;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #990000;
+  text-decoration: underline;
+}
+
+/* Quarto Container Polish */
+#TOC {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.5em;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+#TOC .active {
+  color: #cc0000 !important;
+  font-weight: 600;
+  border-left: 2px solid #cc0000;
+}
+
+/* Custom Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+th {
+  background-color: #cc0000;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  text-align: left;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #edf2f7;
+  color: #4a5568;
+}
+
+tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Callout Box Aesthetics */
+.callout {
+  border-radius: 8px !important;
+  border-left-width: 5px !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+}
+
+.callout-note {
+  border-left-color: #3182ce !important;
+  background-color: #ebf8ff !important;
+}
+
+.callout-tip {
+  border-left-color: #38a169 !important;
+  background-color: #f0fff4 !important;
+}
+
+.callout-warning {
+  border-left-color: #dd6b20 !important;
+  background-color: #fffaf0 !important;
+}
+
+.callout-important {
+  border-left-color: #e53e3e !important;
+  background-color: #fff5f5 !important;
+}
+
+/* Code block styling */
+div.sourceCode {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Math equations styling */
+.math.display {
+  background: white;
+  padding: 1em;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+  overflow-x: auto;
+}
+
+/* Highlight blocks */
+.highlight-block {
+  background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+  border: 1px solid #feb2b2;
+  border-radius: 8px;
+  padding: 1.5em;
+  margin: 1.5em 0;
+}
