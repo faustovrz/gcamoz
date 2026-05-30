@@ -29,7 +29,9 @@ Stelio's research focuses on the genetic architecture of low-phosphorus use effi
 *   **Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:
     $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$
 *   **Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled `MOZ1` to `MOZ7`).
+
 *   **Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. 
+
 *   **Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.
 
 ### Stelio's Factorial Mating Grid
@@ -50,9 +52,13 @@ Each cell represents an $F_1$ hybrid family evaluated in the field.
 ## Experimental Design
 The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** per environment.
 *   **Environments ($E$):** The trials are conducted across **2 environments** representing phosphorus treatment levels:
+
     1.  **env1:** Normal/High Phosphorus conditions.
+
     2.  **env2:** Low Phosphorus Stress conditions.
+
 *   **Trait Evaluated:** Grain Yield (tons/ha).
+
 *   **Total Plots:** $2 \text{ environments} \times 3 \text{ replications} \times 49 \text{ hybrid entries} = 294$ plot evaluations.
 
 ***
@@ -614,10 +620,17 @@ kable(gxe_results, caption = "Genetic Variances, G × E, and Entry-Mean Heritabi
 To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:
 
 1.  **Prepare the Data:** Format the dataset with columns `env`, `block`, `female` (CIMMYT lines), `male` (local testers), `cross` (female_male sorted ID), and `yield`.
+
 2.  **Import to R:** Load `tidyverse` and `sommer`, and import the data from a CSV file.
+
 3.  **Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset's general performance.
+
 4.  **Perform Mixed Modeling:** Fit a mixed model using `sommer::mmer`. Model `female` and `male` as separate random effects, and `cross` as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.
+
 5.  **Calculate Breeding Values and Genotypic Values:**
+
     *   Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.
+
     *   Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.
+
 6.  **Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.

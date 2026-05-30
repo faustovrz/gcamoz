@@ -104,6 +104,7 @@ ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
 
 We formulate our statistical hypothesis as follows:
 *   **Null Hypothesis ($H_0$):** The mean petal length is identical across all three species ($\mu_{\text{setosa}} = \mu_{\text{versicolor}} = \mu_{\text{virginica}}$).
+
 *   **Alternative Hypothesis ($H_1$):** At least one species has a mean petal length that differs from the others.
 
 We fit a standard one-way ANOVA model using R's built-in `aov()` function:
@@ -266,9 +267,13 @@ cld_df[, c("Species", "emmean", "SE", "df", "lower.CL", "upper.CL", "cld_letters
 ```
 
 *   **Interpretation:** 
+
     *   **setosa** belongs to group **a** (Mean = 1.462 cm).
+
     *   **versicolor** belongs to group **b** (Mean = 4.260 cm).
+
     *   **virginica** belongs to group **c** (Mean = 5.552 cm).
+
     *   Since no species share any letters, all three species are **highly significantly different** from each other.
 
 ---
@@ -321,6 +326,9 @@ ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
 In this workflow, we analyzed the differences in `Petal.Length` across three species of Iris. 
 
 1.  **Exploration:** Initial plots revealed clear structural separation between the species.
+
 2.  **ANOVA:** Standard and Welch-adjusted ANOVAs confirmed that these differences were highly statistically significant ($p < 2 \times 10^{-16}$).
+
 3.  **Post-hoc Testing:** Tukey's HSD test computed all pairwise differences.
+
 4.  **CLD Display:** The Compact Letter Display classified setosa (**a**), versicolor (**b**), and virginica (**c**) into three disjoint significance groups, demonstrating that every pairwise species comparison is statistically significant.

@@ -51,13 +51,21 @@ gca/
 ```
 
 ### File Details
+
 *   `data/maize_factorial_yield.csv`: Simulated grain yields containing 294 rows with columns: `env`, `block`, `female`, `male`, `cross`, and `yield`. The dataset incorporates inbreeding depression on the parental lines, deterministic GCA effects, specific heterosis (SCA), and GCA × Environment interactions (amplified CIMMYT tolerance under low phosphorus stress).
+
 *   `gca_simulation.qmd` & `docs/gca_simulation.html`: The background script that sets up the parameters, builds the linear simulation model, and exports the data. Kept separate to keep Stelio's focus on calculations.
+
 *   `gca_calculation.qmd` & `docs/gca_calculation.html`: Stelio's main learning notebook. It outlines the **Breeding Scheme**, **Experimental Design**, and **Phenotype Model** of his exact Line × Tester design (no complex diallel overlays needed). It reads the CSV from `data/` and walks through:
+    
     *   *Exploratory Data Analysis:* Visualizing yields across treatments.
+
     *   *Fixed-Effects Arithmetic (Griffing/Line-Tester):* Step-by-step arithmetic to estimate combining abilities from cell averages.
+    
     *   *Mixed-Effects Modeling:* Fitting the mixed model using `sommer` in R, extracting random GCA/SCA BLUPs and variance components under Low P stress (`env2`).
+    
     *   *Breeding Values ($BV$) and Genotypic Values ($GV$):* Calculating parental additive contributions and hybrid commercial potentials.
+    
     *   *Heritability Estimation:* Estimating narrow-sense, broad-sense, and family-mean heritabilities.
 
 ***
@@ -71,7 +79,9 @@ install.packages(c("tidyverse", "sommer", "knitr", "kableExtra"))
 ```
 
 *   `tidyverse` is utilized for data manipulation, reshaping, and exploratory plotting.
+
 *   `sommer` is the standard quantitative genetics mixed-model package in R, running the mmer solver to partition variance components and calculate BLUPs.
+
 *   `knitr` and `kableExtra` are used to render styled tables.
 
 ***

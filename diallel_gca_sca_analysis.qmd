@@ -45,6 +45,7 @@ set.seed(42)
 
 To prepare for real data analysis, we will simulate a **7 × 7 full diallel cross** evaluated for a single trait (**Yield**, in tons per hectare) in **two environments**:
 1.  **env1:** Normal Phosphorus (optimal conditions)
+
 2.  **env2:** Low Phosphorus Stress (phosphorus-deficient conditions)
 
 The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 blocks (replications)** in each environment.
@@ -52,19 +53,33 @@ The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 
 ## Biological Parameters of the Simulation
 To make this simulation biologically realistic for maize, we incorporate:
 *   **A Base Yield ($\mu$):** 8.5 tons/ha.
+
 *   **Environmental Stress Effect ($E$):** Normal P (`env1`) adds $+1.0$ t/ha, while Low P (`env2`) reduces yield by $-1.2$ t/ha.
+
 *   **Deterministic GCA Effects ($g$):** Parent `Line1` is a highly tolerant CIMMYT line, whereas `Line7` is a highly susceptible local line. The true GCA values are:
+
     *   $\text{Line1} = +1.5$ (superior additive breeding value)
+
     *   $\text{Line2} = +0.8$
+
     *   $\text{Line3} = +0.3$
+
     *   $\text{Line4} = 0.0$
+
     *   $\text{Line5} = -0.4$
+
     *   $\text{Line6} = -0.8$
+
     *   $\text{Line7} = -1.4$ (inferior breeding value)
+
 *   **Specific Combining Ability ($s$):** Specific crosses exhibit positive heterosis (e.g., $\text{Line1} \times \text{Line4} = +0.6$), while others show poor compatibility (e.g., $\text{Line2} \times \text{Line6} = -0.5$).
+
 *   **Inbreeding Depression (Selfing):** Maize is highly sensitive to selfing. We apply a severe **selfing depression effect of $-1.8$ t/ha** on the diagonal of the diallel (where $\text{female} == \text{male}$).
+
 *   **Reciprocal maternal effect:** A small maternal effect is added when `Line3` is used as a female ($+0.25$ t/ha).
+
 *   **GCA × Environment Interaction ($G \times E$):** Under Low P stress (`env2`), the tolerance alleles of `Line1` and `Line2` are expressed even more strongly (enhancing their GCA by $+30\%$), whereas susceptible lines perform even worse.
+
 *   **Residual Error ($\epsilon$):** Standard plot-level noise ($\sigma_{\epsilon} = 0.35$ t/ha).
 
 ## R Code to Generate the Dataset
@@ -234,6 +249,7 @@ Let $Y_{ij}$ be the mean of the cross between female $i$ and male $j$ across rep
 *   **Grand Mean ($\mu$):** The overall mean of the $p \times p$ diallel table.
     $$\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}$$
 *   **Parental Average Means:** The row mean ($\bar{Y}_{i.}$) and column mean ($\bar{Y}_{.i}$) represent the average performance of parent $i$ as a female and male, respectively.
+
 *   **GCA Effect of Parent $i$ ($g_i$):**
     $$g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}$$
 *   **Reciprocal Effect of Cross $ij$ ($r_{ij}$):**
@@ -311,13 +327,17 @@ kable(gca_fixed_df, caption = "Arithmetically Calculated GCA Effects (Griffing M
 
 While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on **Linear Mixed Models (LMMs)**. Mixed models:
 1.  Handle unbalanced datasets (e.g., missing crosses).
+
 2.  Incorporate pedigree relationship matrices ($A$-matrix).
+
 3.  Directly estimate genetic variance components ($\sigma^2_A$ and $\sigma^2_D$).
+
 4.  Shrink predictions (BLUPs) to minimize prediction errors.
 
 ## The Challenge of Diallel Mixed Models in R
 In a diallel design, the same individual appears as both `female` and `male`. 
 *   If we fit standard random effects like `(1|female) + (1|male)` in `lme4`, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.
+
 *   To estimate a single, consistent GCA effect for each parent, we must **overlay** the random incidence matrices $Z_{\text{female}}$ and $Z_{\text{male}}$ so that the statistical model restricts their distributions to be identical.
 
 ## Option A: Elegant Mixed Modeling with `sommer`
@@ -457,7 +477,9 @@ Finally, we use the estimated variance components from the mixed model to calcul
 ## Heritability Formulas for Individuals
 From Equation 5.7 and 5.8 in the NCSU curriculum (`isik2017_chapter4.txt`):
 *   **Additive Variance:** $\sigma^2_A = 4 \times \sigma^2_{GCA}$
+
 *   **Dominance Variance:** $\sigma^2_D = 4 \times \sigma^2_{SCA}$
+
 *   **Phenotypic Variance among Individuals:**
     $$\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
 *   **Individual Narrow-Sense Heritability ($h^2_i$):**
@@ -527,10 +549,17 @@ kable(heritability_results, caption = "Estimated Genetic Variances and Heritabil
 To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:
 
 1.  **Format the Dataset:** Ensure column names are set (`env`, `block`, `female`, `male`, `yield`) and that the `cross` field is created in a female/male sorted manner.
+
 2.  **Define Reciprocals:** Code a reciprocal covariate (`r_cov` set to $1, -1, 0$) if reciprocal maternal effects are to be analyzed.
+
 3.  **Run Griffing's Arithmetic:** Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.
+
 4.  **Perform Mixed Modeling:** Use the `sommer::mmer` package in R. Fit the model using `overlay(female, male)` for the parental GCA, `cross` for the SCA, and nest blocks within environment (`env:block`).
+
 5.  **Extract BLUPs:** Extract the predictions and use the equations:
+
     *   $BV = g_A + g_B$ (for parental selection)
+
     *   $GV = g_A + g_B + s_{AB}$ (for commercial hybrid selection)
+
 6.  **Calculate Heritabilities:** Extract variance components to calculate narrow-sense heritability ($h^2$) to evaluate genetic gain potential.
