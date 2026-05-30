@@ -23,12 +23,11 @@ The primary genetic analysis focuses on Stelio's actual experimental mating and 
 
 ## Repository Structure
 
-The directory is clean, neat, and organized into data, results, source notebooks, and custom style assets:
+The directory is clean, neat, and organized into data, results, and source notebooks:
 
 ```text
 gca/
 ├── README.md                          # Repository documentation (this file)
-├── custom.css                         # Premium custom stylesheet for Quarto HTML rendering
 ├── iris_anova_cld.qmd                 # Reference example: ANOVA and Compact Letter Display
 ├── diallel_gca_sca_analysis.qmd       # Reference example: 7x7 full-diallel combining ability
 ├── gca_simulation.qmd                 # Source notebook: Setup of simulation parameters and export
