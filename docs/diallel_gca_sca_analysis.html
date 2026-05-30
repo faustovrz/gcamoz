@@ -2667,11 +2667,32 @@ window.Quarto = {
 </section>
 <section id="simulating-a-7-7-diallel-maize-dataset" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Simulating a 7 × 7 Diallel Maize Dataset</h1>
-<p>To prepare for real data analysis, we will simulate a <strong>7 × 7 full diallel cross</strong> evaluated for a single trait (<strong>Yield</strong>, in tons per hectare) in <strong>two environments</strong>: 1. <strong>env1:</strong> Normal Phosphorus (optimal conditions) 2. <strong>env2:</strong> Low Phosphorus Stress (phosphorus-deficient conditions)</p>
+<p>To prepare for real data analysis, we will simulate a <strong>7 × 7 full diallel cross</strong> evaluated for a single trait (<strong>Yield</strong>, in tons per hectare) in <strong>two environments</strong>: 1. <strong>env1:</strong> Normal Phosphorus (optimal conditions)</p>
+<ol start="2" type="1">
+<li><strong>env2:</strong> Low Phosphorus Stress (phosphorus-deficient conditions)</li>
+</ol>
 <p>The trial is laid out as a <strong>Randomized Complete Block Design (RCBD)</strong> with <strong>3 blocks (replications)</strong> in each environment.</p>
 <section id="biological-parameters-of-the-simulation" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="biological-parameters-of-the-simulation"><span class="header-section-number">2.1</span> Biological Parameters of the Simulation</h2>
-<p>To make this simulation biologically realistic for maize, we incorporate: * <strong>A Base Yield (<span class="math inline">\(\mu\)</span>):</strong> 8.5 tons/ha. * <strong>Environmental Stress Effect (<span class="math inline">\(E\)</span>):</strong> Normal P (<code>env1</code>) adds <span class="math inline">\(+1.0\)</span> t/ha, while Low P (<code>env2</code>) reduces yield by <span class="math inline">\(-1.2\)</span> t/ha. * <strong>Deterministic GCA Effects (<span class="math inline">\(g\)</span>):</strong> Parent <code>Line1</code> is a highly tolerant CIMMYT line, whereas <code>Line7</code> is a highly susceptible local line. The true GCA values are: * <span class="math inline">\(\text{Line1} = +1.5\)</span> (superior additive breeding value) * <span class="math inline">\(\text{Line2} = +0.8\)</span> * <span class="math inline">\(\text{Line3} = +0.3\)</span> * <span class="math inline">\(\text{Line4} = 0.0\)</span> * <span class="math inline">\(\text{Line5} = -0.4\)</span> * <span class="math inline">\(\text{Line6} = -0.8\)</span> * <span class="math inline">\(\text{Line7} = -1.4\)</span> (inferior breeding value) * <strong>Specific Combining Ability (<span class="math inline">\(s\)</span>):</strong> Specific crosses exhibit positive heterosis (e.g., <span class="math inline">\(\text{Line1} \times \text{Line4} = +0.6\)</span>), while others show poor compatibility (e.g., <span class="math inline">\(\text{Line2} \times \text{Line6} = -0.5\)</span>). * <strong>Inbreeding Depression (Selfing):</strong> Maize is highly sensitive to selfing. We apply a severe <strong>selfing depression effect of <span class="math inline">\(-1.8\)</span> t/ha</strong> on the diagonal of the diallel (where <span class="math inline">\(\text{female} == \text{male}\)</span>). * <strong>Reciprocal maternal effect:</strong> A small maternal effect is added when <code>Line3</code> is used as a female (<span class="math inline">\(+0.25\)</span> t/ha). * <strong>GCA × Environment Interaction (<span class="math inline">\(G \times E\)</span>):</strong> Under Low P stress (<code>env2</code>), the tolerance alleles of <code>Line1</code> and <code>Line2</code> are expressed even more strongly (enhancing their GCA by <span class="math inline">\(+30\%\)</span>), whereas susceptible lines perform even worse. * <strong>Residual Error (<span class="math inline">\(\epsilon\)</span>):</strong> Standard plot-level noise (<span class="math inline">\(\sigma_{\epsilon} = 0.35\)</span> t/ha).</p>
+<p>To make this simulation biologically realistic for maize, we incorporate: * <strong>A Base Yield (<span class="math inline">\(\mu\)</span>):</strong> 8.5 tons/ha.</p>
+<ul>
+<li><p><strong>Environmental Stress Effect (<span class="math inline">\(E\)</span>):</strong> Normal P (<code>env1</code>) adds <span class="math inline">\(+1.0\)</span> t/ha, while Low P (<code>env2</code>) reduces yield by <span class="math inline">\(-1.2\)</span> t/ha.</p></li>
+<li><p><strong>Deterministic GCA Effects (<span class="math inline">\(g\)</span>):</strong> Parent <code>Line1</code> is a highly tolerant CIMMYT line, whereas <code>Line7</code> is a highly susceptible local line. The true GCA values are:</p>
+<ul>
+<li><p><span class="math inline">\(\text{Line1} = +1.5\)</span> (superior additive breeding value)</p></li>
+<li><p><span class="math inline">\(\text{Line2} = +0.8\)</span></p></li>
+<li><p><span class="math inline">\(\text{Line3} = +0.3\)</span></p></li>
+<li><p><span class="math inline">\(\text{Line4} = 0.0\)</span></p></li>
+<li><p><span class="math inline">\(\text{Line5} = -0.4\)</span></p></li>
+<li><p><span class="math inline">\(\text{Line6} = -0.8\)</span></p></li>
+<li><p><span class="math inline">\(\text{Line7} = -1.4\)</span> (inferior breeding value)</p></li>
+</ul></li>
+<li><p><strong>Specific Combining Ability (<span class="math inline">\(s\)</span>):</strong> Specific crosses exhibit positive heterosis (e.g., <span class="math inline">\(\text{Line1} \times \text{Line4} = +0.6\)</span>), while others show poor compatibility (e.g., <span class="math inline">\(\text{Line2} \times \text{Line6} = -0.5\)</span>).</p></li>
+<li><p><strong>Inbreeding Depression (Selfing):</strong> Maize is highly sensitive to selfing. We apply a severe <strong>selfing depression effect of <span class="math inline">\(-1.8\)</span> t/ha</strong> on the diagonal of the diallel (where <span class="math inline">\(\text{female} == \text{male}\)</span>).</p></li>
+<li><p><strong>Reciprocal maternal effect:</strong> A small maternal effect is added when <code>Line3</code> is used as a female (<span class="math inline">\(+0.25\)</span> t/ha).</p></li>
+<li><p><strong>GCA × Environment Interaction (<span class="math inline">\(G \times E\)</span>):</strong> Under Low P stress (<code>env2</code>), the tolerance alleles of <code>Line1</code> and <code>Line2</code> are expressed even more strongly (enhancing their GCA by <span class="math inline">\(+30\%\)</span>), whereas susceptible lines perform even worse.</p></li>
+<li><p><strong>Residual Error (<span class="math inline">\(\epsilon\)</span>):</strong> Standard plot-level noise (<span class="math inline">\(\sigma_{\epsilon} = 0.35\)</span> t/ha).</p></li>
+</ul>
 </section>
 <section id="r-code-to-generate-the-dataset" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="r-code-to-generate-the-dataset"><span class="header-section-number">2.2</span> R Code to Generate the Dataset</h2>
@@ -3039,7 +3060,12 @@ window.Quarto = {
 <p>We will demonstrate the direct arithmetic calculations from family means. This provides Stelio with an intuitive, hands-on understanding of the underlying genetic algebra before using mixed-model solvers.</p>
 <section id="arithmetic-formulas" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="arithmetic-formulas"><span class="header-section-number">4.1</span> Arithmetic Formulas</h2>
-<p>Let <span class="math inline">\(Y_{ij}\)</span> be the mean of the cross between female <span class="math inline">\(i\)</span> and male <span class="math inline">\(j\)</span> across replications and environments. * <strong>Grand Mean (<span class="math inline">\(\mu\)</span>):</strong> The overall mean of the <span class="math inline">\(p \times p\)</span> diallel table. <span class="math display">\[\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}\]</span> * <strong>Parental Average Means:</strong> The row mean (<span class="math inline">\(\bar{Y}_{i.}\)</span>) and column mean (<span class="math inline">\(\bar{Y}_{.i}\)</span>) represent the average performance of parent <span class="math inline">\(i\)</span> as a female and male, respectively. * <strong>GCA Effect of Parent <span class="math inline">\(i\)</span> (<span class="math inline">\(g_i\)</span>):</strong> <span class="math display">\[g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}\]</span> * <strong>Reciprocal Effect of Cross <span class="math inline">\(ij\)</span> (<span class="math inline">\(r_{ij}\)</span>):</strong> <span class="math display">\[r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}\]</span> * <strong>SCA Effect of Cross <span class="math inline">\(ij\)</span> (<span class="math inline">\(s_{ij}\)</span>):</strong> <span class="math display">\[s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)\]</span> <span class="math display">\[s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)\]</span></p>
+<p>Let <span class="math inline">\(Y_{ij}\)</span> be the mean of the cross between female <span class="math inline">\(i\)</span> and male <span class="math inline">\(j\)</span> across replications and environments. * <strong>Grand Mean (<span class="math inline">\(\mu\)</span>):</strong> The overall mean of the <span class="math inline">\(p \times p\)</span> diallel table. <span class="math display">\[\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}\]</span> * <strong>Parental Average Means:</strong> The row mean (<span class="math inline">\(\bar{Y}_{i.}\)</span>) and column mean (<span class="math inline">\(\bar{Y}_{.i}\)</span>) represent the average performance of parent <span class="math inline">\(i\)</span> as a female and male, respectively.</p>
+<ul>
+<li><strong>GCA Effect of Parent <span class="math inline">\(i\)</span> (<span class="math inline">\(g_i\)</span>):</strong> <span class="math display">\[g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}\]</span></li>
+<li><strong>Reciprocal Effect of Cross <span class="math inline">\(ij\)</span> (<span class="math inline">\(r_{ij}\)</span>):</strong> <span class="math display">\[r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}\]</span></li>
+<li><strong>SCA Effect of Cross <span class="math inline">\(ij\)</span> (<span class="math inline">\(s_{ij}\)</span>):</strong> <span class="math display">\[s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)\]</span> <span class="math display">\[s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)\]</span></li>
+</ul>
 </section>
 <section id="direct-r-implementation" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="direct-r-implementation"><span class="header-section-number">4.2</span> Direct R Implementation</h2>
@@ -3158,10 +3184,18 @@ window.Quarto = {
 </section>
 <section id="mixed-effects-calculations-overlay-matrix-modeling" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Mixed-Effects Calculations: Overlay Matrix Modeling</h1>
-<p>While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on <strong>Linear Mixed Models (LMMs)</strong>. Mixed models: 1. Handle unbalanced datasets (e.g., missing crosses). 2. Incorporate pedigree relationship matrices (<span class="math inline">\(A\)</span>-matrix). 3. Directly estimate genetic variance components (<span class="math inline">\(\sigma^2_A\)</span> and <span class="math inline">\(\sigma^2_D\)</span>). 4. Shrink predictions (BLUPs) to minimize prediction errors.</p>
+<p>While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on <strong>Linear Mixed Models (LMMs)</strong>. Mixed models: 1. Handle unbalanced datasets (e.g., missing crosses).</p>
+<ol start="2" type="1">
+<li><p>Incorporate pedigree relationship matrices (<span class="math inline">\(A\)</span>-matrix).</p></li>
+<li><p>Directly estimate genetic variance components (<span class="math inline">\(\sigma^2_A\)</span> and <span class="math inline">\(\sigma^2_D\)</span>).</p></li>
+<li><p>Shrink predictions (BLUPs) to minimize prediction errors.</p></li>
+</ol>
 <section id="the-challenge-of-diallel-mixed-models-in-r" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="the-challenge-of-diallel-mixed-models-in-r"><span class="header-section-number">5.1</span> The Challenge of Diallel Mixed Models in R</h2>
-<p>In a diallel design, the same individual appears as both <code>female</code> and <code>male</code>. * If we fit standard random effects like <code>(1|female) + (1|male)</code> in <code>lme4</code>, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions. * To estimate a single, consistent GCA effect for each parent, we must <strong>overlay</strong> the random incidence matrices <span class="math inline">\(Z_{\text{female}}\)</span> and <span class="math inline">\(Z_{\text{male}}\)</span> so that the statistical model restricts their distributions to be identical.</p>
+<p>In a diallel design, the same individual appears as both <code>female</code> and <code>male</code>. * If we fit standard random effects like <code>(1|female) + (1|male)</code> in <code>lme4</code>, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.</p>
+<ul>
+<li>To estimate a single, consistent GCA effect for each parent, we must <strong>overlay</strong> the random incidence matrices <span class="math inline">\(Z_{\text{female}}\)</span> and <span class="math inline">\(Z_{\text{male}}\)</span> so that the statistical model restricts their distributions to be identical.</li>
+</ul>
 </section>
 <section id="option-a-elegant-mixed-modeling-with-sommer" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="option-a-elegant-mixed-modeling-with-sommer"><span class="header-section-number">5.2</span> Option A: Elegant Mixed Modeling with <code>sommer</code></h2>
@@ -3618,7 +3652,13 @@ window.Quarto = {
 <p>Finally, we use the estimated variance components from the mixed model to calculate narrow-sense (<span class="math inline">\(h^2\)</span>) and broad-sense (<span class="math inline">\(H^2\)</span>) heritabilities.</p>
 <section id="heritability-formulas-for-individuals" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="heritability-formulas-for-individuals"><span class="header-section-number">8.1</span> Heritability Formulas for Individuals</h2>
-<p>From Equation 5.7 and 5.8 in the NCSU curriculum (<code>isik2017_chapter4.txt</code>): * <strong>Additive Variance:</strong> <span class="math inline">\(\sigma^2_A = 4 \times \sigma^2_{GCA}\)</span> * <strong>Dominance Variance:</strong> <span class="math inline">\(\sigma^2_D = 4 \times \sigma^2_{SCA}\)</span> * <strong>Phenotypic Variance among Individuals:</strong> <span class="math display">\[\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}\]</span> * <strong>Individual Narrow-Sense Heritability (<span class="math inline">\(h^2_i\)</span>):</strong> <span class="math display">\[h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}\]</span> * <strong>Individual Broad-Sense Heritability (<span class="math inline">\(H^2_{bs}\)</span>):</strong> <span class="math display">\[H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}\]</span></p>
+<p>From Equation 5.7 and 5.8 in the NCSU curriculum (<code>isik2017_chapter4.txt</code>): * <strong>Additive Variance:</strong> <span class="math inline">\(\sigma^2_A = 4 \times \sigma^2_{GCA}\)</span></p>
+<ul>
+<li><p><strong>Dominance Variance:</strong> <span class="math inline">\(\sigma^2_D = 4 \times \sigma^2_{SCA}\)</span></p></li>
+<li><p><strong>Phenotypic Variance among Individuals:</strong> <span class="math display">\[\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}\]</span></p></li>
+<li><p><strong>Individual Narrow-Sense Heritability (<span class="math inline">\(h^2_i\)</span>):</strong> <span class="math display">\[h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}\]</span></p></li>
+<li><p><strong>Individual Broad-Sense Heritability (<span class="math inline">\(H^2_{bs}\)</span>):</strong> <span class="math display">\[H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}\]</span></p></li>
+</ul>
 </section>
 <section id="heritability-of-family-means" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="heritability-of-family-means"><span class="header-section-number">8.2</span> Heritability of Family Means</h2>
@@ -3714,16 +3754,16 @@ window.Quarto = {
 <h1 data-number="9"><span class="header-section-number">9</span> Tutorial Summary &amp; Checklist for Stelio</h1>
 <p>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</p>
 <ol type="1">
-<li><strong>Format the Dataset:</strong> Ensure column names are set (<code>env</code>, <code>block</code>, <code>female</code>, <code>male</code>, <code>yield</code>) and that the <code>cross</code> field is created in a female/male sorted manner.</li>
-<li><strong>Define Reciprocals:</strong> Code a reciprocal covariate (<code>r_cov</code> set to <span class="math inline">\(1, -1, 0\)</span>) if reciprocal maternal effects are to be analyzed.</li>
-<li><strong>Run Griffing’s Arithmetic:</strong> Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.</li>
-<li><strong>Perform Mixed Modeling:</strong> Use the <code>sommer::mmer</code> package in R. Fit the model using <code>overlay(female, male)</code> for the parental GCA, <code>cross</code> for the SCA, and nest blocks within environment (<code>env:block</code>).</li>
-<li><strong>Extract BLUPs:</strong> Extract the predictions and use the equations:
+<li><p><strong>Format the Dataset:</strong> Ensure column names are set (<code>env</code>, <code>block</code>, <code>female</code>, <code>male</code>, <code>yield</code>) and that the <code>cross</code> field is created in a female/male sorted manner.</p></li>
+<li><p><strong>Define Reciprocals:</strong> Code a reciprocal covariate (<code>r_cov</code> set to <span class="math inline">\(1, -1, 0\)</span>) if reciprocal maternal effects are to be analyzed.</p></li>
+<li><p><strong>Run Griffing’s Arithmetic:</strong> Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.</p></li>
+<li><p><strong>Perform Mixed Modeling:</strong> Use the <code>sommer::mmer</code> package in R. Fit the model using <code>overlay(female, male)</code> for the parental GCA, <code>cross</code> for the SCA, and nest blocks within environment (<code>env:block</code>).</p></li>
+<li><p><strong>Extract BLUPs:</strong> Extract the predictions and use the equations:</p>
 <ul>
-<li><span class="math inline">\(BV = g_A + g_B\)</span> (for parental selection)</li>
-<li><span class="math inline">\(GV = g_A + g_B + s_{AB}\)</span> (for commercial hybrid selection)</li>
+<li><p><span class="math inline">\(BV = g_A + g_B\)</span> (for parental selection)</p></li>
+<li><p><span class="math inline">\(GV = g_A + g_B + s_{AB}\)</span> (for commercial hybrid selection)</p></li>
 </ul></li>
-<li><strong>Calculate Heritabilities:</strong> Extract variance components to calculate narrow-sense heritability (<span class="math inline">\(h^2\)</span>) to evaluate genetic gain potential.</li>
+<li><p><strong>Calculate Heritabilities:</strong> Extract variance components to calculate narrow-sense heritability (<span class="math inline">\(h^2\)</span>) to evaluate genetic gain potential.</p></li>
 </ol>
 <!-- -->
 
@@ -4229,495 +4269,524 @@ window.Quarto = {
 <span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>To prepare for real data analysis, we will simulate a **7 × 7 full diallel cross** evaluated for a single trait (**Yield**, in tons per hectare) in **two environments**:</span>
 <span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**env1:** Normal Phosphorus (optimal conditions)</span>
-<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**env2:** Low Phosphorus Stress (phosphorus-deficient conditions)</span>
-<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 blocks (replications)** in each environment.</span>
-<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## Biological Parameters of the Simulation</span></span>
-<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>To make this simulation biologically realistic for maize, we incorporate:</span>
-<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**A Base Yield ($\mu$):** 8.5 tons/ha.</span>
-<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Environmental Stress Effect ($E$):** Normal P (<span class="in">`env1`</span>) adds $+1.0$ t/ha, while Low P (<span class="in">`env2`</span>) reduces yield by $-1.2$ t/ha.</span>
-<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Deterministic GCA Effects ($g$):** Parent <span class="in">`Line1`</span> is a highly tolerant CIMMYT line, whereas <span class="in">`Line7`</span> is a highly susceptible local line. The true GCA values are:</span>
-<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line1} = +1.5$ (superior additive breeding value)</span>
-<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line2} = +0.8$</span>
-<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line3} = +0.3$</span>
-<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line4} = 0.0$</span>
-<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line5} = -0.4$</span>
-<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line6} = -0.8$</span>
-<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line7} = -1.4$ (inferior breeding value)</span>
-<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Specific Combining Ability ($s$):** Specific crosses exhibit positive heterosis (e.g., $\text{Line1} \times \text{Line4} = +0.6$), while others show poor compatibility (e.g., $\text{Line2} \times \text{Line6} = -0.5$).</span>
-<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Inbreeding Depression (Selfing):** Maize is highly sensitive to selfing. We apply a severe **selfing depression effect of $-1.8$ t/ha** on the diagonal of the diallel (where $\text{female} == \text{male}$).</span>
-<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Reciprocal maternal effect:** A small maternal effect is added when <span class="in">`Line3`</span> is used as a female ($+0.25$ t/ha).</span>
-<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA × Environment Interaction ($G \times E$):** Under Low P stress (<span class="in">`env2`</span>), the tolerance alleles of <span class="in">`Line1`</span> and <span class="in">`Line2`</span> are expressed even more strongly (enhancing their GCA by $+30\%$), whereas susceptible lines perform even worse.</span>
-<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Residual Error ($\epsilon$):** Standard plot-level noise ($\sigma_{\epsilon} = 0.35$ t/ha).</span>
-<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a><span class="fu">## R Code to Generate the Dataset</span></span>
-<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>We build the complete dataset of $2 \text{ envs} \times 3 \text{ blocks} \times 49 \text{ crosses} = 294$ plot observations.</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**env2:** Low Phosphorus Stress (phosphorus-deficient conditions)</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 blocks (replications)** in each environment.</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## Biological Parameters of the Simulation</span></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>To make this simulation biologically realistic for maize, we incorporate:</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**A Base Yield ($\mu$):** 8.5 tons/ha.</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Environmental Stress Effect ($E$):** Normal P (<span class="in">`env1`</span>) adds $+1.0$ t/ha, while Low P (<span class="in">`env2`</span>) reduces yield by $-1.2$ t/ha.</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Deterministic GCA Effects ($g$):** Parent <span class="in">`Line1`</span> is a highly tolerant CIMMYT line, whereas <span class="in">`Line7`</span> is a highly susceptible local line. The true GCA values are:</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line1} = +1.5$ (superior additive breeding value)</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line2} = +0.8$</span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line3} = +0.3$</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line4} = 0.0$</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line5} = -0.4$</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line6} = -0.8$</span>
 <span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: data-simulation</span></span>
-<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parental lines</span></span>
-<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>parents <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Line&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span>
-<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>n_parents <span class="ot">&lt;-</span> <span class="fu">length</span>(parents)</span>
-<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a><span class="co"># Define GCA and Environment parameters</span></span>
-<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>gca_effects <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Line1=</span><span class="fl">1.5</span>, <span class="at">Line2=</span><span class="fl">0.8</span>, <span class="at">Line3=</span><span class="fl">0.3</span>, <span class="at">Line4=</span><span class="fl">0.0</span>, <span class="at">Line5=</span><span class="sc">-</span><span class="fl">0.4</span>, <span class="at">Line6=</span><span class="sc">-</span><span class="fl">0.8</span>, <span class="at">Line7=</span><span class="sc">-</span><span class="fl">1.4</span>)</span>
-<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>env_effects <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">env1=</span><span class="fl">1.0</span>, <span class="at">env2=</span><span class="sc">-</span><span class="fl">1.2</span>)</span>
-<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Define SCA matrix (symmetric, with diagonal showing selfing depression)</span></span>
-<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>sca_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(parents, parents))</span>
-<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line1&quot;</span>, <span class="st">&quot;Line4&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.6</span>; sca_matrix[<span class="st">&quot;Line4&quot;</span>, <span class="st">&quot;Line1&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
-<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line2&quot;</span>, <span class="st">&quot;Line6&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.5</span>; sca_matrix[<span class="st">&quot;Line6&quot;</span>, <span class="st">&quot;Line2&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.5</span></span>
-<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line3&quot;</span>, <span class="st">&quot;Line7&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.4</span>; sca_matrix[<span class="st">&quot;Line7&quot;</span>, <span class="st">&quot;Line3&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.4</span></span>
-<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line5&quot;</span>, <span class="st">&quot;Line7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.3</span>; sca_matrix[<span class="st">&quot;Line7&quot;</span>, <span class="st">&quot;Line5&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.3</span></span>
-<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(sca_matrix) <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.8</span> <span class="co"># Inbreeding depression for selfs</span></span>
-<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Build complete observation grid</span></span>
-<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">env =</span> <span class="fu">c</span>(<span class="st">&quot;env1&quot;</span>, <span class="st">&quot;env2&quot;</span>),</span>
-<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>  <span class="at">block =</span> <span class="fu">c</span>(<span class="st">&quot;B1&quot;</span>, <span class="st">&quot;B2&quot;</span>, <span class="st">&quot;B3&quot;</span>),</span>
-<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">female =</span> parents,</span>
-<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">male =</span> parents,</span>
-<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
-<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Define unique cross ID (order-independent) and reciprocal indicator</span></span>
-<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">map2_chr</span>(female, male, <span class="sc">~</span> {</span>
-<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>      p_sorted <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">c</span>(.x, .y))</span>
-<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(p_sorted[<span class="dv">1</span>], p_sorted[<span class="dv">2</span>], <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
-<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>    }),</span>
-<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>    <span class="at">r_cov =</span> <span class="fu">case_when</span>(</span>
-<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, female)) <span class="sc">&lt;</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, male)) <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, female)) <span class="sc">&gt;</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, male)) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span>,</span>
-<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span></span>
-<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate simulated yield using biological parameters</span></span>
-<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>sim_data<span class="sc">$</span>yield <span class="ot">&lt;-</span> <span class="fu">apply</span>(sim_data, <span class="dv">1</span>, <span class="cf">function</span>(row) {</span>
-<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>  env <span class="ot">&lt;-</span> row[<span class="st">&quot;env&quot;</span>]</span>
-<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  blk <span class="ot">&lt;-</span> row[<span class="st">&quot;block&quot;</span>]</span>
-<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>  fem <span class="ot">&lt;-</span> row[<span class="st">&quot;female&quot;</span>]</span>
-<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>  mal <span class="ot">&lt;-</span> row[<span class="st">&quot;male&quot;</span>]</span>
-<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>  crs <span class="ot">&lt;-</span> row[<span class="st">&quot;cross&quot;</span>]</span>
-<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Base mean yield</span></span>
-<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> <span class="fl">8.5</span></span>
-<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Block effect (unique seed per block nested in environment)</span></span>
-<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="fu">which</span>(parents <span class="sc">==</span> fem)<span class="sc">*</span><span class="dv">10</span> <span class="sc">+</span> <span class="fu">which</span>(parents <span class="sc">==</span> mal) <span class="sc">+</span> <span class="fu">which</span>(<span class="fu">c</span>(<span class="st">&quot;env1&quot;</span>, <span class="st">&quot;env2&quot;</span>) <span class="sc">==</span> env)<span class="sc">*</span><span class="dv">100</span> <span class="sc">+</span> <span class="fu">which</span>(<span class="fu">c</span>(<span class="st">&quot;B1&quot;</span>, <span class="st">&quot;B2&quot;</span>, <span class="st">&quot;B3&quot;</span>) <span class="sc">==</span> blk)<span class="sc">*</span><span class="dv">1000</span>)</span>
-<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>  b_eff <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.20</span>)</span>
-<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Environmental effect</span></span>
-<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>  e_eff <span class="ot">&lt;-</span> env_effects[env]</span>
-<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GCA parental effects</span></span>
-<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>  gca_fem <span class="ot">&lt;-</span> gca_effects[fem]</span>
-<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>  gca_mal <span class="ot">&lt;-</span> gca_effects[mal]</span>
-<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SCA effect</span></span>
-<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>  sca_val <span class="ot">&lt;-</span> sca_matrix[fem, mal]</span>
-<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GCA x Env interaction (Low P stress amplifies GCA effects by 30%)</span></span>
-<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>  ge_fem <span class="ot">&lt;-</span> <span class="cf">if</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) gca_fem <span class="sc">*</span> <span class="fl">0.3</span> <span class="cf">else</span> <span class="sc">-</span>gca_fem <span class="sc">*</span> <span class="fl">0.3</span></span>
-<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>  ge_mal <span class="ot">&lt;-</span> <span class="cf">if</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) gca_mal <span class="sc">*</span> <span class="fl">0.3</span> <span class="cf">else</span> <span class="sc">-</span>gca_mal <span class="sc">*</span> <span class="fl">0.3</span></span>
-<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SCA x Env interaction (specific hybrid adaptability)</span></span>
-<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>  se_val <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.12</span>)</span>
-<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reciprocal maternal effect (positive maternal effect for Line3)</span></span>
-<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>  r_val <span class="ot">&lt;-</span> <span class="cf">if</span>(fem <span class="sc">!=</span> mal) {</span>
-<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>    mat_eff <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(fem <span class="sc">==</span> <span class="st">&quot;Line3&quot;</span>) mat_eff <span class="ot">&lt;-</span> mat_eff <span class="sc">+</span> <span class="fl">0.25</span></span>
-<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(mal <span class="sc">==</span> <span class="st">&quot;Line3&quot;</span>) mat_eff <span class="ot">&lt;-</span> mat_eff <span class="sc">-</span> <span class="fl">0.25</span></span>
-<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>    mat_eff</span>
-<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$\text{Line7} = -1.4$ (inferior breeding value)</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Specific Combining Ability ($s$):** Specific crosses exhibit positive heterosis (e.g., $\text{Line1} \times \text{Line4} = +0.6$), while others show poor compatibility (e.g., $\text{Line2} \times \text{Line6} = -0.5$).</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Inbreeding Depression (Selfing):** Maize is highly sensitive to selfing. We apply a severe **selfing depression effect of $-1.8$ t/ha** on the diagonal of the diallel (where $\text{female} == \text{male}$).</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Reciprocal maternal effect:** A small maternal effect is added when <span class="in">`Line3`</span> is used as a female ($+0.25$ t/ha).</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA × Environment Interaction ($G \times E$):** Under Low P stress (<span class="in">`env2`</span>), the tolerance alleles of <span class="in">`Line1`</span> and <span class="in">`Line2`</span> are expressed even more strongly (enhancing their GCA by $+30\%$), whereas susceptible lines perform even worse.</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Residual Error ($\epsilon$):** Standard plot-level noise ($\sigma_{\epsilon} = 0.35$ t/ha).</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## R Code to Generate the Dataset</span></span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>We build the complete dataset of $2 \text{ envs} \times 3 \text{ blocks} \times 49 \text{ crosses} = 294$ plot observations.</span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: data-simulation</span></span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Define parental lines</span></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>parents <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;Line&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>n_parents <span class="ot">&lt;-</span> <span class="fu">length</span>(parents)</span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Define GCA and Environment parameters</span></span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>gca_effects <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Line1=</span><span class="fl">1.5</span>, <span class="at">Line2=</span><span class="fl">0.8</span>, <span class="at">Line3=</span><span class="fl">0.3</span>, <span class="at">Line4=</span><span class="fl">0.0</span>, <span class="at">Line5=</span><span class="sc">-</span><span class="fl">0.4</span>, <span class="at">Line6=</span><span class="sc">-</span><span class="fl">0.8</span>, <span class="at">Line7=</span><span class="sc">-</span><span class="fl">1.4</span>)</span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>env_effects <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">env1=</span><span class="fl">1.0</span>, <span class="at">env2=</span><span class="sc">-</span><span class="fl">1.2</span>)</span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a><span class="co"># Define SCA matrix (symmetric, with diagonal showing selfing depression)</span></span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>sca_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(parents, parents))</span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line1&quot;</span>, <span class="st">&quot;Line4&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.6</span>; sca_matrix[<span class="st">&quot;Line4&quot;</span>, <span class="st">&quot;Line1&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line2&quot;</span>, <span class="st">&quot;Line6&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.5</span>; sca_matrix[<span class="st">&quot;Line6&quot;</span>, <span class="st">&quot;Line2&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.5</span></span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line3&quot;</span>, <span class="st">&quot;Line7&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.4</span>; sca_matrix[<span class="st">&quot;Line7&quot;</span>, <span class="st">&quot;Line3&quot;</span>] <span class="ot">&lt;-</span> <span class="fl">0.4</span></span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>sca_matrix[<span class="st">&quot;Line5&quot;</span>, <span class="st">&quot;Line7&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.3</span>; sca_matrix[<span class="st">&quot;Line7&quot;</span>, <span class="st">&quot;Line5&quot;</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.3</span></span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(sca_matrix) <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.8</span> <span class="co"># Inbreeding depression for selfs</span></span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a><span class="co"># Build complete observation grid</span></span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>  <span class="at">env =</span> <span class="fu">c</span>(<span class="st">&quot;env1&quot;</span>, <span class="st">&quot;env2&quot;</span>),</span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>  <span class="at">block =</span> <span class="fu">c</span>(<span class="st">&quot;B1&quot;</span>, <span class="st">&quot;B2&quot;</span>, <span class="st">&quot;B3&quot;</span>),</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>  <span class="at">female =</span> parents,</span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>  <span class="at">male =</span> parents,</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a><span class="co"># Define unique cross ID (order-independent) and reciprocal indicator</span></span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">map2_chr</span>(female, male, <span class="sc">~</span> {</span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>      p_sorted <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">c</span>(.x, .y))</span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(p_sorted[<span class="dv">1</span>], p_sorted[<span class="dv">2</span>], <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>)</span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>    }),</span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>    <span class="at">r_cov =</span> <span class="fu">case_when</span>(</span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, female)) <span class="sc">&lt;</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, male)) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, female)) <span class="sc">&gt;</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, male)) <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span></span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate simulated yield using biological parameters</span></span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a>sim_data<span class="sc">$</span>yield <span class="ot">&lt;-</span> <span class="fu">apply</span>(sim_data, <span class="dv">1</span>, <span class="cf">function</span>(row) {</span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>  env <span class="ot">&lt;-</span> row[<span class="st">&quot;env&quot;</span>]</span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a>  blk <span class="ot">&lt;-</span> row[<span class="st">&quot;block&quot;</span>]</span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>  fem <span class="ot">&lt;-</span> row[<span class="st">&quot;female&quot;</span>]</span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>  mal <span class="ot">&lt;-</span> row[<span class="st">&quot;male&quot;</span>]</span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>  crs <span class="ot">&lt;-</span> row[<span class="st">&quot;cross&quot;</span>]</span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Base mean yield</span></span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> <span class="fl">8.5</span></span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Block effect (unique seed per block nested in environment)</span></span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="fu">which</span>(parents <span class="sc">==</span> fem)<span class="sc">*</span><span class="dv">10</span> <span class="sc">+</span> <span class="fu">which</span>(parents <span class="sc">==</span> mal) <span class="sc">+</span> <span class="fu">which</span>(<span class="fu">c</span>(<span class="st">&quot;env1&quot;</span>, <span class="st">&quot;env2&quot;</span>) <span class="sc">==</span> env)<span class="sc">*</span><span class="dv">100</span> <span class="sc">+</span> <span class="fu">which</span>(<span class="fu">c</span>(<span class="st">&quot;B1&quot;</span>, <span class="st">&quot;B2&quot;</span>, <span class="st">&quot;B3&quot;</span>) <span class="sc">==</span> blk)<span class="sc">*</span><span class="dv">1000</span>)</span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a>  b_eff <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.20</span>)</span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Environmental effect</span></span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>  e_eff <span class="ot">&lt;-</span> env_effects[env]</span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GCA parental effects</span></span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>  gca_fem <span class="ot">&lt;-</span> gca_effects[fem]</span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a>  gca_mal <span class="ot">&lt;-</span> gca_effects[mal]</span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SCA effect</span></span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>  sca_val <span class="ot">&lt;-</span> sca_matrix[fem, mal]</span>
 <span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Residual Plot Error</span></span>
-<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>  err <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.35</span>)</span>
-<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine to get phenotypic yield</span></span>
-<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> mu <span class="sc">+</span> e_eff <span class="sc">+</span> b_eff <span class="sc">+</span> gca_fem <span class="sc">+</span> gca_mal <span class="sc">+</span> sca_val <span class="sc">+</span> ge_fem <span class="sc">+</span> ge_mal <span class="sc">+</span> se_val <span class="sc">+</span> r_val <span class="sc">+</span> err</span>
-<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(y, <span class="dv">3</span>))</span>
-<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a><span class="co"># Display first few rows of the generated dataset</span></span>
-<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(sim_data, <span class="dv">10</span>), <span class="at">caption =</span> <span class="st">&quot;First 10 Observations of the Simulated Maize Diallel Dataset&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exploratory Data Analysis &amp; Visualizations</span></span>
-<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>Before running mathematical models, we visualize the dataset to verify that the simulation reflects biological realities (e.g., lower yields in <span class="in">`env2`</span>, inbreeding depression in selfs, and positive GCA in <span class="in">`Line1`</span>).</span>
-<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a><span class="fu">## Diallel Cross Yield Grid</span></span>
-<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>Let&#39;s construct a 7x7 grid of mean yields across all replications and environments to inspect the crossing table.</span>
-<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-grid</span></span>
-<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean yield for each female x male combination across all blocks and envs</span></span>
-<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>diallel_summary <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
-<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">round</span>(<span class="fu">mean</span>(yield), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> male, <span class="at">values_from =</span> mean_yield)</span>
-<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(diallel_summary, <span class="at">caption =</span> <span class="st">&quot;7x7 Maize Diallel Mean Yield Grid (Combined Environments, tons/ha)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;bordered&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">&quot;#cc0000&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span>
-<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-196"><a href="#cb11-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-197"><a href="#cb11-197" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
-<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Notice the diagonal of the matrix! The yields of selfed lines (e.g., $\text{Line1} \times \text{Line1} = 7.74$ t/ha) are substantially lower than their hybrid crosses (e.g., $\text{Line1} \times \text{Line2} = 9.87$ t/ha). This demonstrates severe **inbreeding depression**, which is typical of maize parental inbreds compared to $F_1$ single-cross hybrids.</span></span>
-<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a><span class="fu">## Performance Across Environments</span></span>
-<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a>Let&#39;s plot parental and hybrid yields across the two environments to see the impact of Low Phosphorus stress (<span class="in">`env2`</span>) and check for GCA-by-environment interactions.</span>
-<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-plot</span></span>
-<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 10</span></span>
-<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6</span></span>
-<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a><span class="co"># Classify entries as Hybrid or Self</span></span>
-<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a>sim_data_plot <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Type =</span> <span class="fu">if_else</span>(female <span class="sc">==</span> male, <span class="st">&quot;Self (Inbred)&quot;</span>, <span class="st">&quot;Hybrid (Cross)&quot;</span>))</span>
-<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot yields</span></span>
-<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sim_data_plot, <span class="fu">aes</span>(<span class="at">x =</span> env, <span class="at">y =</span> yield, <span class="at">fill =</span> Type)) <span class="sc">+</span></span>
-<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Hybrid (Cross)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#cc0000&quot;</span>, <span class="st">&quot;Self (Inbred)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#4a5568&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb11-218"><a href="#cb11-218" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb11-219"><a href="#cb11-219" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Maize Grain Yield Distribution under Normal vs. Low Phosphorus&quot;</span>,</span>
-<span id="cb11-220"><a href="#cb11-220" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Comparing F1 Hybrids vs. Parental Selfs&quot;</span>,</span>
-<span id="cb11-221"><a href="#cb11-221" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Environment (Treatment)&quot;</span>,</span>
-<span id="cb11-222"><a href="#cb11-222" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Yield (tons/ha)&quot;</span>,</span>
-<span id="cb11-223"><a href="#cb11-223" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Genetic Entry Type&quot;</span></span>
-<span id="cb11-224"><a href="#cb11-224" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb11-225"><a href="#cb11-225" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb11-226"><a href="#cb11-226" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb11-227"><a href="#cb11-227" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#1a202c&quot;</span>),</span>
-<span id="cb11-228"><a href="#cb11-228" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
-<span id="cb11-229"><a href="#cb11-229" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-230"><a href="#cb11-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-231"><a href="#cb11-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-232"><a href="#cb11-232" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb11-233"><a href="#cb11-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-234"><a href="#cb11-234" aria-hidden="true" tabindex="-1"></a><span class="fu"># Fixed-Effects Calculations: Griffing&#39;s Method 1</span></span>
-<span id="cb11-235"><a href="#cb11-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-236"><a href="#cb11-236" aria-hidden="true" tabindex="-1"></a>In quantitative genetics, **Griffing&#39;s Method 1** (incorporating parents, $F_1$ hybrids, and reciprocal crosses) is the classical fixed-effects method used to partition family means into general combining ability (GCA), specific combining ability (SCA), and reciprocal effects. </span>
-<span id="cb11-237"><a href="#cb11-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-238"><a href="#cb11-238" aria-hidden="true" tabindex="-1"></a>We will demonstrate the direct arithmetic calculations from family means. This provides Stelio with an intuitive, hands-on understanding of the underlying genetic algebra before using mixed-model solvers.</span>
-<span id="cb11-239"><a href="#cb11-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-240"><a href="#cb11-240" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arithmetic Formulas</span></span>
-<span id="cb11-241"><a href="#cb11-241" aria-hidden="true" tabindex="-1"></a>Let $Y_{ij}$ be the mean of the cross between female $i$ and male $j$ across replications and environments.</span>
-<span id="cb11-242"><a href="#cb11-242" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Grand Mean ($\mu$):** The overall mean of the $p \times p$ diallel table.</span>
-<span id="cb11-243"><a href="#cb11-243" aria-hidden="true" tabindex="-1"></a>    $$\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}$$</span>
-<span id="cb11-244"><a href="#cb11-244" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Parental Average Means:** The row mean ($\bar{Y}_{i.}$) and column mean ($\bar{Y}_{.i}$) represent the average performance of parent $i$ as a female and male, respectively.</span>
-<span id="cb11-245"><a href="#cb11-245" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA Effect of Parent $i$ ($g_i$):**</span>
-<span id="cb11-246"><a href="#cb11-246" aria-hidden="true" tabindex="-1"></a>    $$g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}$$</span>
-<span id="cb11-247"><a href="#cb11-247" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Reciprocal Effect of Cross $ij$ ($r_{ij}$):**</span>
-<span id="cb11-248"><a href="#cb11-248" aria-hidden="true" tabindex="-1"></a>    $$r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}$$</span>
-<span id="cb11-249"><a href="#cb11-249" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**SCA Effect of Cross $ij$ ($s_{ij}$):**</span>
-<span id="cb11-250"><a href="#cb11-250" aria-hidden="true" tabindex="-1"></a>    $$s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)$$</span>
-<span id="cb11-251"><a href="#cb11-251" aria-hidden="true" tabindex="-1"></a>    $$s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)$$</span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GCA x Env interaction (Low P stress amplifies GCA effects by 30%)</span></span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a>  ge_fem <span class="ot">&lt;-</span> <span class="cf">if</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) gca_fem <span class="sc">*</span> <span class="fl">0.3</span> <span class="cf">else</span> <span class="sc">-</span>gca_fem <span class="sc">*</span> <span class="fl">0.3</span></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a>  ge_mal <span class="ot">&lt;-</span> <span class="cf">if</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) gca_mal <span class="sc">*</span> <span class="fl">0.3</span> <span class="cf">else</span> <span class="sc">-</span>gca_mal <span class="sc">*</span> <span class="fl">0.3</span></span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a>  <span class="co"># SCA x Env interaction (specific hybrid adaptability)</span></span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a>  se_val <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.12</span>)</span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reciprocal maternal effect (positive maternal effect for Line3)</span></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a>  r_val <span class="ot">&lt;-</span> <span class="cf">if</span>(fem <span class="sc">!=</span> mal) {</span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a>    mat_eff <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(fem <span class="sc">==</span> <span class="st">&quot;Line3&quot;</span>) mat_eff <span class="ot">&lt;-</span> mat_eff <span class="sc">+</span> <span class="fl">0.25</span></span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(mal <span class="sc">==</span> <span class="st">&quot;Line3&quot;</span>) mat_eff <span class="ot">&lt;-</span> mat_eff <span class="sc">-</span> <span class="fl">0.25</span></span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a>    mat_eff</span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Residual Plot Error</span></span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a>  err <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.35</span>)</span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine to get phenotypic yield</span></span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> mu <span class="sc">+</span> e_eff <span class="sc">+</span> b_eff <span class="sc">+</span> gca_fem <span class="sc">+</span> gca_mal <span class="sc">+</span> sca_val <span class="sc">+</span> ge_fem <span class="sc">+</span> ge_mal <span class="sc">+</span> se_val <span class="sc">+</span> r_val <span class="sc">+</span> err</span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">round</span>(y, <span class="dv">3</span>))</span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a><span class="co"># Display first few rows of the generated dataset</span></span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(sim_data, <span class="dv">10</span>), <span class="at">caption =</span> <span class="st">&quot;First 10 Observations of the Simulated Maize Diallel Dataset&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-187"><a href="#cb11-187" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-188"><a href="#cb11-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-189"><a href="#cb11-189" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exploratory Data Analysis &amp; Visualizations</span></span>
+<span id="cb11-190"><a href="#cb11-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-191"><a href="#cb11-191" aria-hidden="true" tabindex="-1"></a>Before running mathematical models, we visualize the dataset to verify that the simulation reflects biological realities (e.g., lower yields in <span class="in">`env2`</span>, inbreeding depression in selfs, and positive GCA in <span class="in">`Line1`</span>).</span>
+<span id="cb11-192"><a href="#cb11-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-193"><a href="#cb11-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## Diallel Cross Yield Grid</span></span>
+<span id="cb11-194"><a href="#cb11-194" aria-hidden="true" tabindex="-1"></a>Let&#39;s construct a 7x7 grid of mean yields across all replications and environments to inspect the crossing table.</span>
+<span id="cb11-195"><a href="#cb11-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-198"><a href="#cb11-198" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-199"><a href="#cb11-199" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-grid</span></span>
+<span id="cb11-200"><a href="#cb11-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-201"><a href="#cb11-201" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean yield for each female x male combination across all blocks and envs</span></span>
+<span id="cb11-202"><a href="#cb11-202" aria-hidden="true" tabindex="-1"></a>diallel_summary <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-203"><a href="#cb11-203" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
+<span id="cb11-204"><a href="#cb11-204" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">round</span>(<span class="fu">mean</span>(yield), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-205"><a href="#cb11-205" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> male, <span class="at">values_from =</span> mean_yield)</span>
+<span id="cb11-206"><a href="#cb11-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-207"><a href="#cb11-207" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(diallel_summary, <span class="at">caption =</span> <span class="st">&quot;7x7 Maize Diallel Mean Yield Grid (Combined Environments, tons/ha)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-208"><a href="#cb11-208" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;bordered&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-209"><a href="#cb11-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">&quot;#cc0000&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span>
+<span id="cb11-210"><a href="#cb11-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-211"><a href="#cb11-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-212"><a href="#cb11-212" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
+<span id="cb11-213"><a href="#cb11-213" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Notice the diagonal of the matrix! The yields of selfed lines (e.g., $\text{Line1} \times \text{Line1} = 7.74$ t/ha) are substantially lower than their hybrid crosses (e.g., $\text{Line1} \times \text{Line2} = 9.87$ t/ha). This demonstrates severe **inbreeding depression**, which is typical of maize parental inbreds compared to $F_1$ single-cross hybrids.</span></span>
+<span id="cb11-214"><a href="#cb11-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-215"><a href="#cb11-215" aria-hidden="true" tabindex="-1"></a><span class="fu">## Performance Across Environments</span></span>
+<span id="cb11-216"><a href="#cb11-216" aria-hidden="true" tabindex="-1"></a>Let&#39;s plot parental and hybrid yields across the two environments to see the impact of Low Phosphorus stress (<span class="in">`env2`</span>) and check for GCA-by-environment interactions.</span>
+<span id="cb11-217"><a href="#cb11-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-220"><a href="#cb11-220" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-221"><a href="#cb11-221" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-plot</span></span>
+<span id="cb11-222"><a href="#cb11-222" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 10</span></span>
+<span id="cb11-223"><a href="#cb11-223" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6</span></span>
+<span id="cb11-224"><a href="#cb11-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-225"><a href="#cb11-225" aria-hidden="true" tabindex="-1"></a><span class="co"># Classify entries as Hybrid or Self</span></span>
+<span id="cb11-226"><a href="#cb11-226" aria-hidden="true" tabindex="-1"></a>sim_data_plot <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-227"><a href="#cb11-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Type =</span> <span class="fu">if_else</span>(female <span class="sc">==</span> male, <span class="st">&quot;Self (Inbred)&quot;</span>, <span class="st">&quot;Hybrid (Cross)&quot;</span>))</span>
+<span id="cb11-228"><a href="#cb11-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-229"><a href="#cb11-229" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot yields</span></span>
+<span id="cb11-230"><a href="#cb11-230" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(sim_data_plot, <span class="fu">aes</span>(<span class="at">x =</span> env, <span class="at">y =</span> yield, <span class="at">fill =</span> Type)) <span class="sc">+</span></span>
+<span id="cb11-231"><a href="#cb11-231" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb11-232"><a href="#cb11-232" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Hybrid (Cross)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#cc0000&quot;</span>, <span class="st">&quot;Self (Inbred)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#4a5568&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb11-233"><a href="#cb11-233" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-234"><a href="#cb11-234" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Maize Grain Yield Distribution under Normal vs. Low Phosphorus&quot;</span>,</span>
+<span id="cb11-235"><a href="#cb11-235" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Comparing F1 Hybrids vs. Parental Selfs&quot;</span>,</span>
+<span id="cb11-236"><a href="#cb11-236" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Environment (Treatment)&quot;</span>,</span>
+<span id="cb11-237"><a href="#cb11-237" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Yield (tons/ha)&quot;</span>,</span>
+<span id="cb11-238"><a href="#cb11-238" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Genetic Entry Type&quot;</span></span>
+<span id="cb11-239"><a href="#cb11-239" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-240"><a href="#cb11-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb11-241"><a href="#cb11-241" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-242"><a href="#cb11-242" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#1a202c&quot;</span>),</span>
+<span id="cb11-243"><a href="#cb11-243" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span></span>
+<span id="cb11-244"><a href="#cb11-244" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-245"><a href="#cb11-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-246"><a href="#cb11-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-247"><a href="#cb11-247" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-248"><a href="#cb11-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-249"><a href="#cb11-249" aria-hidden="true" tabindex="-1"></a><span class="fu"># Fixed-Effects Calculations: Griffing&#39;s Method 1</span></span>
+<span id="cb11-250"><a href="#cb11-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-251"><a href="#cb11-251" aria-hidden="true" tabindex="-1"></a>In quantitative genetics, **Griffing&#39;s Method 1** (incorporating parents, $F_1$ hybrids, and reciprocal crosses) is the classical fixed-effects method used to partition family means into general combining ability (GCA), specific combining ability (SCA), and reciprocal effects. </span>
 <span id="cb11-252"><a href="#cb11-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-253"><a href="#cb11-253" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Implementation</span></span>
-<span id="cb11-254"><a href="#cb11-254" aria-hidden="true" tabindex="-1"></a>Let&#39;s compute these values arithmetically using the simulated dataset.</span>
-<span id="cb11-255"><a href="#cb11-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-258"><a href="#cb11-258" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-259"><a href="#cb11-259" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: griffing-arithmetic</span></span>
+<span id="cb11-253"><a href="#cb11-253" aria-hidden="true" tabindex="-1"></a>We will demonstrate the direct arithmetic calculations from family means. This provides Stelio with an intuitive, hands-on understanding of the underlying genetic algebra before using mixed-model solvers.</span>
+<span id="cb11-254"><a href="#cb11-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-255"><a href="#cb11-255" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arithmetic Formulas</span></span>
+<span id="cb11-256"><a href="#cb11-256" aria-hidden="true" tabindex="-1"></a>Let $Y_{ij}$ be the mean of the cross between female $i$ and male $j$ across replications and environments.</span>
+<span id="cb11-257"><a href="#cb11-257" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Grand Mean ($\mu$):** The overall mean of the $p \times p$ diallel table.</span>
+<span id="cb11-258"><a href="#cb11-258" aria-hidden="true" tabindex="-1"></a>    $$\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}$$</span>
+<span id="cb11-259"><a href="#cb11-259" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Parental Average Means:** The row mean ($\bar{Y}_{i.}$) and column mean ($\bar{Y}_{.i}$) represent the average performance of parent $i$ as a female and male, respectively.</span>
 <span id="cb11-260"><a href="#cb11-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-261"><a href="#cb11-261" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calculate family means across all observations</span></span>
-<span id="cb11-262"><a href="#cb11-262" aria-hidden="true" tabindex="-1"></a>family_means <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb11-263"><a href="#cb11-263" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
-<span id="cb11-264"><a href="#cb11-264" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">mean</span>(yield), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>)</span>
-<span id="cb11-265"><a href="#cb11-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-266"><a href="#cb11-266" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Convert to a 7x7 matrix for matrix operations</span></span>
-<span id="cb11-267"><a href="#cb11-267" aria-hidden="true" tabindex="-1"></a>Y_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
-<span id="cb11-268"><a href="#cb11-268" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(family_means)) {</span>
-<span id="cb11-269"><a href="#cb11-269" aria-hidden="true" tabindex="-1"></a>  Y_matrix[family_means<span class="sc">$</span>female[i], family_means<span class="sc">$</span>male[i]] <span class="ot">&lt;-</span> family_means<span class="sc">$</span>mean_yield[i]</span>
-<span id="cb11-270"><a href="#cb11-270" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-261"><a href="#cb11-261" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA Effect of Parent $i$ ($g_i$):**</span>
+<span id="cb11-262"><a href="#cb11-262" aria-hidden="true" tabindex="-1"></a>    $$g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}$$</span>
+<span id="cb11-263"><a href="#cb11-263" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Reciprocal Effect of Cross $ij$ ($r_{ij}$):**</span>
+<span id="cb11-264"><a href="#cb11-264" aria-hidden="true" tabindex="-1"></a>    $$r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}$$</span>
+<span id="cb11-265"><a href="#cb11-265" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**SCA Effect of Cross $ij$ ($s_{ij}$):**</span>
+<span id="cb11-266"><a href="#cb11-266" aria-hidden="true" tabindex="-1"></a>    $$s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)$$</span>
+<span id="cb11-267"><a href="#cb11-267" aria-hidden="true" tabindex="-1"></a>    $$s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)$$</span>
+<span id="cb11-268"><a href="#cb11-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-269"><a href="#cb11-269" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Implementation</span></span>
+<span id="cb11-270"><a href="#cb11-270" aria-hidden="true" tabindex="-1"></a>Let&#39;s compute these values arithmetically using the simulated dataset.</span>
 <span id="cb11-271"><a href="#cb11-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-272"><a href="#cb11-272" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Compute Grand Mean</span></span>
-<span id="cb11-273"><a href="#cb11-273" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(Y_matrix)</span>
-<span id="cb11-274"><a href="#cb11-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-275"><a href="#cb11-275" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Compute Row and Column Means</span></span>
-<span id="cb11-276"><a href="#cb11-276" aria-hidden="true" tabindex="-1"></a>row_means <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Y_matrix)</span>
-<span id="cb11-277"><a href="#cb11-277" aria-hidden="true" tabindex="-1"></a>col_means <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(Y_matrix)</span>
-<span id="cb11-278"><a href="#cb11-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-279"><a href="#cb11-279" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Calculate GCA effects</span></span>
-<span id="cb11-280"><a href="#cb11-280" aria-hidden="true" tabindex="-1"></a>gca_effects_fixed <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (row_means <span class="sc">+</span> col_means) <span class="sc">-</span> mu_hat</span>
+<span id="cb11-274"><a href="#cb11-274" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-275"><a href="#cb11-275" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: griffing-arithmetic</span></span>
+<span id="cb11-276"><a href="#cb11-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-277"><a href="#cb11-277" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calculate family means across all observations</span></span>
+<span id="cb11-278"><a href="#cb11-278" aria-hidden="true" tabindex="-1"></a>family_means <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-279"><a href="#cb11-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
+<span id="cb11-280"><a href="#cb11-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">mean</span>(yield), <span class="at">.groups =</span> <span class="st">&#39;drop&#39;</span>)</span>
 <span id="cb11-281"><a href="#cb11-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-282"><a href="#cb11-282" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Calculate Reciprocal effects</span></span>
-<span id="cb11-283"><a href="#cb11-283" aria-hidden="true" tabindex="-1"></a>recip_effects_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
-<span id="cb11-284"><a href="#cb11-284" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
-<span id="cb11-285"><a href="#cb11-285" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
-<span id="cb11-286"><a href="#cb11-286" aria-hidden="true" tabindex="-1"></a>    recip_effects_fixed[i, j] <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (Y_matrix[i, j] <span class="sc">-</span> Y_matrix[j, i])</span>
-<span id="cb11-287"><a href="#cb11-287" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb11-288"><a href="#cb11-288" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb11-289"><a href="#cb11-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-290"><a href="#cb11-290" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Calculate SCA effects</span></span>
-<span id="cb11-291"><a href="#cb11-291" aria-hidden="true" tabindex="-1"></a>sca_effects_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
-<span id="cb11-292"><a href="#cb11-292" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
-<span id="cb11-293"><a href="#cb11-293" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
-<span id="cb11-294"><a href="#cb11-294" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">==</span> j) {</span>
-<span id="cb11-295"><a href="#cb11-295" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Selfs</span></span>
-<span id="cb11-296"><a href="#cb11-296" aria-hidden="true" tabindex="-1"></a>      sca_effects_fixed[i, j] <span class="ot">&lt;-</span> Y_matrix[i, j] <span class="sc">-</span> (<span class="dv">2</span> <span class="sc">*</span> gca_effects_fixed[i]) <span class="sc">-</span> mu_hat</span>
-<span id="cb11-297"><a href="#cb11-297" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb11-298"><a href="#cb11-298" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Crosses</span></span>
-<span id="cb11-299"><a href="#cb11-299" aria-hidden="true" tabindex="-1"></a>      sca_effects_fixed[i, j] <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (Y_matrix[i, j] <span class="sc">+</span> Y_matrix[j, i]) <span class="sc">-</span> gca_effects_fixed[i] <span class="sc">-</span> gca_effects_fixed[j] <span class="sc">-</span> mu_hat</span>
-<span id="cb11-300"><a href="#cb11-300" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb11-301"><a href="#cb11-301" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb11-302"><a href="#cb11-302" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb11-303"><a href="#cb11-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-304"><a href="#cb11-304" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the calculated GCA effects in a premium table</span></span>
-<span id="cb11-305"><a href="#cb11-305" aria-hidden="true" tabindex="-1"></a>gca_fixed_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-306"><a href="#cb11-306" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parent =</span> <span class="fu">names</span>(gca_effects_fixed),</span>
-<span id="cb11-307"><a href="#cb11-307" aria-hidden="true" tabindex="-1"></a>  <span class="at">True_GCA =</span> gca_effects[Parent],</span>
-<span id="cb11-308"><a href="#cb11-308" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA_Fixed =</span> <span class="fu">round</span>(gca_effects_fixed, <span class="dv">4</span>)</span>
-<span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_fixed_df, <span class="at">caption =</span> <span class="st">&quot;Arithmetically Calculated GCA Effects (Griffing Method 1)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
-<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Notice how close the arithmetically estimated GCA effects are to the true programmed parameters! This illustrates the robustness of Griffing&#39;s arithmetic approach in balanced diallel experiments.</span></span>
-<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-282"><a href="#cb11-282" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Convert to a 7x7 matrix for matrix operations</span></span>
+<span id="cb11-283"><a href="#cb11-283" aria-hidden="true" tabindex="-1"></a>Y_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
+<span id="cb11-284"><a href="#cb11-284" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(family_means)) {</span>
+<span id="cb11-285"><a href="#cb11-285" aria-hidden="true" tabindex="-1"></a>  Y_matrix[family_means<span class="sc">$</span>female[i], family_means<span class="sc">$</span>male[i]] <span class="ot">&lt;-</span> family_means<span class="sc">$</span>mean_yield[i]</span>
+<span id="cb11-286"><a href="#cb11-286" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-287"><a href="#cb11-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-288"><a href="#cb11-288" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Compute Grand Mean</span></span>
+<span id="cb11-289"><a href="#cb11-289" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(Y_matrix)</span>
+<span id="cb11-290"><a href="#cb11-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-291"><a href="#cb11-291" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Compute Row and Column Means</span></span>
+<span id="cb11-292"><a href="#cb11-292" aria-hidden="true" tabindex="-1"></a>row_means <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Y_matrix)</span>
+<span id="cb11-293"><a href="#cb11-293" aria-hidden="true" tabindex="-1"></a>col_means <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(Y_matrix)</span>
+<span id="cb11-294"><a href="#cb11-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-295"><a href="#cb11-295" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Calculate GCA effects</span></span>
+<span id="cb11-296"><a href="#cb11-296" aria-hidden="true" tabindex="-1"></a>gca_effects_fixed <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (row_means <span class="sc">+</span> col_means) <span class="sc">-</span> mu_hat</span>
+<span id="cb11-297"><a href="#cb11-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-298"><a href="#cb11-298" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Calculate Reciprocal effects</span></span>
+<span id="cb11-299"><a href="#cb11-299" aria-hidden="true" tabindex="-1"></a>recip_effects_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
+<span id="cb11-300"><a href="#cb11-300" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
+<span id="cb11-301"><a href="#cb11-301" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
+<span id="cb11-302"><a href="#cb11-302" aria-hidden="true" tabindex="-1"></a>    recip_effects_fixed[i, j] <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (Y_matrix[i, j] <span class="sc">-</span> Y_matrix[j, i])</span>
+<span id="cb11-303"><a href="#cb11-303" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-304"><a href="#cb11-304" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-305"><a href="#cb11-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-306"><a href="#cb11-306" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Calculate SCA effects</span></span>
+<span id="cb11-307"><a href="#cb11-307" aria-hidden="true" tabindex="-1"></a>sca_effects_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> n_parents, <span class="at">ncol =</span> n_parents, <span class="at">dimnames =</span> <span class="fu">list</span>(parents, parents))</span>
+<span id="cb11-308"><a href="#cb11-308" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
+<span id="cb11-309"><a href="#cb11-309" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_parents) {</span>
+<span id="cb11-310"><a href="#cb11-310" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">==</span> j) {</span>
+<span id="cb11-311"><a href="#cb11-311" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Selfs</span></span>
+<span id="cb11-312"><a href="#cb11-312" aria-hidden="true" tabindex="-1"></a>      sca_effects_fixed[i, j] <span class="ot">&lt;-</span> Y_matrix[i, j] <span class="sc">-</span> (<span class="dv">2</span> <span class="sc">*</span> gca_effects_fixed[i]) <span class="sc">-</span> mu_hat</span>
+<span id="cb11-313"><a href="#cb11-313" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb11-314"><a href="#cb11-314" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Crosses</span></span>
+<span id="cb11-315"><a href="#cb11-315" aria-hidden="true" tabindex="-1"></a>      sca_effects_fixed[i, j] <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (Y_matrix[i, j] <span class="sc">+</span> Y_matrix[j, i]) <span class="sc">-</span> gca_effects_fixed[i] <span class="sc">-</span> gca_effects_fixed[j] <span class="sc">-</span> mu_hat</span>
+<span id="cb11-316"><a href="#cb11-316" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-317"><a href="#cb11-317" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-318"><a href="#cb11-318" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb11-319"><a href="#cb11-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a><span class="fu"># Mixed-Effects Calculations: Overlay Matrix Modeling</span></span>
-<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a>While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on **Linear Mixed Models (LMMs)**. Mixed models:</span>
-<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Handle unbalanced datasets (e.g., missing crosses).</span>
-<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Incorporate pedigree relationship matrices ($A$-matrix).</span>
-<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Directly estimate genetic variance components ($\sigma^2_A$ and $\sigma^2_D$).</span>
-<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Shrink predictions (BLUPs) to minimize prediction errors.</span>
-<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Challenge of Diallel Mixed Models in R</span></span>
-<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a>In a diallel design, the same individual appears as both <span class="in">`female`</span> and <span class="in">`male`</span>. </span>
-<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>If we fit standard random effects like <span class="in">`(1|female) + (1|male)`</span> in <span class="in">`lme4`</span>, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.</span>
-<span id="cb11-331"><a href="#cb11-331" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>To estimate a single, consistent GCA effect for each parent, we must **overlay** the random incidence matrices $Z_{\text{female}}$ and $Z_{\text{male}}$ so that the statistical model restricts their distributions to be identical.</span>
-<span id="cb11-332"><a href="#cb11-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-333"><a href="#cb11-333" aria-hidden="true" tabindex="-1"></a><span class="fu">## Option A: Elegant Mixed Modeling with `sommer`</span></span>
-<span id="cb11-334"><a href="#cb11-334" aria-hidden="true" tabindex="-1"></a>The R package <span class="in">`sommer`</span> has a built-in <span class="in">`overlay()`</span> function designed specifically for overlaying genetic design matrices, functioning identically to ASReml&#39;s <span class="in">`and()`</span> functionality.</span>
+<span id="cb11-320"><a href="#cb11-320" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the calculated GCA effects in a premium table</span></span>
+<span id="cb11-321"><a href="#cb11-321" aria-hidden="true" tabindex="-1"></a>gca_fixed_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-322"><a href="#cb11-322" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parent =</span> <span class="fu">names</span>(gca_effects_fixed),</span>
+<span id="cb11-323"><a href="#cb11-323" aria-hidden="true" tabindex="-1"></a>  <span class="at">True_GCA =</span> gca_effects[Parent],</span>
+<span id="cb11-324"><a href="#cb11-324" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA_Fixed =</span> <span class="fu">round</span>(gca_effects_fixed, <span class="dv">4</span>)</span>
+<span id="cb11-325"><a href="#cb11-325" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-326"><a href="#cb11-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-327"><a href="#cb11-327" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_fixed_df, <span class="at">caption =</span> <span class="st">&quot;Arithmetically Calculated GCA Effects (Griffing Method 1)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-328"><a href="#cb11-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb11-329"><a href="#cb11-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-330"><a href="#cb11-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-331"><a href="#cb11-331" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
+<span id="cb11-332"><a href="#cb11-332" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Notice how close the arithmetically estimated GCA effects are to the true programmed parameters! This illustrates the robustness of Griffing&#39;s arithmetic approach in balanced diallel experiments.</span></span>
+<span id="cb11-333"><a href="#cb11-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-334"><a href="#cb11-334" aria-hidden="true" tabindex="-1"></a>***</span>
 <span id="cb11-335"><a href="#cb11-335" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-336"><a href="#cb11-336" aria-hidden="true" tabindex="-1"></a>We will fit the mixed model for **`env2` (Low Phosphorus Stress)**.</span>
+<span id="cb11-336"><a href="#cb11-336" aria-hidden="true" tabindex="-1"></a><span class="fu"># Mixed-Effects Calculations: Overlay Matrix Modeling</span></span>
 <span id="cb11-337"><a href="#cb11-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-340"><a href="#cb11-340" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-341"><a href="#cb11-341" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixed-model-sommer</span></span>
-<span id="cb11-342"><a href="#cb11-342" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb11-343"><a href="#cb11-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-344"><a href="#cb11-344" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset data for the Low Phosphorus environment (env2)</span></span>
-<span id="cb11-345"><a href="#cb11-345" aria-hidden="true" tabindex="-1"></a>data_env2 <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
-<span id="cb11-346"><a href="#cb11-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-347"><a href="#cb11-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb11-348"><a href="#cb11-348" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
-<span id="cb11-349"><a href="#cb11-349" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
-<span id="cb11-350"><a href="#cb11-350" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross),</span>
-<span id="cb11-351"><a href="#cb11-351" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block)</span>
-<span id="cb11-352"><a href="#cb11-352" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-353"><a href="#cb11-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-354"><a href="#cb11-354" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit mixed model in sommer</span></span>
-<span id="cb11-355"><a href="#cb11-355" aria-hidden="true" tabindex="-1"></a><span class="co"># yield = fixed intercept + random overlaid GCA + random SCA (cross) + random block</span></span>
-<span id="cb11-356"><a href="#cb11-356" aria-hidden="true" tabindex="-1"></a>fit_env2 <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
-<span id="cb11-357"><a href="#cb11-357" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed =</span> yield <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb11-358"><a href="#cb11-358" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> <span class="fu">overlay</span>(female, male) <span class="sc">+</span> cross <span class="sc">+</span> block,</span>
-<span id="cb11-359"><a href="#cb11-359" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_env2,</span>
-<span id="cb11-360"><a href="#cb11-360" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb11-361"><a href="#cb11-361" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-362"><a href="#cb11-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-363"><a href="#cb11-363" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract variance components</span></span>
-<span id="cb11-364"><a href="#cb11-364" aria-hidden="true" tabindex="-1"></a>var_comps <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_env2)<span class="sc">$</span>varcomp</span>
-<span id="cb11-365"><a href="#cb11-365" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps, <span class="at">caption =</span> <span class="st">&quot;Estimated Variance Components in Low Phosphorus (env2)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-366"><a href="#cb11-366" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>))</span>
-<span id="cb11-367"><a href="#cb11-367" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-368"><a href="#cb11-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-369"><a href="#cb11-369" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting GCA BLUPs (sommer)</span></span>
-<span id="cb11-370"><a href="#cb11-370" aria-hidden="true" tabindex="-1"></a>We extract the General Combining Ability predictions (BLUPs) for each of the 7 parents.</span>
-<span id="cb11-371"><a href="#cb11-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-374"><a href="#cb11-374" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-375"><a href="#cb11-375" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: blups-sommer</span></span>
-<span id="cb11-376"><a href="#cb11-376" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-377"><a href="#cb11-377" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract GCA random effect predictions (BLUPs)</span></span>
-<span id="cb11-378"><a href="#cb11-378" aria-hidden="true" tabindex="-1"></a>gca_blups <span class="ot">&lt;-</span> fit_env2<span class="sc">$</span>U<span class="sc">$</span><span class="st">`</span><span class="at">overlay(female, male)</span><span class="st">`</span><span class="sc">$</span>yield</span>
-<span id="cb11-379"><a href="#cb11-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-380"><a href="#cb11-380" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up names to get Line1, Line2, etc.</span></span>
-<span id="cb11-381"><a href="#cb11-381" aria-hidden="true" tabindex="-1"></a>gca_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-382"><a href="#cb11-382" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parent =</span> <span class="fu">gsub</span>(<span class="st">&quot;overlay</span><span class="sc">\\</span><span class="st">(female, male</span><span class="sc">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(gca_blups)),</span>
-<span id="cb11-383"><a href="#cb11-383" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(gca_blups), <span class="dv">4</span>)</span>
-<span id="cb11-384"><a href="#cb11-384" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-385"><a href="#cb11-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-386"><a href="#cb11-386" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_blups_df, <span class="at">caption =</span> <span class="st">&quot;General Combining Ability (GCA) BLUPs under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-387"><a href="#cb11-387" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb11-388"><a href="#cb11-388" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-389"><a href="#cb11-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-390"><a href="#cb11-390" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
-<span id="cb11-391"><a href="#cb11-391" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`Line1`</span><span class="at"> and </span><span class="in">`Line2`</span><span class="at"> have strong positive GCA BLUPs under Low P stress, indicating they carry superior, inheritable alleles for phosphorus efficiency that they transmit reliably to their offspring. Conversely, </span><span class="in">`Line7`</span><span class="at"> is highly susceptible.</span></span>
-<span id="cb11-392"><a href="#cb11-392" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-393"><a href="#cb11-393" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb11-394"><a href="#cb11-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-395"><a href="#cb11-395" aria-hidden="true" tabindex="-1"></a><span class="fu"># Calculations for Specific Combining Ability (SCA)</span></span>
+<span id="cb11-338"><a href="#cb11-338" aria-hidden="true" tabindex="-1"></a>While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on **Linear Mixed Models (LMMs)**. Mixed models:</span>
+<span id="cb11-339"><a href="#cb11-339" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Handle unbalanced datasets (e.g., missing crosses).</span>
+<span id="cb11-340"><a href="#cb11-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-341"><a href="#cb11-341" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Incorporate pedigree relationship matrices ($A$-matrix).</span>
+<span id="cb11-342"><a href="#cb11-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-343"><a href="#cb11-343" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Directly estimate genetic variance components ($\sigma^2_A$ and $\sigma^2_D$).</span>
+<span id="cb11-344"><a href="#cb11-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-345"><a href="#cb11-345" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Shrink predictions (BLUPs) to minimize prediction errors.</span>
+<span id="cb11-346"><a href="#cb11-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-347"><a href="#cb11-347" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Challenge of Diallel Mixed Models in R</span></span>
+<span id="cb11-348"><a href="#cb11-348" aria-hidden="true" tabindex="-1"></a>In a diallel design, the same individual appears as both <span class="in">`female`</span> and <span class="in">`male`</span>. </span>
+<span id="cb11-349"><a href="#cb11-349" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>If we fit standard random effects like <span class="in">`(1|female) + (1|male)`</span> in <span class="in">`lme4`</span>, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.</span>
+<span id="cb11-350"><a href="#cb11-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-351"><a href="#cb11-351" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>To estimate a single, consistent GCA effect for each parent, we must **overlay** the random incidence matrices $Z_{\text{female}}$ and $Z_{\text{male}}$ so that the statistical model restricts their distributions to be identical.</span>
+<span id="cb11-352"><a href="#cb11-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-353"><a href="#cb11-353" aria-hidden="true" tabindex="-1"></a><span class="fu">## Option A: Elegant Mixed Modeling with `sommer`</span></span>
+<span id="cb11-354"><a href="#cb11-354" aria-hidden="true" tabindex="-1"></a>The R package <span class="in">`sommer`</span> has a built-in <span class="in">`overlay()`</span> function designed specifically for overlaying genetic design matrices, functioning identically to ASReml&#39;s <span class="in">`and()`</span> functionality.</span>
+<span id="cb11-355"><a href="#cb11-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-356"><a href="#cb11-356" aria-hidden="true" tabindex="-1"></a>We will fit the mixed model for **`env2` (Low Phosphorus Stress)**.</span>
+<span id="cb11-357"><a href="#cb11-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-360"><a href="#cb11-360" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-361"><a href="#cb11-361" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixed-model-sommer</span></span>
+<span id="cb11-362"><a href="#cb11-362" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb11-363"><a href="#cb11-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-364"><a href="#cb11-364" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset data for the Low Phosphorus environment (env2)</span></span>
+<span id="cb11-365"><a href="#cb11-365" aria-hidden="true" tabindex="-1"></a>data_env2 <span class="ot">&lt;-</span> sim_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-366"><a href="#cb11-366" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(env <span class="sc">==</span> <span class="st">&quot;env2&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-367"><a href="#cb11-367" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-368"><a href="#cb11-368" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
+<span id="cb11-369"><a href="#cb11-369" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
+<span id="cb11-370"><a href="#cb11-370" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross),</span>
+<span id="cb11-371"><a href="#cb11-371" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block)</span>
+<span id="cb11-372"><a href="#cb11-372" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-373"><a href="#cb11-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-374"><a href="#cb11-374" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit mixed model in sommer</span></span>
+<span id="cb11-375"><a href="#cb11-375" aria-hidden="true" tabindex="-1"></a><span class="co"># yield = fixed intercept + random overlaid GCA + random SCA (cross) + random block</span></span>
+<span id="cb11-376"><a href="#cb11-376" aria-hidden="true" tabindex="-1"></a>fit_env2 <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
+<span id="cb11-377"><a href="#cb11-377" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed =</span> yield <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb11-378"><a href="#cb11-378" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> <span class="fu">overlay</span>(female, male) <span class="sc">+</span> cross <span class="sc">+</span> block,</span>
+<span id="cb11-379"><a href="#cb11-379" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_env2,</span>
+<span id="cb11-380"><a href="#cb11-380" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-381"><a href="#cb11-381" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-382"><a href="#cb11-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-383"><a href="#cb11-383" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract variance components</span></span>
+<span id="cb11-384"><a href="#cb11-384" aria-hidden="true" tabindex="-1"></a>var_comps <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_env2)<span class="sc">$</span>varcomp</span>
+<span id="cb11-385"><a href="#cb11-385" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps, <span class="at">caption =</span> <span class="st">&quot;Estimated Variance Components in Low Phosphorus (env2)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-386"><a href="#cb11-386" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>))</span>
+<span id="cb11-387"><a href="#cb11-387" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-388"><a href="#cb11-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-389"><a href="#cb11-389" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting GCA BLUPs (sommer)</span></span>
+<span id="cb11-390"><a href="#cb11-390" aria-hidden="true" tabindex="-1"></a>We extract the General Combining Ability predictions (BLUPs) for each of the 7 parents.</span>
+<span id="cb11-391"><a href="#cb11-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-394"><a href="#cb11-394" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-395"><a href="#cb11-395" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: blups-sommer</span></span>
 <span id="cb11-396"><a href="#cb11-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-397"><a href="#cb11-397" aria-hidden="true" tabindex="-1"></a>While GCA represents parental additive values, the Specific Combining Ability (SCA) represents **dominance deviations** from the expected parental sum, representing how specific cross combinations perform compared to expectations.</span>
-<span id="cb11-398"><a href="#cb11-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-399"><a href="#cb11-399" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reconstructing SCA Matrix</span></span>
-<span id="cb11-400"><a href="#cb11-400" aria-hidden="true" tabindex="-1"></a>We extract the random cross effects from our mixed model. These represent the SCA predictions. We format them into a symmetric 7x7 matrix.</span>
-<span id="cb11-401"><a href="#cb11-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-404"><a href="#cb11-404" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-405"><a href="#cb11-405" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: sca-matrix-mixed</span></span>
-<span id="cb11-406"><a href="#cb11-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-407"><a href="#cb11-407" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract SCA random effects (cross)</span></span>
-<span id="cb11-408"><a href="#cb11-408" aria-hidden="true" tabindex="-1"></a>sca_blups <span class="ot">&lt;-</span> fit_env2<span class="sc">$</span>U<span class="sc">$</span>cross<span class="sc">$</span>yield</span>
+<span id="cb11-397"><a href="#cb11-397" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract GCA random effect predictions (BLUPs)</span></span>
+<span id="cb11-398"><a href="#cb11-398" aria-hidden="true" tabindex="-1"></a>gca_blups <span class="ot">&lt;-</span> fit_env2<span class="sc">$</span>U<span class="sc">$</span><span class="st">`</span><span class="at">overlay(female, male)</span><span class="st">`</span><span class="sc">$</span>yield</span>
+<span id="cb11-399"><a href="#cb11-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-400"><a href="#cb11-400" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up names to get Line1, Line2, etc.</span></span>
+<span id="cb11-401"><a href="#cb11-401" aria-hidden="true" tabindex="-1"></a>gca_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-402"><a href="#cb11-402" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parent =</span> <span class="fu">gsub</span>(<span class="st">&quot;overlay</span><span class="sc">\\</span><span class="st">(female, male</span><span class="sc">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(gca_blups)),</span>
+<span id="cb11-403"><a href="#cb11-403" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(gca_blups), <span class="dv">4</span>)</span>
+<span id="cb11-404"><a href="#cb11-404" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-405"><a href="#cb11-405" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-406"><a href="#cb11-406" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_blups_df, <span class="at">caption =</span> <span class="st">&quot;General Combining Ability (GCA) BLUPs under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-407"><a href="#cb11-407" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb11-408"><a href="#cb11-408" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb11-409"><a href="#cb11-409" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-410"><a href="#cb11-410" aria-hidden="true" tabindex="-1"></a><span class="co"># Build SCA table</span></span>
-<span id="cb11-411"><a href="#cb11-411" aria-hidden="true" tabindex="-1"></a>sca_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-412"><a href="#cb11-412" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cross =</span> <span class="fu">gsub</span>(<span class="st">&quot;cross&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(sca_blups)),</span>
-<span id="cb11-413"><a href="#cb11-413" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCA_BLUP =</span> <span class="fu">as.numeric</span>(sca_blups)</span>
-<span id="cb11-414"><a href="#cb11-414" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-415"><a href="#cb11-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-416"><a href="#cb11-416" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse female/male from cross name to form a symmetric matrix</span></span>
-<span id="cb11-417"><a href="#cb11-417" aria-hidden="true" tabindex="-1"></a>sca_matrix_blup <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(parents, parents))</span>
+<span id="cb11-410"><a href="#cb11-410" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
+<span id="cb11-411"><a href="#cb11-411" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="in">`Line1`</span><span class="at"> and </span><span class="in">`Line2`</span><span class="at"> have strong positive GCA BLUPs under Low P stress, indicating they carry superior, inheritable alleles for phosphorus efficiency that they transmit reliably to their offspring. Conversely, </span><span class="in">`Line7`</span><span class="at"> is highly susceptible.</span></span>
+<span id="cb11-412"><a href="#cb11-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-413"><a href="#cb11-413" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-414"><a href="#cb11-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-415"><a href="#cb11-415" aria-hidden="true" tabindex="-1"></a><span class="fu"># Calculations for Specific Combining Ability (SCA)</span></span>
+<span id="cb11-416"><a href="#cb11-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-417"><a href="#cb11-417" aria-hidden="true" tabindex="-1"></a>While GCA represents parental additive values, the Specific Combining Ability (SCA) represents **dominance deviations** from the expected parental sum, representing how specific cross combinations perform compared to expectations.</span>
 <span id="cb11-418"><a href="#cb11-418" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-419"><a href="#cb11-419" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sca_df)) {</span>
-<span id="cb11-420"><a href="#cb11-420" aria-hidden="true" tabindex="-1"></a>  cross_name <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>Cross[i]</span>
-<span id="cb11-421"><a href="#cb11-421" aria-hidden="true" tabindex="-1"></a>  pts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(cross_name, <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb11-422"><a href="#cb11-422" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">&lt;-</span> pts[<span class="dv">1</span>]</span>
-<span id="cb11-423"><a href="#cb11-423" aria-hidden="true" tabindex="-1"></a>  p2 <span class="ot">&lt;-</span> pts[<span class="dv">2</span>]</span>
-<span id="cb11-424"><a href="#cb11-424" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>SCA_BLUP[i]</span>
-<span id="cb11-425"><a href="#cb11-425" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb11-426"><a href="#cb11-426" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p1, p2] <span class="ot">&lt;-</span> val</span>
-<span id="cb11-427"><a href="#cb11-427" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p2, p1] <span class="ot">&lt;-</span> val</span>
-<span id="cb11-428"><a href="#cb11-428" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-419"><a href="#cb11-419" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reconstructing SCA Matrix</span></span>
+<span id="cb11-420"><a href="#cb11-420" aria-hidden="true" tabindex="-1"></a>We extract the random cross effects from our mixed model. These represent the SCA predictions. We format them into a symmetric 7x7 matrix.</span>
+<span id="cb11-421"><a href="#cb11-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-424"><a href="#cb11-424" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-425"><a href="#cb11-425" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: sca-matrix-mixed</span></span>
+<span id="cb11-426"><a href="#cb11-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-427"><a href="#cb11-427" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract SCA random effects (cross)</span></span>
+<span id="cb11-428"><a href="#cb11-428" aria-hidden="true" tabindex="-1"></a>sca_blups <span class="ot">&lt;-</span> fit_env2<span class="sc">$</span>U<span class="sc">$</span>cross<span class="sc">$</span>yield</span>
 <span id="cb11-429"><a href="#cb11-429" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-430"><a href="#cb11-430" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">round</span>(sca_matrix_blup, <span class="dv">4</span>), <span class="at">caption =</span> <span class="st">&quot;Symmetric 7x7 Specific Combining Ability (SCA) BLUP Matrix (env2)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-431"><a href="#cb11-431" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;bordered&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb11-432"><a href="#cb11-432" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">&quot;#4a5568&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span>
-<span id="cb11-433"><a href="#cb11-433" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-434"><a href="#cb11-434" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-435"><a href="#cb11-435" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb11-436"><a href="#cb11-436" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-437"><a href="#cb11-437" aria-hidden="true" tabindex="-1"></a><span class="fu"># Calculating Breeding Values (BV) and Genotypic Values (GV)</span></span>
+<span id="cb11-430"><a href="#cb11-430" aria-hidden="true" tabindex="-1"></a><span class="co"># Build SCA table</span></span>
+<span id="cb11-431"><a href="#cb11-431" aria-hidden="true" tabindex="-1"></a>sca_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-432"><a href="#cb11-432" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cross =</span> <span class="fu">gsub</span>(<span class="st">&quot;cross&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(sca_blups)),</span>
+<span id="cb11-433"><a href="#cb11-433" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCA_BLUP =</span> <span class="fu">as.numeric</span>(sca_blups)</span>
+<span id="cb11-434"><a href="#cb11-434" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-435"><a href="#cb11-435" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-436"><a href="#cb11-436" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse female/male from cross name to form a symmetric matrix</span></span>
+<span id="cb11-437"><a href="#cb11-437" aria-hidden="true" tabindex="-1"></a>sca_matrix_blup <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(parents, parents))</span>
 <span id="cb11-438"><a href="#cb11-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-439"><a href="#cb11-439" aria-hidden="true" tabindex="-1"></a>A key task for breeding students is to calculate and distinguish the **Breeding Value (BV)** and the **Genotypic Value (GV)** of individual crosses.</span>
-<span id="cb11-440"><a href="#cb11-440" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-441"><a href="#cb11-441" aria-hidden="true" tabindex="-1"></a>According to Chapter 5 of Isik et al. (2017):</span>
-<span id="cb11-442"><a href="#cb11-442" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Expected Breeding Value ($BV$):** The sum of the parent general combining abilities. Breeding value is completely additive and determines the response to selection when parents are recombined:</span>
-<span id="cb11-443"><a href="#cb11-443" aria-hidden="true" tabindex="-1"></a>    $$BV_{\text{Cross } AB} = g_A + g_B$$</span>
-<span id="cb11-444"><a href="#cb11-444" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Genotypic Value ($GV$):** The total genetic value of the cross, equal to the Breeding Value plus the dominance Specific Combining Ability deviation. GV determines the commercial performance of the $F_1$ hybrid:</span>
-<span id="cb11-445"><a href="#cb11-445" aria-hidden="true" tabindex="-1"></a>    $$GV_{\text{Cross } AB} = BV_{\text{Cross } AB} + SCA_{AB} = g_A + g_B + s_{AB}$$</span>
-<span id="cb11-446"><a href="#cb11-446" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-447"><a href="#cb11-447" aria-hidden="true" tabindex="-1"></a>Let&#39;s calculate both for all crosses under Low Phosphorus stress (<span class="in">`env2`</span>) using our mixed model results.</span>
-<span id="cb11-448"><a href="#cb11-448" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-451"><a href="#cb11-451" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-452"><a href="#cb11-452" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: bv-gv-calc</span></span>
-<span id="cb11-453"><a href="#cb11-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-454"><a href="#cb11-454" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate BV and GV for all crosses</span></span>
-<span id="cb11-455"><a href="#cb11-455" aria-hidden="true" tabindex="-1"></a>genetic_values <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Female =</span> parents, <span class="at">Male =</span> parents, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-456"><a href="#cb11-456" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, Female)) <span class="sc">&lt;=</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, Male))) <span class="sc">%&gt;%</span> <span class="co"># unique crosses</span></span>
-<span id="cb11-457"><a href="#cb11-457" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb11-458"><a href="#cb11-458" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> gca_blups_df<span class="sc">$</span>GCA_BLUP[gca_blups_df<span class="sc">$</span>Parent <span class="sc">==</span> .x]),</span>
-<span id="cb11-459"><a href="#cb11-459" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> gca_blups_df<span class="sc">$</span>GCA_BLUP[gca_blups_df<span class="sc">$</span>Parent <span class="sc">==</span> .x]),</span>
-<span id="cb11-460"><a href="#cb11-460" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
-<span id="cb11-461"><a href="#cb11-461" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
-<span id="cb11-462"><a href="#cb11-462" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
-<span id="cb11-463"><a href="#cb11-463" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-464"><a href="#cb11-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-465"><a href="#cb11-465" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(genetic_values, <span class="dv">15</span>), <span class="at">caption =</span> <span class="st">&quot;Breeding Values (BV) and Genotypic Values (GV) of Maize Crosses (Top 15)&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-466"><a href="#cb11-466" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb11-467"><a href="#cb11-467" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-439"><a href="#cb11-439" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sca_df)) {</span>
+<span id="cb11-440"><a href="#cb11-440" aria-hidden="true" tabindex="-1"></a>  cross_name <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>Cross[i]</span>
+<span id="cb11-441"><a href="#cb11-441" aria-hidden="true" tabindex="-1"></a>  pts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(cross_name, <span class="st">&quot;_&quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb11-442"><a href="#cb11-442" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">&lt;-</span> pts[<span class="dv">1</span>]</span>
+<span id="cb11-443"><a href="#cb11-443" aria-hidden="true" tabindex="-1"></a>  p2 <span class="ot">&lt;-</span> pts[<span class="dv">2</span>]</span>
+<span id="cb11-444"><a href="#cb11-444" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>SCA_BLUP[i]</span>
+<span id="cb11-445"><a href="#cb11-445" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-446"><a href="#cb11-446" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p1, p2] <span class="ot">&lt;-</span> val</span>
+<span id="cb11-447"><a href="#cb11-447" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p2, p1] <span class="ot">&lt;-</span> val</span>
+<span id="cb11-448"><a href="#cb11-448" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-449"><a href="#cb11-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-450"><a href="#cb11-450" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">round</span>(sca_matrix_blup, <span class="dv">4</span>), <span class="at">caption =</span> <span class="st">&quot;Symmetric 7x7 Specific Combining Ability (SCA) BLUP Matrix (env2)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-451"><a href="#cb11-451" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;bordered&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-452"><a href="#cb11-452" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">&quot;#4a5568&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>)</span>
+<span id="cb11-453"><a href="#cb11-453" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-454"><a href="#cb11-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-455"><a href="#cb11-455" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-456"><a href="#cb11-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-457"><a href="#cb11-457" aria-hidden="true" tabindex="-1"></a><span class="fu"># Calculating Breeding Values (BV) and Genotypic Values (GV)</span></span>
+<span id="cb11-458"><a href="#cb11-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-459"><a href="#cb11-459" aria-hidden="true" tabindex="-1"></a>A key task for breeding students is to calculate and distinguish the **Breeding Value (BV)** and the **Genotypic Value (GV)** of individual crosses.</span>
+<span id="cb11-460"><a href="#cb11-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-461"><a href="#cb11-461" aria-hidden="true" tabindex="-1"></a>According to Chapter 5 of Isik et al. (2017):</span>
+<span id="cb11-462"><a href="#cb11-462" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Expected Breeding Value ($BV$):** The sum of the parent general combining abilities. Breeding value is completely additive and determines the response to selection when parents are recombined:</span>
+<span id="cb11-463"><a href="#cb11-463" aria-hidden="true" tabindex="-1"></a>    $$BV_{\text{Cross } AB} = g_A + g_B$$</span>
+<span id="cb11-464"><a href="#cb11-464" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Genotypic Value ($GV$):** The total genetic value of the cross, equal to the Breeding Value plus the dominance Specific Combining Ability deviation. GV determines the commercial performance of the $F_1$ hybrid:</span>
+<span id="cb11-465"><a href="#cb11-465" aria-hidden="true" tabindex="-1"></a>    $$GV_{\text{Cross } AB} = BV_{\text{Cross } AB} + SCA_{AB} = g_A + g_B + s_{AB}$$</span>
+<span id="cb11-466"><a href="#cb11-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-467"><a href="#cb11-467" aria-hidden="true" tabindex="-1"></a>Let&#39;s calculate both for all crosses under Low Phosphorus stress (<span class="in">`env2`</span>) using our mixed model results.</span>
 <span id="cb11-468"><a href="#cb11-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-469"><a href="#cb11-469" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb11-470"><a href="#cb11-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-471"><a href="#cb11-471" aria-hidden="true" tabindex="-1"></a><span class="fu"># Heritability Estimation from Variance Components</span></span>
-<span id="cb11-472"><a href="#cb11-472" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-473"><a href="#cb11-473" aria-hidden="true" tabindex="-1"></a>Finally, we use the estimated variance components from the mixed model to calculate narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities. </span>
-<span id="cb11-474"><a href="#cb11-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-475"><a href="#cb11-475" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Formulas for Individuals</span></span>
-<span id="cb11-476"><a href="#cb11-476" aria-hidden="true" tabindex="-1"></a>From Equation 5.7 and 5.8 in the NCSU curriculum (<span class="in">`isik2017_chapter4.txt`</span>):</span>
-<span id="cb11-477"><a href="#cb11-477" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive Variance:** $\sigma^2_A = 4 \times \sigma^2_{GCA}$</span>
-<span id="cb11-478"><a href="#cb11-478" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance Variance:** $\sigma^2_D = 4 \times \sigma^2_{SCA}$</span>
-<span id="cb11-479"><a href="#cb11-479" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance among Individuals:**</span>
-<span id="cb11-480"><a href="#cb11-480" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$</span>
-<span id="cb11-481"><a href="#cb11-481" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Individual Narrow-Sense Heritability ($h^2_i$):**</span>
-<span id="cb11-482"><a href="#cb11-482" aria-hidden="true" tabindex="-1"></a>    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
-<span id="cb11-483"><a href="#cb11-483" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Individual Broad-Sense Heritability ($H^2_{bs}$):**</span>
-<span id="cb11-484"><a href="#cb11-484" aria-hidden="true" tabindex="-1"></a>    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
-<span id="cb11-485"><a href="#cb11-485" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-486"><a href="#cb11-486" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability of Family Means</span></span>
-<span id="cb11-487"><a href="#cb11-487" aria-hidden="true" tabindex="-1"></a>For a breeder selecting based on whole-family means:</span>
-<span id="cb11-488"><a href="#cb11-488" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance of Full-Sib Family Means ($\sigma^2_{FS}$):**</span>
-<span id="cb11-489"><a href="#cb11-489" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{FS} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$</span>
-<span id="cb11-490"><a href="#cb11-490" aria-hidden="true" tabindex="-1"></a>    where $r = 3$ is the number of replications.</span>
-<span id="cb11-491"><a href="#cb11-491" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Full-Sib Family Heritability ($h^2_{FS}$):**</span>
-<span id="cb11-492"><a href="#cb11-492" aria-hidden="true" tabindex="-1"></a>    $$h^2_{FS} = \frac{2\sigma^2_{GCA}}{\sigma^2_{FS}}$$</span>
-<span id="cb11-493"><a href="#cb11-493" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-494"><a href="#cb11-494" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Calculations in R</span></span>
-<span id="cb11-495"><a href="#cb11-495" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-496"><a href="#cb11-496" aria-hidden="true" tabindex="-1"></a>Let&#39;s execute these calculations in R using the variance components retrieved from <span class="in">`fit_env2`</span>.</span>
-<span id="cb11-497"><a href="#cb11-497" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-500"><a href="#cb11-500" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb11-501"><a href="#cb11-501" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: heritability</span></span>
-<span id="cb11-502"><a href="#cb11-502" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-503"><a href="#cb11-503" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract individual variance components from sommer output</span></span>
-<span id="cb11-504"><a href="#cb11-504" aria-hidden="true" tabindex="-1"></a>var_gca <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;overlay(female, male):yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
-<span id="cb11-505"><a href="#cb11-505" aria-hidden="true" tabindex="-1"></a>var_sca <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;cross:yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
-<span id="cb11-506"><a href="#cb11-506" aria-hidden="true" tabindex="-1"></a>var_res <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;units:yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
+<span id="cb11-471"><a href="#cb11-471" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-472"><a href="#cb11-472" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: bv-gv-calc</span></span>
+<span id="cb11-473"><a href="#cb11-473" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-474"><a href="#cb11-474" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate BV and GV for all crosses</span></span>
+<span id="cb11-475"><a href="#cb11-475" aria-hidden="true" tabindex="-1"></a>genetic_values <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Female =</span> parents, <span class="at">Male =</span> parents, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-476"><a href="#cb11-476" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, Female)) <span class="sc">&lt;=</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">&quot;Line&quot;</span>, <span class="st">&quot;&quot;</span>, Male))) <span class="sc">%&gt;%</span> <span class="co"># unique crosses</span></span>
+<span id="cb11-477"><a href="#cb11-477" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-478"><a href="#cb11-478" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> gca_blups_df<span class="sc">$</span>GCA_BLUP[gca_blups_df<span class="sc">$</span>Parent <span class="sc">==</span> .x]),</span>
+<span id="cb11-479"><a href="#cb11-479" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> gca_blups_df<span class="sc">$</span>GCA_BLUP[gca_blups_df<span class="sc">$</span>Parent <span class="sc">==</span> .x]),</span>
+<span id="cb11-480"><a href="#cb11-480" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
+<span id="cb11-481"><a href="#cb11-481" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
+<span id="cb11-482"><a href="#cb11-482" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
+<span id="cb11-483"><a href="#cb11-483" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-484"><a href="#cb11-484" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-485"><a href="#cb11-485" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(genetic_values, <span class="dv">15</span>), <span class="at">caption =</span> <span class="st">&quot;Breeding Values (BV) and Genotypic Values (GV) of Maize Crosses (Top 15)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-486"><a href="#cb11-486" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb11-487"><a href="#cb11-487" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-488"><a href="#cb11-488" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-489"><a href="#cb11-489" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-490"><a href="#cb11-490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-491"><a href="#cb11-491" aria-hidden="true" tabindex="-1"></a><span class="fu"># Heritability Estimation from Variance Components</span></span>
+<span id="cb11-492"><a href="#cb11-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-493"><a href="#cb11-493" aria-hidden="true" tabindex="-1"></a>Finally, we use the estimated variance components from the mixed model to calculate narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities. </span>
+<span id="cb11-494"><a href="#cb11-494" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-495"><a href="#cb11-495" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Formulas for Individuals</span></span>
+<span id="cb11-496"><a href="#cb11-496" aria-hidden="true" tabindex="-1"></a>From Equation 5.7 and 5.8 in the NCSU curriculum (<span class="in">`isik2017_chapter4.txt`</span>):</span>
+<span id="cb11-497"><a href="#cb11-497" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive Variance:** $\sigma^2_A = 4 \times \sigma^2_{GCA}$</span>
+<span id="cb11-498"><a href="#cb11-498" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-499"><a href="#cb11-499" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance Variance:** $\sigma^2_D = 4 \times \sigma^2_{SCA}$</span>
+<span id="cb11-500"><a href="#cb11-500" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-501"><a href="#cb11-501" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance among Individuals:**</span>
+<span id="cb11-502"><a href="#cb11-502" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$</span>
+<span id="cb11-503"><a href="#cb11-503" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Individual Narrow-Sense Heritability ($h^2_i$):**</span>
+<span id="cb11-504"><a href="#cb11-504" aria-hidden="true" tabindex="-1"></a>    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
+<span id="cb11-505"><a href="#cb11-505" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Individual Broad-Sense Heritability ($H^2_{bs}$):**</span>
+<span id="cb11-506"><a href="#cb11-506" aria-hidden="true" tabindex="-1"></a>    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
 <span id="cb11-507"><a href="#cb11-507" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-508"><a href="#cb11-508" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Genetic Variances</span></span>
-<span id="cb11-509"><a href="#cb11-509" aria-hidden="true" tabindex="-1"></a>var_A <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_gca</span>
-<span id="cb11-510"><a href="#cb11-510" aria-hidden="true" tabindex="-1"></a>var_D <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_sca</span>
-<span id="cb11-511"><a href="#cb11-511" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-512"><a href="#cb11-512" aria-hidden="true" tabindex="-1"></a><span class="co"># Individual Phenotypic Variance</span></span>
-<span id="cb11-513"><a href="#cb11-513" aria-hidden="true" tabindex="-1"></a>var_phen_ind <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> var_gca <span class="sc">+</span> var_sca <span class="sc">+</span> var_res</span>
-<span id="cb11-514"><a href="#cb11-514" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-515"><a href="#cb11-515" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Individual Heritabilities</span></span>
-<span id="cb11-516"><a href="#cb11-516" aria-hidden="true" tabindex="-1"></a>h2_individual_ns <span class="ot">&lt;-</span> var_A <span class="sc">/</span> var_phen_ind</span>
-<span id="cb11-517"><a href="#cb11-517" aria-hidden="true" tabindex="-1"></a>H2_individual_bs <span class="ot">&lt;-</span> (var_A <span class="sc">+</span> var_D) <span class="sc">/</span> var_phen_ind</span>
-<span id="cb11-518"><a href="#cb11-518" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-519"><a href="#cb11-519" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-Sib Family Phenotypic Variance (r = 3 blocks)</span></span>
-<span id="cb11-520"><a href="#cb11-520" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb11-521"><a href="#cb11-521" aria-hidden="true" tabindex="-1"></a>var_phen_fs <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> var_gca <span class="sc">+</span> var_sca <span class="sc">+</span> (var_res <span class="sc">/</span> r_rep)</span>
-<span id="cb11-522"><a href="#cb11-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-523"><a href="#cb11-523" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Family Heritability</span></span>
-<span id="cb11-524"><a href="#cb11-524" aria-hidden="true" tabindex="-1"></a>h2_family_fs <span class="ot">&lt;-</span> (<span class="dv">2</span> <span class="sc">*</span> var_gca) <span class="sc">/</span> var_phen_fs</span>
-<span id="cb11-525"><a href="#cb11-525" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-526"><a href="#cb11-526" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
-<span id="cb11-527"><a href="#cb11-527" aria-hidden="true" tabindex="-1"></a>heritability_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-528"><a href="#cb11-528" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
-<span id="cb11-529"><a href="#cb11-529" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Additive Genetic Variance (Va)&quot;</span>, </span>
-<span id="cb11-530"><a href="#cb11-530" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Dominance Genetic Variance (Vd)&quot;</span>, </span>
-<span id="cb11-531"><a href="#cb11-531" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Individual Phenotypic Variance (Vp_ind)&quot;</span>,</span>
-<span id="cb11-532"><a href="#cb11-532" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-Sense Individual Heritability (h2_i)&quot;</span>, </span>
-<span id="cb11-533"><a href="#cb11-533" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Broad-Sense Individual Heritability (H2_bs)&quot;</span>,</span>
-<span id="cb11-534"><a href="#cb11-534" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-Sense Full-Sib Family Heritability (h2_FS)&quot;</span></span>
-<span id="cb11-535"><a href="#cb11-535" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb11-536"><a href="#cb11-536" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), <span class="dv">4</span>)</span>
-<span id="cb11-537"><a href="#cb11-537" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-538"><a href="#cb11-538" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-539"><a href="#cb11-539" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(heritability_results, <span class="at">caption =</span> <span class="st">&quot;Estimated Genetic Variances and Heritabilities under Low P Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb11-540"><a href="#cb11-540" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb11-541"><a href="#cb11-541" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb11-542"><a href="#cb11-542" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-543"><a href="#cb11-543" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-508"><a href="#cb11-508" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability of Family Means</span></span>
+<span id="cb11-509"><a href="#cb11-509" aria-hidden="true" tabindex="-1"></a>For a breeder selecting based on whole-family means:</span>
+<span id="cb11-510"><a href="#cb11-510" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance of Full-Sib Family Means ($\sigma^2_{FS}$):**</span>
+<span id="cb11-511"><a href="#cb11-511" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{FS} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$</span>
+<span id="cb11-512"><a href="#cb11-512" aria-hidden="true" tabindex="-1"></a>    where $r = 3$ is the number of replications.</span>
+<span id="cb11-513"><a href="#cb11-513" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Full-Sib Family Heritability ($h^2_{FS}$):**</span>
+<span id="cb11-514"><a href="#cb11-514" aria-hidden="true" tabindex="-1"></a>    $$h^2_{FS} = \frac{2\sigma^2_{GCA}}{\sigma^2_{FS}}$$</span>
+<span id="cb11-515"><a href="#cb11-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-516"><a href="#cb11-516" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Calculations in R</span></span>
+<span id="cb11-517"><a href="#cb11-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-518"><a href="#cb11-518" aria-hidden="true" tabindex="-1"></a>Let&#39;s execute these calculations in R using the variance components retrieved from <span class="in">`fit_env2`</span>.</span>
+<span id="cb11-519"><a href="#cb11-519" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-522"><a href="#cb11-522" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb11-523"><a href="#cb11-523" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: heritability</span></span>
+<span id="cb11-524"><a href="#cb11-524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-525"><a href="#cb11-525" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract individual variance components from sommer output</span></span>
+<span id="cb11-526"><a href="#cb11-526" aria-hidden="true" tabindex="-1"></a>var_gca <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;overlay(female, male):yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
+<span id="cb11-527"><a href="#cb11-527" aria-hidden="true" tabindex="-1"></a>var_sca <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;cross:yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
+<span id="cb11-528"><a href="#cb11-528" aria-hidden="true" tabindex="-1"></a>var_res <span class="ot">&lt;-</span> var_comps[<span class="st">&quot;units:yield:yield&quot;</span>, <span class="st">&quot;VarComp&quot;</span>]</span>
+<span id="cb11-529"><a href="#cb11-529" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-530"><a href="#cb11-530" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Genetic Variances</span></span>
+<span id="cb11-531"><a href="#cb11-531" aria-hidden="true" tabindex="-1"></a>var_A <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_gca</span>
+<span id="cb11-532"><a href="#cb11-532" aria-hidden="true" tabindex="-1"></a>var_D <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_sca</span>
+<span id="cb11-533"><a href="#cb11-533" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-534"><a href="#cb11-534" aria-hidden="true" tabindex="-1"></a><span class="co"># Individual Phenotypic Variance</span></span>
+<span id="cb11-535"><a href="#cb11-535" aria-hidden="true" tabindex="-1"></a>var_phen_ind <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> var_gca <span class="sc">+</span> var_sca <span class="sc">+</span> var_res</span>
+<span id="cb11-536"><a href="#cb11-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-537"><a href="#cb11-537" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Individual Heritabilities</span></span>
+<span id="cb11-538"><a href="#cb11-538" aria-hidden="true" tabindex="-1"></a>h2_individual_ns <span class="ot">&lt;-</span> var_A <span class="sc">/</span> var_phen_ind</span>
+<span id="cb11-539"><a href="#cb11-539" aria-hidden="true" tabindex="-1"></a>H2_individual_bs <span class="ot">&lt;-</span> (var_A <span class="sc">+</span> var_D) <span class="sc">/</span> var_phen_ind</span>
+<span id="cb11-540"><a href="#cb11-540" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-541"><a href="#cb11-541" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-Sib Family Phenotypic Variance (r = 3 blocks)</span></span>
+<span id="cb11-542"><a href="#cb11-542" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb11-543"><a href="#cb11-543" aria-hidden="true" tabindex="-1"></a>var_phen_fs <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> var_gca <span class="sc">+</span> var_sca <span class="sc">+</span> (var_res <span class="sc">/</span> r_rep)</span>
 <span id="cb11-544"><a href="#cb11-544" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-545"><a href="#cb11-545" aria-hidden="true" tabindex="-1"></a><span class="fu"># Tutorial Summary &amp; Checklist for Stelio</span></span>
-<span id="cb11-546"><a href="#cb11-546" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-547"><a href="#cb11-547" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
-<span id="cb11-548"><a href="#cb11-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-549"><a href="#cb11-549" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Format the Dataset:** Ensure column names are set (<span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span>, <span class="in">`male`</span>, <span class="in">`yield`</span>) and that the <span class="in">`cross`</span> field is created in a female/male sorted manner.</span>
-<span id="cb11-550"><a href="#cb11-550" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Define Reciprocals:** Code a reciprocal covariate (<span class="in">`r_cov`</span> set to $1, -1, 0$) if reciprocal maternal effects are to be analyzed.</span>
-<span id="cb11-551"><a href="#cb11-551" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing&#39;s Arithmetic:** Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.</span>
-<span id="cb11-552"><a href="#cb11-552" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Use the <span class="in">`sommer::mmer`</span> package in R. Fit the model using <span class="in">`overlay(female, male)`</span> for the parental GCA, <span class="in">`cross`</span> for the SCA, and nest blocks within environment (<span class="in">`env:block`</span>).</span>
-<span id="cb11-553"><a href="#cb11-553" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Extract BLUPs:** Extract the predictions and use the equations:</span>
-<span id="cb11-554"><a href="#cb11-554" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$BV = g_A + g_B$ (for parental selection)</span>
-<span id="cb11-555"><a href="#cb11-555" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$GV = g_A + g_B + s_{AB}$ (for commercial hybrid selection)</span>
-<span id="cb11-556"><a href="#cb11-556" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Calculate Heritabilities:** Extract variance components to calculate narrow-sense heritability ($h^2$) to evaluate genetic gain potential.</span>
+<span id="cb11-545"><a href="#cb11-545" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Family Heritability</span></span>
+<span id="cb11-546"><a href="#cb11-546" aria-hidden="true" tabindex="-1"></a>h2_family_fs <span class="ot">&lt;-</span> (<span class="dv">2</span> <span class="sc">*</span> var_gca) <span class="sc">/</span> var_phen_fs</span>
+<span id="cb11-547"><a href="#cb11-547" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-548"><a href="#cb11-548" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb11-549"><a href="#cb11-549" aria-hidden="true" tabindex="-1"></a>heritability_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-550"><a href="#cb11-550" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
+<span id="cb11-551"><a href="#cb11-551" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Additive Genetic Variance (Va)&quot;</span>, </span>
+<span id="cb11-552"><a href="#cb11-552" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Dominance Genetic Variance (Vd)&quot;</span>, </span>
+<span id="cb11-553"><a href="#cb11-553" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Individual Phenotypic Variance (Vp_ind)&quot;</span>,</span>
+<span id="cb11-554"><a href="#cb11-554" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-Sense Individual Heritability (h2_i)&quot;</span>, </span>
+<span id="cb11-555"><a href="#cb11-555" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Broad-Sense Individual Heritability (H2_bs)&quot;</span>,</span>
+<span id="cb11-556"><a href="#cb11-556" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Narrow-Sense Full-Sib Family Heritability (h2_FS)&quot;</span></span>
+<span id="cb11-557"><a href="#cb11-557" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb11-558"><a href="#cb11-558" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), <span class="dv">4</span>)</span>
+<span id="cb11-559"><a href="#cb11-559" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-560"><a href="#cb11-560" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-561"><a href="#cb11-561" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(heritability_results, <span class="at">caption =</span> <span class="st">&quot;Estimated Genetic Variances and Heritabilities under Low P Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-562"><a href="#cb11-562" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb11-563"><a href="#cb11-563" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb11-564"><a href="#cb11-564" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-565"><a href="#cb11-565" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb11-566"><a href="#cb11-566" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-567"><a href="#cb11-567" aria-hidden="true" tabindex="-1"></a><span class="fu"># Tutorial Summary &amp; Checklist for Stelio</span></span>
+<span id="cb11-568"><a href="#cb11-568" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-569"><a href="#cb11-569" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
+<span id="cb11-570"><a href="#cb11-570" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-571"><a href="#cb11-571" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Format the Dataset:** Ensure column names are set (<span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span>, <span class="in">`male`</span>, <span class="in">`yield`</span>) and that the <span class="in">`cross`</span> field is created in a female/male sorted manner.</span>
+<span id="cb11-572"><a href="#cb11-572" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-573"><a href="#cb11-573" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Define Reciprocals:** Code a reciprocal covariate (<span class="in">`r_cov`</span> set to $1, -1, 0$) if reciprocal maternal effects are to be analyzed.</span>
+<span id="cb11-574"><a href="#cb11-574" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-575"><a href="#cb11-575" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing&#39;s Arithmetic:** Compute the initial GCA and SCA effects using simple family averages to verify data integrity and get quick fixed-effects results.</span>
+<span id="cb11-576"><a href="#cb11-576" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-577"><a href="#cb11-577" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Use the <span class="in">`sommer::mmer`</span> package in R. Fit the model using <span class="in">`overlay(female, male)`</span> for the parental GCA, <span class="in">`cross`</span> for the SCA, and nest blocks within environment (<span class="in">`env:block`</span>).</span>
+<span id="cb11-578"><a href="#cb11-578" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-579"><a href="#cb11-579" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Extract BLUPs:** Extract the predictions and use the equations:</span>
+<span id="cb11-580"><a href="#cb11-580" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-581"><a href="#cb11-581" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$BV = g_A + g_B$ (for parental selection)</span>
+<span id="cb11-582"><a href="#cb11-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-583"><a href="#cb11-583" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>$GV = g_A + g_B + s_{AB}$ (for commercial hybrid selection)</span>
+<span id="cb11-584"><a href="#cb11-584" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-585"><a href="#cb11-585" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Calculate Heritabilities:** Extract variance components to calculate narrow-sense heritability ($h^2$) to evaluate genetic gain potential.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
