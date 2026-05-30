@@ -69,10 +69,16 @@ install.packages(c("tidyverse", "sommer", "knitr", "kableExtra"))
 
 ## Compilation Instructions
 
-The `.qmd` files are ready for rendering. To compile them to beautiful HTML outputs, run the following commands in your shell:
+This repository is configured as a Quarto project (see `_quarto.yml`), with `results/` as the output directory and all four notebooks registered for rendering. To compile every notebook into `results/` in one shot, run:
 
 ```bash
-quarto render gca_simulation.qmd --output-dir results/
-quarto render gca_calculation.qmd --output-dir results/
+quarto render
 ```
+
+To render a single notebook, pass its filename — the project-level `output-dir: results` still applies:
+
+```bash
+quarto render gca_calculation.qmd
+```
+
 *(Alternatively, you can open the `.qmd` files in RStudio or Positron and run the code chunks interactively).*
