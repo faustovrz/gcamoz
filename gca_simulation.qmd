@@ -15,6 +15,10 @@ format:
     code-tools: true
 ---
 
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
 > [!NOTE]
 > This notebook is dedicated strictly to the genetic simulation of a 7 × 7 maize factorial cross (Line × Tester) evaluated in two environments. The objective is to establish a biologically realistic dataset for General Combining Ability (GCA) and Specific Combining Ability (SCA) calculations, and save it in a clean CSV format.
 

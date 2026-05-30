@@ -17,6 +17,10 @@ bibliography: references.bib
 csl: https://www.zotero.org/styles/apa
 ---
 
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
 > [!NOTE]
 > This Quarto notebook is designed to guide Stelio Boaventura Nuvunga through the statistical calculations for General Combining Ability (GCA) and Specific Combining Ability (SCA). It uses the simulated maize dataset representing his actual PhD research setup: a **7 × 7 Factorial Mating (Line × Tester) F1 hybrid cross evaluated across 2 environments in an RCBD with 3 replications**.
 

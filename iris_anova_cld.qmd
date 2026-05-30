@@ -19,6 +19,10 @@ format:
     fig-align: center
 ---
 
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE, 

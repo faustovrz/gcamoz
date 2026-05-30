@@ -15,6 +15,10 @@ format:
     code-tools: true
 ---
 
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
 > [!NOTE]
 > This step-by-step Quarto notebook is designed for Stelio Boaventura Nuvunga to demonstrate the calculation of General Combining Ability (GCA) and Specific Combining Ability (SCA) using a simulated maize dataset. It starts with the experimental design, simulates realistic yield data for a 7x7 diallel across two environments (representing normal and low-phosphorus conditions), and provides both fixed-effects and mixed-effects R implementations.
 
