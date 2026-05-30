@@ -9,21 +9,30 @@ This project is tailored specifically to Stélio Boaventura Nuvunga's PhD resear
 ## Breeding and Experimental Design
 
 The primary genetic analysis focuses on Stelio's actual experimental mating and field layout:
+
 1.  **Breeding Mating Scheme:** **7 × 7 Factorial Cross (Line × Tester / North Carolina Design II)**.
+
     *   **Females (Lines):** 7 Low-Phosphorus tolerant inbred donor lines sourced from CIMMYT (`CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532`).
+
     *   **Males (Testers):** 7 elite local Mozambican inbred lines (`MOZ1` to `MOZ7`) adapted to local agroecological zones.
+
     *   **Evaluated Progeny:** $F_1$ diallelic factorial hybrids ($N = 49$ unique families). (No selfs or reciprocals are represented in the primary analysis).
+
 2.  **Field Trial Layout:** **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** nested within each environment.
+
 3.  **Environments:** Combined evaluation across **2 environments** representing phosphorus treatments:
+
     *   `env1`: Normal/High Phosphorus (control).
+
     *   `env2`: Low Phosphorus Stress (treatment).
+
 4.  **Evaluated Trait:** Grain Yield (tons/ha).
 
 ***
 
 ## Repository Structure
 
-The directory is clean, neat, and organized into data, results, and source notebooks:
+The directory is clean, neat, and organized into data, rendered docs, and source notebooks:
 
 ```text
 gca/
@@ -75,7 +84,7 @@ This repository is configured as a Quarto project (see `_quarto.yml`), with `doc
 quarto render
 ```
 
-To render a single notebook, pass its filename — the project-level `output-dir: results` still applies:
+To render a single notebook, pass its filename — the project-level `output-dir: docs` still applies:
 
 ```bash
 quarto render gca_calculation.qmd
