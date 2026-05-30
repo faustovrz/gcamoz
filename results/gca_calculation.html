@@ -107,7 +107,6 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="custom.css">
 </head>
 
 <body class="quarto-light">
@@ -1748,450 +1747,449 @@ window.Quarto = {
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">    number-sections: true</span></span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">    css: custom.css</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; This Quarto notebook is designed to guide Stelio Boaventura Nuvunga through the statistical calculations for General Combining Ability (GCA) and Specific Combining Ability (SCA). It uses the simulated maize dataset representing his actual PhD research setup: a **7 × 7 Factorial Mating (Line × Tester) F1 hybrid cross evaluated across 2 environments in an RCBD with 3 replications**.</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Theoretical Foundation &amp; Experimental Setup</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>Before performing calculations in R, we must define the genetic breeding scheme, the field experimental design, and the mathematical phenotype model.</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## Breeding Scheme (Line × Tester)</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).</span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled <span class="in">`Local1`</span> to <span class="in">`Local7`</span>).</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. </span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### Stelio's Factorial Mating Grid</span></span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>Each cell represents an $F_1$ hybrid family evaluated in the field.</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CIMMYT Donors (Females) <span class="pp">|</span> Local1 <span class="pp">|</span> Local2 <span class="pp">|</span> Local3 <span class="pp">|</span> Local4 <span class="pp">|</span> Local5 <span class="pp">|</span> Local6 <span class="pp">|</span> Local7 <span class="pp">|</span></span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML364** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML366** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML434** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML435** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML439** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML440** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML532** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Experimental Design</span></span>
-<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** per environment.</span>
-<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Environments ($E$):** The trials are conducted across **2 environments** representing phosphorus treatment levels:</span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**env1:** Normal/High Phosphorus conditions.</span>
-<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**env2:** Low Phosphorus Stress conditions.</span>
-<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Trait Evaluated:** Grain Yield (tons/ha).</span>
-<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Total Plots:** $2 \text{ environments} \times 3 \text{ replications} \times 49 \text{ hybrid entries} = 294$ plot evaluations.</span>
-<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="fu">## Phenotype Model (Mathematical Equation)</span></span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>To analyze the phenotypic yield data, we model the value of a plot containing hybrid $pq$ (cross of female parent $p$ and male parent $q$) in block $j$ of environment $i$ as:</span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>$$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$</span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>Where:</span>
-<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$y_{ijpq}$ is the grain yield observed in the plot.</span>
-<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$\mu$ is the overall mean grain yield of the population.</span>
-<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$E_i$ is the fixed effect of the $i$-th environment (phosphorus treatment).</span>
-<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$B_{j(i)}$ is the random effect of the $j$-th block nested within the $i$-th environment, assumed $B_{j(i)} \sim \text{NID}(0, \sigma^2_{B(E)})$.</span>
-<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$g_{F_p}$ is the random General Combining Ability (GCA) effect of the $p$-th female parent, assumed $g_{F_p} \sim \text{NID}(0, \sigma^2_{GCA<span class="sc">\_</span>F})$. This represents the additive breeding value transmitted by the CIMMYT donor.</span>
-<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$g_{M_q}$ is the random GCA effect of the $q$-th male parent, assumed $g_{M_q} \sim \text{NID}(0, \sigma^2_{GCA<span class="sc">\_</span>M})$. This represents the additive breeding value transmitted by the local tester.</span>
-<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$s_{pq}$ is the random Specific Combining Ability (SCA) effect of the cross between female $p$ and male $q$, assumed $s_{pq} \sim \text{NID}(0, \sigma^2_{SCA})$. This represents dominance deviations (heterosis/hybrid vigor).</span>
-<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$(Eg_{F})_{ip}$ and $(Eg_{M})_{iq}$ are the random interactions of the parental GCA effects with the environment, modeling how additive breeding values respond to low-phosphorus stress.</span>
-<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$(Es)_{ipq}$ is the random interaction of the SCA effect with the environment, representing specific hybrid adaptability to stress.</span>
-<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$\epsilon_{ijpq}$ is the residual experimental plot error, assumed $\epsilon_{ijpq} \sim \text{NID}(0, \sigma^2_{\epsilon})$.</span>
-<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!IMPORTANT</span><span class="co">]</span></span>
-<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Because Stelio's design uses distinct female and male lines (a factorial mating scheme), the parental effects are mutually exclusive. Unlike a diallel, **we do not need to overlay design matrices or use overlay functions** in mixed models. This significantly simplifies our mixed model code in R!</span></span>
-<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="fu"># R Environment &amp; Data Import</span></span>
-<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>We load the necessary libraries and read the simulated maize dataset, which is stored in <span class="in">`/data/maize_factorial_yield.csv`</span>.</span>
-<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
-<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
-<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sommer)</span>
-<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset</span></span>
-<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>maize_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/maize_factorial_yield.csv"</span>)</span>
-<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert design factors to R factors</span></span>
-<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>maize_data <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
-<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">env =</span> <span class="fu">as.factor</span>(env),</span>
-<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block),</span>
-<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
-<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
-<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross)</span>
-<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exploratory Data Analysis (EDA)</span></span>
-<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a>We visualize the grain yields of the 49 crosses across the two environments to understand the stress impact.</span>
-<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mean Yield Grid</span></span>
-<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a>Let's construct a grid of mean yields across all 3 replications, combined for both environments.</span>
-<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-grid</span></span>
-<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>mean_yields <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
-<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
-<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">round</span>(<span class="fu">mean</span>(yield), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> male, <span class="at">values_from =</span> mean_yield)</span>
-<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(mean_yields, <span class="at">caption =</span> <span class="st">"7 × 7 Factorial F1 Yield Grid (Combined Environments, tons/ha)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"bordered"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">"#cc0000"</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
-<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a><span class="fu">## Performance across Environments</span></span>
-<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a>Let's visualize the yield distribution under Normal Phosphorus (<span class="in">`env1`</span>) versus Low Phosphorus Stress (<span class="in">`env2`</span>).</span>
-<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-plot</span></span>
-<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 10</span></span>
-<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6</span></span>
-<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(maize_data, <span class="fu">aes</span>(<span class="at">x =</span> env, <span class="at">y =</span> yield, <span class="at">fill =</span> env)) <span class="sc">+</span></span>
-<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">outlier.color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"env1"</span> <span class="ot">=</span> <span class="st">"#3182ce"</span>, <span class="st">"env2"</span> <span class="ot">=</span> <span class="st">"#dd6b20"</span>)) <span class="sc">+</span></span>
-<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Maize Grain Yield under Normal vs. Low Phosphorus Conditions"</span>,</span>
-<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Grain Yield of 49 Factorial Hybrids across 3 Blocks per Environment"</span>,</span>
-<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Environment (Treatment)"</span>,</span>
-<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Yield (tons/ha)"</span>,</span>
-<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Treatment"</span></span>
-<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"#1a202c"</span>))</span>
-<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a><span class="fu"># Fixed-Effects Calculations: Factorial Combining Ability</span></span>
-<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a>In a balanced factorial cross, GCA and SCA can be calculated arithmetically from family means. This provides a transparent foundation before using mixed models.</span>
-<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arithmetic Formulas</span></span>
-<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{p.}$ be the mean yield of all crosses involving female parent $p$.</span>
-<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{.q}$ be the mean yield of all crosses involving male parent $q$.</span>
-<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{pq}$ be the mean yield of the hybrid cross between female $p$ and male $q$.</span>
-<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{..}$ be the overall grand mean of all crosses in the factorial grid.</span>
-<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Grand Mean:**</span>
-<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a>    $$\bar{Y}_{..} = \frac{1}{f \cdot m} \sum_{p} \sum_{q} \bar{Y}_{pq}$$</span>
-<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA of Female Parent $p$ ($g_{F_p}$):**</span>
-<span id="cb12-175"><a href="#cb12-175" aria-hidden="true" tabindex="-1"></a>    $$g_{F_p} = \bar{Y}_{p.} - \bar{Y}_{..}$$</span>
-<span id="cb12-176"><a href="#cb12-176" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA of Male Parent $q$ ($g_{M_q}$):**</span>
-<span id="cb12-177"><a href="#cb12-177" aria-hidden="true" tabindex="-1"></a>    $$g_{M_q} = \bar{Y}_{.q} - \bar{Y}_{..}$$</span>
-<span id="cb12-178"><a href="#cb12-178" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**SCA of Cross $pq$ ($s_{pq}$):**</span>
-<span id="cb12-179"><a href="#cb12-179" aria-hidden="true" tabindex="-1"></a>    $$s_{pq} = \bar{Y}_{pq} - g_{F_p} - g_{M_q} - \bar{Y}_{..} = \bar{Y}_{pq} - \bar{Y}_{p.} - \bar{Y}_{.q} + \bar{Y}_{..}$$</span>
-<span id="cb12-180"><a href="#cb12-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-181"><a href="#cb12-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Arithmetic</span></span>
-<span id="cb12-182"><a href="#cb12-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-183"><a href="#cb12-183" aria-hidden="true" tabindex="-1"></a>We calculate these effects arithmetically from the entire dataset.</span>
-<span id="cb12-184"><a href="#cb12-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-187"><a href="#cb12-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-188"><a href="#cb12-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: arithmetic-calculations</span></span>
-<span id="cb12-189"><a href="#cb12-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-190"><a href="#cb12-190" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calculate family means</span></span>
-<span id="cb12-191"><a href="#cb12-191" aria-hidden="true" tabindex="-1"></a>family_means <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
-<span id="cb12-192"><a href="#cb12-192" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
-<span id="cb12-193"><a href="#cb12-193" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">mean</span>(yield), <span class="at">.groups =</span> <span class="st">'drop'</span>)</span>
-<span id="cb12-194"><a href="#cb12-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-195"><a href="#cb12-195" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Reshape to a 7x7 matrix (7 females in rows, 7 males in columns)</span></span>
-<span id="cb12-196"><a href="#cb12-196" aria-hidden="true" tabindex="-1"></a>Y_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">7</span>, <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">levels</span>(maize_data<span class="sc">$</span>female), <span class="fu">levels</span>(maize_data<span class="sc">$</span>male)))</span>
-<span id="cb12-197"><a href="#cb12-197" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(family_means)) {</span>
-<span id="cb12-198"><a href="#cb12-198" aria-hidden="true" tabindex="-1"></a>  Y_matrix[<span class="fu">as.character</span>(family_means<span class="sc">$</span>female[i]), <span class="fu">as.character</span>(family_means<span class="sc">$</span>male[i])] <span class="ot">&lt;-</span> family_means<span class="sc">$</span>mean_yield[i]</span>
-<span id="cb12-199"><a href="#cb12-199" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb12-200"><a href="#cb12-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-201"><a href="#cb12-201" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Grand mean</span></span>
-<span id="cb12-202"><a href="#cb12-202" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(Y_matrix)</span>
-<span id="cb12-203"><a href="#cb12-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-204"><a href="#cb12-204" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Female and Male means</span></span>
-<span id="cb12-205"><a href="#cb12-205" aria-hidden="true" tabindex="-1"></a>female_means <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Y_matrix)</span>
-<span id="cb12-206"><a href="#cb12-206" aria-hidden="true" tabindex="-1"></a>male_means <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(Y_matrix)</span>
-<span id="cb12-207"><a href="#cb12-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-208"><a href="#cb12-208" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. GCA effects</span></span>
-<span id="cb12-209"><a href="#cb12-209" aria-hidden="true" tabindex="-1"></a>gca_female_fixed <span class="ot">&lt;-</span> female_means <span class="sc">-</span> mu_hat</span>
-<span id="cb12-210"><a href="#cb12-210" aria-hidden="true" tabindex="-1"></a>gca_male_fixed <span class="ot">&lt;-</span> male_means <span class="sc">-</span> mu_hat</span>
-<span id="cb12-211"><a href="#cb12-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-212"><a href="#cb12-212" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. SCA effects</span></span>
-<span id="cb12-213"><a href="#cb12-213" aria-hidden="true" tabindex="-1"></a>sca_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">7</span>, <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">levels</span>(maize_data<span class="sc">$</span>female), <span class="fu">levels</span>(maize_data<span class="sc">$</span>male)))</span>
-<span id="cb12-214"><a href="#cb12-214" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(p <span class="cf">in</span> <span class="fu">rownames</span>(sca_fixed)) {</span>
-<span id="cb12-215"><a href="#cb12-215" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(q <span class="cf">in</span> <span class="fu">colnames</span>(sca_fixed)) {</span>
-<span id="cb12-216"><a href="#cb12-216" aria-hidden="true" tabindex="-1"></a>    sca_fixed[p, q] <span class="ot">&lt;-</span> Y_matrix[p, q] <span class="sc">-</span> gca_female_fixed[p] <span class="sc">-</span> gca_male_fixed[q] <span class="sc">-</span> mu_hat</span>
-<span id="cb12-217"><a href="#cb12-217" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb12-218"><a href="#cb12-218" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb12-219"><a href="#cb12-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-220"><a href="#cb12-220" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Female GCA Effects</span></span>
-<span id="cb12-221"><a href="#cb12-221" aria-hidden="true" tabindex="-1"></a>gca_female_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-222"><a href="#cb12-222" aria-hidden="true" tabindex="-1"></a>  <span class="at">Female_Parent =</span> <span class="fu">names</span>(gca_female_fixed),</span>
-<span id="cb12-223"><a href="#cb12-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Yield =</span> <span class="fu">round</span>(female_means, <span class="dv">3</span>),</span>
-<span id="cb12-224"><a href="#cb12-224" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_female_fixed, <span class="dv">4</span>)</span>
-<span id="cb12-225"><a href="#cb12-225" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-226"><a href="#cb12-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-227"><a href="#cb12-227" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_female_df, <span class="at">caption =</span> <span class="st">"Estimated GCA Effects for Female Parents (CIMMYT Lines)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-228"><a href="#cb12-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-229"><a href="#cb12-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-230"><a href="#cb12-230" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Male GCA Effects</span></span>
-<span id="cb12-231"><a href="#cb12-231" aria-hidden="true" tabindex="-1"></a>gca_male_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-232"><a href="#cb12-232" aria-hidden="true" tabindex="-1"></a>  <span class="at">Male_Parent =</span> <span class="fu">names</span>(gca_male_fixed),</span>
-<span id="cb12-233"><a href="#cb12-233" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Yield =</span> <span class="fu">round</span>(male_means, <span class="dv">3</span>),</span>
-<span id="cb12-234"><a href="#cb12-234" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_male_fixed, <span class="dv">4</span>)</span>
-<span id="cb12-235"><a href="#cb12-235" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-236"><a href="#cb12-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-237"><a href="#cb12-237" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">"Estimated GCA Effects for Male Parents (Local Testers)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-238"><a href="#cb12-238" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-239"><a href="#cb12-239" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-240"><a href="#cb12-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-241"><a href="#cb12-241" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-242"><a href="#cb12-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-243"><a href="#cb12-243" aria-hidden="true" tabindex="-1"></a><span class="fu"># Mixed-Effects Calculations: Factorial Variance Component Analysis</span></span>
-<span id="cb12-244"><a href="#cb12-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-245"><a href="#cb12-245" aria-hidden="true" tabindex="-1"></a>In modern breeding, combining ability is analyzed using **Linear Mixed Models (LMMs)**. Parents are treated as random samples from a reference population. </span>
-<span id="cb12-246"><a href="#cb12-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-247"><a href="#cb12-247" aria-hidden="true" tabindex="-1"></a>We use the R package <span class="in">`sommer`</span> to fit the mixed model. Because female and male lines are distinct, **no matrix overlays are needed**. We analyze the **Low Phosphorus Stress environment (`env2`)** where selecting tolerant lines is critical.</span>
-<span id="cb12-248"><a href="#cb12-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-249"><a href="#cb12-249" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fitting the Mixed Model</span></span>
-<span id="cb12-250"><a href="#cb12-250" aria-hidden="true" tabindex="-1"></a>The random terms in our model are: <span class="in">`female`</span> (Female GCA), <span class="in">`male`</span> (Male GCA), <span class="in">`cross`</span> (SCA), and <span class="in">`block`</span> (RCBD replication).</span>
-<span id="cb12-251"><a href="#cb12-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-254"><a href="#cb12-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-255"><a href="#cb12-255" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixed-model-sommer</span></span>
-<span id="cb12-256"><a href="#cb12-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-257"><a href="#cb12-257" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for env2 (Low Phosphorus Stress)</span></span>
-<span id="cb12-258"><a href="#cb12-258" aria-hidden="true" tabindex="-1"></a>data_env2 <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
-<span id="cb12-259"><a href="#cb12-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(env <span class="sc">==</span> <span class="st">"env2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-260"><a href="#cb12-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-261"><a href="#cb12-261" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
-<span id="cb12-262"><a href="#cb12-262" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
-<span id="cb12-263"><a href="#cb12-263" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross),</span>
-<span id="cb12-264"><a href="#cb12-264" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block)</span>
-<span id="cb12-265"><a href="#cb12-265" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-266"><a href="#cb12-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-267"><a href="#cb12-267" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Mixed Model in sommer</span></span>
-<span id="cb12-268"><a href="#cb12-268" aria-hidden="true" tabindex="-1"></a><span class="co"># yield = fixed intercept + random female GCA + random male GCA + random SCA + random block</span></span>
-<span id="cb12-269"><a href="#cb12-269" aria-hidden="true" tabindex="-1"></a>fit_factorial <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
-<span id="cb12-270"><a href="#cb12-270" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed =</span> yield <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb12-271"><a href="#cb12-271" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> female <span class="sc">+</span> male <span class="sc">+</span> cross <span class="sc">+</span> block,</span>
-<span id="cb12-272"><a href="#cb12-272" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_env2,</span>
-<span id="cb12-273"><a href="#cb12-273" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
-<span id="cb12-274"><a href="#cb12-274" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-275"><a href="#cb12-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-276"><a href="#cb12-276" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract and display variance components</span></span>
-<span id="cb12-277"><a href="#cb12-277" aria-hidden="true" tabindex="-1"></a>var_comps <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_factorial)<span class="sc">$</span>varcomp</span>
-<span id="cb12-278"><a href="#cb12-278" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps, <span class="at">caption =</span> <span class="st">"Estimated Genetic and Environmental Variance Components in Low Phosphorus (env2)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-279"><a href="#cb12-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span>
-<span id="cb12-280"><a href="#cb12-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-281"><a href="#cb12-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-282"><a href="#cb12-282" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting GCA BLUPs (sommer)</span></span>
-<span id="cb12-283"><a href="#cb12-283" aria-hidden="true" tabindex="-1"></a>We extract the General Combining Ability predictions (BLUPs) for both the female and male parent sets.</span>
-<span id="cb12-284"><a href="#cb12-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-287"><a href="#cb12-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-288"><a href="#cb12-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gca-blups</span></span>
-<span id="cb12-289"><a href="#cb12-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-290"><a href="#cb12-290" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract random effects from fit</span></span>
-<span id="cb12-291"><a href="#cb12-291" aria-hidden="true" tabindex="-1"></a>female_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>female<span class="sc">$</span>yield</span>
-<span id="cb12-292"><a href="#cb12-292" aria-hidden="true" tabindex="-1"></a>male_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>male<span class="sc">$</span>yield</span>
-<span id="cb12-293"><a href="#cb12-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-294"><a href="#cb12-294" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up lists and print</span></span>
-<span id="cb12-295"><a href="#cb12-295" aria-hidden="true" tabindex="-1"></a>female_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-296"><a href="#cb12-296" aria-hidden="true" tabindex="-1"></a>  <span class="at">CIMMYT_Female =</span> <span class="fu">gsub</span>(<span class="st">"female"</span>, <span class="st">""</span>, <span class="fu">names</span>(female_blups)),</span>
-<span id="cb12-297"><a href="#cb12-297" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(female_blups), <span class="dv">4</span>)</span>
-<span id="cb12-298"><a href="#cb12-298" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-299"><a href="#cb12-299" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-300"><a href="#cb12-300" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(female_blups_df, <span class="at">caption =</span> <span class="st">"Female GCA BLUPs (CIMMYT Lines) under Low Phosphorus Stress"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-301"><a href="#cb12-301" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-302"><a href="#cb12-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-303"><a href="#cb12-303" aria-hidden="true" tabindex="-1"></a>male_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-304"><a href="#cb12-304" aria-hidden="true" tabindex="-1"></a>  <span class="at">Local_Male =</span> <span class="fu">gsub</span>(<span class="st">"male"</span>, <span class="st">""</span>, <span class="fu">names</span>(male_blups)),</span>
-<span id="cb12-305"><a href="#cb12-305" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(male_blups), <span class="dv">4</span>)</span>
-<span id="cb12-306"><a href="#cb12-306" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-307"><a href="#cb12-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-308"><a href="#cb12-308" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">"Male GCA BLUPs (Local Testers) under Low Phosphorus Stress"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-309"><a href="#cb12-309" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-310"><a href="#cb12-310" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-311"><a href="#cb12-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-312"><a href="#cb12-312" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
-<span id="cb12-313"><a href="#cb12-313" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`CML364`</span><span class="at"> and </span><span class="in">`CML366`</span><span class="at"> exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring.</span></span>
-<span id="cb12-314"><a href="#cb12-314" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`Local1`</span><span class="at"> and </span><span class="in">`Local2`</span><span class="at"> are the best local tester parents.</span></span>
-<span id="cb12-315"><a href="#cb12-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-316"><a href="#cb12-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting SCA BLUPs</span></span>
-<span id="cb12-317"><a href="#cb12-317" aria-hidden="true" tabindex="-1"></a>We extract the Specific Combining Ability predictions (dominance deviations) and format them into a symmetric $7 \times 7$ grid.</span>
-<span id="cb12-318"><a href="#cb12-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-321"><a href="#cb12-321" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-322"><a href="#cb12-322" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: sca-blups</span></span>
-<span id="cb12-323"><a href="#cb12-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-324"><a href="#cb12-324" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract SCA predictions</span></span>
-<span id="cb12-325"><a href="#cb12-325" aria-hidden="true" tabindex="-1"></a>cross_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>cross<span class="sc">$</span>yield</span>
-<span id="cb12-326"><a href="#cb12-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-327"><a href="#cb12-327" aria-hidden="true" tabindex="-1"></a>sca_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-328"><a href="#cb12-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cross =</span> <span class="fu">gsub</span>(<span class="st">"cross"</span>, <span class="st">""</span>, <span class="fu">names</span>(cross_blups)),</span>
-<span id="cb12-329"><a href="#cb12-329" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCA_BLUP =</span> <span class="fu">as.numeric</span>(cross_blups)</span>
-<span id="cb12-330"><a href="#cb12-330" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-331"><a href="#cb12-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-332"><a href="#cb12-332" aria-hidden="true" tabindex="-1"></a><span class="co"># Format into a 7x7 matrix (Females in rows, Males in columns)</span></span>
-<span id="cb12-333"><a href="#cb12-333" aria-hidden="true" tabindex="-1"></a>sca_matrix_blup <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(<span class="fu">levels</span>(data_env2<span class="sc">$</span>female), <span class="fu">levels</span>(data_env2<span class="sc">$</span>male)))</span>
-<span id="cb12-334"><a href="#cb12-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-335"><a href="#cb12-335" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sca_df)) {</span>
-<span id="cb12-336"><a href="#cb12-336" aria-hidden="true" tabindex="-1"></a>  crs_name <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>Cross[i]</span>
-<span id="cb12-337"><a href="#cb12-337" aria-hidden="true" tabindex="-1"></a>  pts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(crs_name, <span class="st">"_"</span>)[[<span class="dv">1</span>]]</span>
-<span id="cb12-338"><a href="#cb12-338" aria-hidden="true" tabindex="-1"></a>  p_fem <span class="ot">&lt;-</span> pts[<span class="dv">1</span>]</span>
-<span id="cb12-339"><a href="#cb12-339" aria-hidden="true" tabindex="-1"></a>  p_mal <span class="ot">&lt;-</span> pts[<span class="dv">2</span>]</span>
-<span id="cb12-340"><a href="#cb12-340" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>SCA_BLUP[i]</span>
-<span id="cb12-341"><a href="#cb12-341" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb12-342"><a href="#cb12-342" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p_fem, p_mal] <span class="ot">&lt;-</span> val</span>
-<span id="cb12-343"><a href="#cb12-343" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb12-344"><a href="#cb12-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-345"><a href="#cb12-345" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">round</span>(sca_matrix_blup, <span class="dv">4</span>), <span class="at">caption =</span> <span class="st">"7 × 7 Specific Combining Ability (SCA) BLUP Grid (env2)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-346"><a href="#cb12-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"bordered"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-347"><a href="#cb12-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">"#4a5568"</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
-<span id="cb12-348"><a href="#cb12-348" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-349"><a href="#cb12-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-350"><a href="#cb12-350" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-351"><a href="#cb12-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-352"><a href="#cb12-352" aria-hidden="true" tabindex="-1"></a><span class="fu"># Breeding Values (BV) and Genotypic Values (GV)</span></span>
-<span id="cb12-353"><a href="#cb12-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-354"><a href="#cb12-354" aria-hidden="true" tabindex="-1"></a>For hybrid breeding selection, we must calculate the **Expected Breeding Value (BV)** and the **Genotypic Value (GV)** of the crosses:</span>
-<span id="cb12-355"><a href="#cb12-355" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Breeding Value ($BV$):** The sum of the parent general combining abilities. $BV$ represents the purely additive value of the cross.</span>
-<span id="cb12-356"><a href="#cb12-356" aria-hidden="true" tabindex="-1"></a>    $$BV_{\text{Cross } PQ} = g_{F_p} + g_{M_q}$$</span>
-<span id="cb12-357"><a href="#cb12-357" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Genotypic Value ($GV$):** The total genetic value of the cross. $GV$ equals the Breeding Value plus the Specific Combining Ability (dominance deviation). $GV$ represents the commercial potential of the hybrid.</span>
-<span id="cb12-358"><a href="#cb12-358" aria-hidden="true" tabindex="-1"></a>    $$GV_{\text{Cross } PQ} = BV_{\text{Cross } PQ} + SCA_{PQ} = g_{F_p} + g_{M_q} + s_{pq}$$</span>
-<span id="cb12-359"><a href="#cb12-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-360"><a href="#cb12-360" aria-hidden="true" tabindex="-1"></a>We calculate these for all 49 crosses under Low Phosphorus stress (<span class="in">`env2`</span>) using our mixed model results.</span>
-<span id="cb12-361"><a href="#cb12-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-364"><a href="#cb12-364" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-365"><a href="#cb12-365" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: bv-gv-calc</span></span>
-<span id="cb12-366"><a href="#cb12-366" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-367"><a href="#cb12-367" aria-hidden="true" tabindex="-1"></a>genetic_values <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb12-368"><a href="#cb12-368" aria-hidden="true" tabindex="-1"></a>  <span class="at">Female =</span> <span class="fu">levels</span>(data_env2<span class="sc">$</span>female), </span>
-<span id="cb12-369"><a href="#cb12-369" aria-hidden="true" tabindex="-1"></a>  <span class="at">Male =</span> <span class="fu">levels</span>(data_env2<span class="sc">$</span>male), </span>
-<span id="cb12-370"><a href="#cb12-370" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
-<span id="cb12-371"><a href="#cb12-371" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-372"><a href="#cb12-372" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-373"><a href="#cb12-373" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> female_blups_df<span class="sc">$</span>GCA_BLUP[female_blups_df<span class="sc">$</span>CIMMYT_Female <span class="sc">==</span> .x]),</span>
-<span id="cb12-374"><a href="#cb12-374" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>Local_Male <span class="sc">==</span> .x]),</span>
-<span id="cb12-375"><a href="#cb12-375" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
-<span id="cb12-376"><a href="#cb12-376" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
-<span id="cb12-377"><a href="#cb12-377" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
-<span id="cb12-378"><a href="#cb12-378" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-379"><a href="#cb12-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-380"><a href="#cb12-380" aria-hidden="true" tabindex="-1"></a><span class="co"># Display top 15 hybrids based on Genotypic Value</span></span>
-<span id="cb12-381"><a href="#cb12-381" aria-hidden="true" tabindex="-1"></a>genetic_values_sorted <span class="ot">&lt;-</span> genetic_values <span class="sc">%&gt;%</span></span>
-<span id="cb12-382"><a href="#cb12-382" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Genotypic_Value_GV))</span>
-<span id="cb12-383"><a href="#cb12-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-384"><a href="#cb12-384" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(genetic_values_sorted, <span class="dv">15</span>), <span class="at">caption =</span> <span class="st">"Top 15 Maize Factorial Hybrids Ranked by Genotypic Value (Low P, env2)"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-385"><a href="#cb12-385" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-386"><a href="#cb12-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-387"><a href="#cb12-387" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-388"><a href="#cb12-388" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
-<span id="cb12-389"><a href="#cb12-389" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The hybrid **`CML364_Local4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</span></span>
-<span id="cb12-390"><a href="#cb12-390" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-391"><a href="#cb12-391" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-392"><a href="#cb12-392" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-393"><a href="#cb12-393" aria-hidden="true" tabindex="-1"></a><span class="fu"># Heritability Estimation from Factorial Variance Components</span></span>
-<span id="cb12-394"><a href="#cb12-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-395"><a href="#cb12-395" aria-hidden="true" tabindex="-1"></a>We use the estimated genetic and environmental variance components from our mixed model (<span class="in">`fit_factorial`</span>) to calculate the narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities.</span>
-<span id="cb12-396"><a href="#cb12-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-397"><a href="#cb12-397" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Formulas for Factorial Designs</span></span>
-<span id="cb12-398"><a href="#cb12-398" aria-hidden="true" tabindex="-1"></a>According to Chapter 5 of Isik et al. (2017):</span>
-<span id="cb12-399"><a href="#cb12-399" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive Variance ($\sigma^2_A$):** Since female and male parental sets are distinct, additive variance is estimated as:</span>
-<span id="cb12-400"><a href="#cb12-400" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_A = 2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA<span class="sc">\_</span>M})$$</span>
-<span id="cb12-401"><a href="#cb12-401" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance Variance ($\sigma^2_D$):** Estimated as:</span>
-<span id="cb12-402"><a href="#cb12-402" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_D = 4 \cdot \sigma^2_{SCA}$$</span>
-<span id="cb12-403"><a href="#cb12-403" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance among Individuals ($\sigma^2_{\text{phenotypic}}$):**</span>
-<span id="cb12-404"><a href="#cb12-404" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{\text{phenotypic}} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$</span>
-<span id="cb12-405"><a href="#cb12-405" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Narrow-Sense Individual Heritability ($h^2_i$):**</span>
-<span id="cb12-406"><a href="#cb12-406" aria-hidden="true" tabindex="-1"></a>    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
-<span id="cb12-407"><a href="#cb12-407" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Broad-Sense Individual Heritability ($H^2_{bs}$):**</span>
-<span id="cb12-408"><a href="#cb12-408" aria-hidden="true" tabindex="-1"></a>    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}) + 4 \cdot \sigma^2_{SCA}}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
-<span id="cb12-409"><a href="#cb12-409" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Full-Sib Family Heritability ($h^2_{FS}$):** Represents the accuracy of selection among whole families based on plot means:</span>
-<span id="cb12-410"><a href="#cb12-410" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{FS\_mean} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$</span>
-<span id="cb12-411"><a href="#cb12-411" aria-hidden="true" tabindex="-1"></a>    $$h^2_{FS} = \frac{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}}{\sigma^2_{FS<span class="sc">\_</span>mean}}$$</span>
-<span id="cb12-412"><a href="#cb12-412" aria-hidden="true" tabindex="-1"></a>    where $r = 3$ replicates.</span>
-<span id="cb12-413"><a href="#cb12-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-414"><a href="#cb12-414" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Calculations</span></span>
-<span id="cb12-415"><a href="#cb12-415" aria-hidden="true" tabindex="-1"></a>We execute these calculations in R using the variance components retrieved from <span class="in">`fit_factorial`</span>.</span>
-<span id="cb12-416"><a href="#cb12-416" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-419"><a href="#cb12-419" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb12-420"><a href="#cb12-420" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: heritability-factorial</span></span>
-<span id="cb12-421"><a href="#cb12-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-422"><a href="#cb12-422" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract individual variance components from sommer output</span></span>
-<span id="cb12-423"><a href="#cb12-423" aria-hidden="true" tabindex="-1"></a>var_gca_f <span class="ot">&lt;-</span> var_comps[<span class="st">"female:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
-<span id="cb12-424"><a href="#cb12-424" aria-hidden="true" tabindex="-1"></a>var_gca_m <span class="ot">&lt;-</span> var_comps[<span class="st">"male:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
-<span id="cb12-425"><a href="#cb12-425" aria-hidden="true" tabindex="-1"></a>var_sca <span class="ot">&lt;-</span> var_comps[<span class="st">"cross:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
-<span id="cb12-426"><a href="#cb12-426" aria-hidden="true" tabindex="-1"></a>var_res <span class="ot">&lt;-</span> var_comps[<span class="st">"units:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
-<span id="cb12-427"><a href="#cb12-427" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-428"><a href="#cb12-428" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate genetic variances</span></span>
-<span id="cb12-429"><a href="#cb12-429" aria-hidden="true" tabindex="-1"></a>var_A <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (var_gca_f <span class="sc">+</span> var_gca_m)</span>
-<span id="cb12-430"><a href="#cb12-430" aria-hidden="true" tabindex="-1"></a>var_D <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_sca</span>
-<span id="cb12-431"><a href="#cb12-431" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-432"><a href="#cb12-432" aria-hidden="true" tabindex="-1"></a><span class="co"># Individual Phenotypic Variance</span></span>
-<span id="cb12-433"><a href="#cb12-433" aria-hidden="true" tabindex="-1"></a>var_phen_ind <span class="ot">&lt;-</span> var_gca_f <span class="sc">+</span> var_gca_m <span class="sc">+</span> var_sca <span class="sc">+</span> var_res</span>
-<span id="cb12-434"><a href="#cb12-434" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-435"><a href="#cb12-435" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Individual Heritabilities</span></span>
-<span id="cb12-436"><a href="#cb12-436" aria-hidden="true" tabindex="-1"></a>h2_individual_ns <span class="ot">&lt;-</span> var_A <span class="sc">/</span> var_phen_ind</span>
-<span id="cb12-437"><a href="#cb12-437" aria-hidden="true" tabindex="-1"></a>H2_individual_bs <span class="ot">&lt;-</span> (var_A <span class="sc">+</span> var_D) <span class="sc">/</span> var_phen_ind</span>
-<span id="cb12-438"><a href="#cb12-438" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-439"><a href="#cb12-439" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-Sib Family mean Phenotypic Variance (r = 3 replicates)</span></span>
-<span id="cb12-440"><a href="#cb12-440" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb12-441"><a href="#cb12-441" aria-hidden="true" tabindex="-1"></a>var_phen_fs <span class="ot">&lt;-</span> var_gca_f <span class="sc">+</span> var_gca_m <span class="sc">+</span> var_sca <span class="sc">+</span> (var_res <span class="sc">/</span> r_rep)</span>
-<span id="cb12-442"><a href="#cb12-442" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-443"><a href="#cb12-443" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Family Heritability</span></span>
-<span id="cb12-444"><a href="#cb12-444" aria-hidden="true" tabindex="-1"></a>h2_family_fs <span class="ot">&lt;-</span> (var_gca_f <span class="sc">+</span> var_gca_m) <span class="sc">/</span> var_phen_fs</span>
-<span id="cb12-445"><a href="#cb12-445" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-446"><a href="#cb12-446" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
-<span id="cb12-447"><a href="#cb12-447" aria-hidden="true" tabindex="-1"></a>heritability_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-448"><a href="#cb12-448" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
-<span id="cb12-449"><a href="#cb12-449" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Additive Genetic Variance (Va)"</span>, </span>
-<span id="cb12-450"><a href="#cb12-450" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Dominance Genetic Variance (Vd)"</span>, </span>
-<span id="cb12-451"><a href="#cb12-451" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Individual Phenotypic Variance (Vp_ind)"</span>,</span>
-<span id="cb12-452"><a href="#cb12-452" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Narrow-Sense Individual Heritability (h2_i)"</span>, </span>
-<span id="cb12-453"><a href="#cb12-453" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Broad-Sense Individual Heritability (H2_bs)"</span>,</span>
-<span id="cb12-454"><a href="#cb12-454" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Narrow-Sense Full-Sib Family Heritability (h2_FS)"</span></span>
-<span id="cb12-455"><a href="#cb12-455" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb12-456"><a href="#cb12-456" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), <span class="dv">4</span>)</span>
-<span id="cb12-457"><a href="#cb12-457" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-458"><a href="#cb12-458" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-459"><a href="#cb12-459" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(heritability_results, <span class="at">caption =</span> <span class="st">"Estimated Genetic Variances and Heritabilities under Low P Stress"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-460"><a href="#cb12-460" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
-<span id="cb12-461"><a href="#cb12-461" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb12-462"><a href="#cb12-462" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-463"><a href="#cb12-463" aria-hidden="true" tabindex="-1"></a>***</span>
-<span id="cb12-464"><a href="#cb12-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-465"><a href="#cb12-465" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step-by-Step Checklist for Stelio</span></span>
-<span id="cb12-466"><a href="#cb12-466" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-467"><a href="#cb12-467" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
-<span id="cb12-468"><a href="#cb12-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-469"><a href="#cb12-469" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Prepare the Data:** Format the dataset with columns <span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span> (CIMMYT lines), <span class="in">`male`</span> (local testers), <span class="in">`cross`</span> (female_male sorted ID), and <span class="in">`yield`</span>.</span>
-<span id="cb12-470"><a href="#cb12-470" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Import to R:** Load <span class="in">`tidyverse`</span> and <span class="in">`sommer`</span>, and import the data from a CSV file.</span>
-<span id="cb12-471"><a href="#cb12-471" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset's general performance.</span>
-<span id="cb12-472"><a href="#cb12-472" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Fit a mixed model using <span class="in">`sommer::mmer`</span>. Model <span class="in">`female`</span> and <span class="in">`male`</span> as separate random effects, and <span class="in">`cross`</span> as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.</span>
-<span id="cb12-473"><a href="#cb12-473" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Calculate Breeding Values and Genotypic Values:**</span>
-<span id="cb12-474"><a href="#cb12-474" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.</span>
-<span id="cb12-475"><a href="#cb12-475" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.</span>
-<span id="cb12-476"><a href="#cb12-476" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; This Quarto notebook is designed to guide Stelio Boaventura Nuvunga through the statistical calculations for General Combining Ability (GCA) and Specific Combining Ability (SCA). It uses the simulated maize dataset representing his actual PhD research setup: a **7 × 7 Factorial Mating (Line × Tester) F1 hybrid cross evaluated across 2 environments in an RCBD with 3 replications**.</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="fu"># Theoretical Foundation &amp; Experimental Setup</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>Before performing calculations in R, we must define the genetic breeding scheme, the field experimental design, and the mathematical phenotype model.</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="fu">## Breeding Scheme (Line × Tester)</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled <span class="in">`Local1`</span> to <span class="in">`Local7`</span>).</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. </span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="fu">### Stelio's Factorial Mating Grid</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>Each cell represents an $F_1$ hybrid family evaluated in the field.</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CIMMYT Donors (Females) <span class="pp">|</span> Local1 <span class="pp">|</span> Local2 <span class="pp">|</span> Local3 <span class="pp">|</span> Local4 <span class="pp">|</span> Local5 <span class="pp">|</span> Local6 <span class="pp">|</span> Local7 <span class="pp">|</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML364** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML366** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML434** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML435** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML439** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML440** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML532** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Experimental Design</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** per environment.</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Environments ($E$):** The trials are conducted across **2 environments** representing phosphorus treatment levels:</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a><span class="ss">    1.  </span>**env1:** Normal/High Phosphorus conditions.</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="ss">    2.  </span>**env2:** Low Phosphorus Stress conditions.</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Trait Evaluated:** Grain Yield (tons/ha).</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Total Plots:** $2 \text{ environments} \times 3 \text{ replications} \times 49 \text{ hybrid entries} = 294$ plot evaluations.</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="fu">## Phenotype Model (Mathematical Equation)</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>To analyze the phenotypic yield data, we model the value of a plot containing hybrid $pq$ (cross of female parent $p$ and male parent $q$) in block $j$ of environment $i$ as:</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>$$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>Where:</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$y_{ijpq}$ is the grain yield observed in the plot.</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$\mu$ is the overall mean grain yield of the population.</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$E_i$ is the fixed effect of the $i$-th environment (phosphorus treatment).</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$B_{j(i)}$ is the random effect of the $j$-th block nested within the $i$-th environment, assumed $B_{j(i)} \sim \text{NID}(0, \sigma^2_{B(E)})$.</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$g_{F_p}$ is the random General Combining Ability (GCA) effect of the $p$-th female parent, assumed $g_{F_p} \sim \text{NID}(0, \sigma^2_{GCA<span class="sc">\_</span>F})$. This represents the additive breeding value transmitted by the CIMMYT donor.</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$g_{M_q}$ is the random GCA effect of the $q$-th male parent, assumed $g_{M_q} \sim \text{NID}(0, \sigma^2_{GCA<span class="sc">\_</span>M})$. This represents the additive breeding value transmitted by the local tester.</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$s_{pq}$ is the random Specific Combining Ability (SCA) effect of the cross between female $p$ and male $q$, assumed $s_{pq} \sim \text{NID}(0, \sigma^2_{SCA})$. This represents dominance deviations (heterosis/hybrid vigor).</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$(Eg_{F})_{ip}$ and $(Eg_{M})_{iq}$ are the random interactions of the parental GCA effects with the environment, modeling how additive breeding values respond to low-phosphorus stress.</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$(Es)_{ipq}$ is the random interaction of the SCA effect with the environment, representing specific hybrid adaptability to stress.</span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>$\epsilon_{ijpq}$ is the residual experimental plot error, assumed $\epsilon_{ijpq} \sim \text{NID}(0, \sigma^2_{\epsilon})$.</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!IMPORTANT</span><span class="co">]</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Because Stelio's design uses distinct female and male lines (a factorial mating scheme), the parental effects are mutually exclusive. Unlike a diallel, **we do not need to overlay design matrices or use overlay functions** in mixed models. This significantly simplifies our mixed model code in R!</span></span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a><span class="fu"># R Environment &amp; Data Import</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>We load the necessary libraries and read the simulated maize dataset, which is stored in <span class="in">`/data/maize_factorial_yield.csv`</span>.</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sommer)</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset</span></span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>maize_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/maize_factorial_yield.csv"</span>)</span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert design factors to R factors</span></span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>maize_data <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">env =</span> <span class="fu">as.factor</span>(env),</span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block),</span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross)</span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exploratory Data Analysis (EDA)</span></span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a>We visualize the grain yields of the 49 crosses across the two environments to understand the stress impact.</span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## Mean Yield Grid</span></span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a>Let's construct a grid of mean yields across all 3 replications, combined for both environments.</span>
+<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-grid</span></span>
+<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>mean_yields <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">round</span>(<span class="fu">mean</span>(yield), <span class="dv">2</span>), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> male, <span class="at">values_from =</span> mean_yield)</span>
+<span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(mean_yields, <span class="at">caption =</span> <span class="st">"7 × 7 Factorial F1 Yield Grid (Combined Environments, tons/ha)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"bordered"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">"#cc0000"</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
+<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## Performance across Environments</span></span>
+<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>Let's visualize the yield distribution under Normal Phosphorus (<span class="in">`env1`</span>) versus Low Phosphorus Stress (<span class="in">`env2`</span>).</span>
+<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-140"><a href="#cb12-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: eda-plot</span></span>
+<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 10</span></span>
+<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6</span></span>
+<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(maize_data, <span class="fu">aes</span>(<span class="at">x =</span> env, <span class="at">y =</span> yield, <span class="at">fill =</span> env)) <span class="sc">+</span></span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">outlier.color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"env1"</span> <span class="ot">=</span> <span class="st">"#3182ce"</span>, <span class="st">"env2"</span> <span class="ot">=</span> <span class="st">"#dd6b20"</span>)) <span class="sc">+</span></span>
+<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Maize Grain Yield under Normal vs. Low Phosphorus Conditions"</span>,</span>
+<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Grain Yield of 49 Factorial Hybrids across 3 Blocks per Environment"</span>,</span>
+<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Environment (Treatment)"</span>,</span>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Yield (tons/ha)"</span>,</span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Treatment"</span></span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">color =</span> <span class="st">"#1a202c"</span>))</span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a><span class="fu"># Fixed-Effects Calculations: Factorial Combining Ability</span></span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>In a balanced factorial cross, GCA and SCA can be calculated arithmetically from family means. This provides a transparent foundation before using mixed models.</span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## Arithmetic Formulas</span></span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{p.}$ be the mean yield of all crosses involving female parent $p$.</span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{.q}$ be the mean yield of all crosses involving male parent $q$.</span>
+<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{pq}$ be the mean yield of the hybrid cross between female $p$ and male $q$.</span>
+<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a>Let $\bar{Y}_{..}$ be the overall grand mean of all crosses in the factorial grid.</span>
+<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Grand Mean:**</span>
+<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a>    $$\bar{Y}_{..} = \frac{1}{f \cdot m} \sum_{p} \sum_{q} \bar{Y}_{pq}$$</span>
+<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA of Female Parent $p$ ($g_{F_p}$):**</span>
+<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a>    $$g_{F_p} = \bar{Y}_{p.} - \bar{Y}_{..}$$</span>
+<span id="cb12-175"><a href="#cb12-175" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**GCA of Male Parent $q$ ($g_{M_q}$):**</span>
+<span id="cb12-176"><a href="#cb12-176" aria-hidden="true" tabindex="-1"></a>    $$g_{M_q} = \bar{Y}_{.q} - \bar{Y}_{..}$$</span>
+<span id="cb12-177"><a href="#cb12-177" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**SCA of Cross $pq$ ($s_{pq}$):**</span>
+<span id="cb12-178"><a href="#cb12-178" aria-hidden="true" tabindex="-1"></a>    $$s_{pq} = \bar{Y}_{pq} - g_{F_p} - g_{M_q} - \bar{Y}_{..} = \bar{Y}_{pq} - \bar{Y}_{p.} - \bar{Y}_{.q} + \bar{Y}_{..}$$</span>
+<span id="cb12-179"><a href="#cb12-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-180"><a href="#cb12-180" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Arithmetic</span></span>
+<span id="cb12-181"><a href="#cb12-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-182"><a href="#cb12-182" aria-hidden="true" tabindex="-1"></a>We calculate these effects arithmetically from the entire dataset.</span>
+<span id="cb12-183"><a href="#cb12-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-186"><a href="#cb12-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-187"><a href="#cb12-187" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: arithmetic-calculations</span></span>
+<span id="cb12-188"><a href="#cb12-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-189"><a href="#cb12-189" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calculate family means</span></span>
+<span id="cb12-190"><a href="#cb12-190" aria-hidden="true" tabindex="-1"></a>family_means <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-191"><a href="#cb12-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(female, male) <span class="sc">%&gt;%</span></span>
+<span id="cb12-192"><a href="#cb12-192" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_yield =</span> <span class="fu">mean</span>(yield), <span class="at">.groups =</span> <span class="st">'drop'</span>)</span>
+<span id="cb12-193"><a href="#cb12-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-194"><a href="#cb12-194" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Reshape to a 7x7 matrix (7 females in rows, 7 males in columns)</span></span>
+<span id="cb12-195"><a href="#cb12-195" aria-hidden="true" tabindex="-1"></a>Y_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">7</span>, <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">levels</span>(maize_data<span class="sc">$</span>female), <span class="fu">levels</span>(maize_data<span class="sc">$</span>male)))</span>
+<span id="cb12-196"><a href="#cb12-196" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(family_means)) {</span>
+<span id="cb12-197"><a href="#cb12-197" aria-hidden="true" tabindex="-1"></a>  Y_matrix[<span class="fu">as.character</span>(family_means<span class="sc">$</span>female[i]), <span class="fu">as.character</span>(family_means<span class="sc">$</span>male[i])] <span class="ot">&lt;-</span> family_means<span class="sc">$</span>mean_yield[i]</span>
+<span id="cb12-198"><a href="#cb12-198" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-199"><a href="#cb12-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-200"><a href="#cb12-200" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Grand mean</span></span>
+<span id="cb12-201"><a href="#cb12-201" aria-hidden="true" tabindex="-1"></a>mu_hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(Y_matrix)</span>
+<span id="cb12-202"><a href="#cb12-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-203"><a href="#cb12-203" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Female and Male means</span></span>
+<span id="cb12-204"><a href="#cb12-204" aria-hidden="true" tabindex="-1"></a>female_means <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(Y_matrix)</span>
+<span id="cb12-205"><a href="#cb12-205" aria-hidden="true" tabindex="-1"></a>male_means <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(Y_matrix)</span>
+<span id="cb12-206"><a href="#cb12-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-207"><a href="#cb12-207" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. GCA effects</span></span>
+<span id="cb12-208"><a href="#cb12-208" aria-hidden="true" tabindex="-1"></a>gca_female_fixed <span class="ot">&lt;-</span> female_means <span class="sc">-</span> mu_hat</span>
+<span id="cb12-209"><a href="#cb12-209" aria-hidden="true" tabindex="-1"></a>gca_male_fixed <span class="ot">&lt;-</span> male_means <span class="sc">-</span> mu_hat</span>
+<span id="cb12-210"><a href="#cb12-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-211"><a href="#cb12-211" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. SCA effects</span></span>
+<span id="cb12-212"><a href="#cb12-212" aria-hidden="true" tabindex="-1"></a>sca_fixed <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">7</span>, <span class="at">ncol =</span> <span class="dv">7</span>, <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">levels</span>(maize_data<span class="sc">$</span>female), <span class="fu">levels</span>(maize_data<span class="sc">$</span>male)))</span>
+<span id="cb12-213"><a href="#cb12-213" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(p <span class="cf">in</span> <span class="fu">rownames</span>(sca_fixed)) {</span>
+<span id="cb12-214"><a href="#cb12-214" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(q <span class="cf">in</span> <span class="fu">colnames</span>(sca_fixed)) {</span>
+<span id="cb12-215"><a href="#cb12-215" aria-hidden="true" tabindex="-1"></a>    sca_fixed[p, q] <span class="ot">&lt;-</span> Y_matrix[p, q] <span class="sc">-</span> gca_female_fixed[p] <span class="sc">-</span> gca_male_fixed[q] <span class="sc">-</span> mu_hat</span>
+<span id="cb12-216"><a href="#cb12-216" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-217"><a href="#cb12-217" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-218"><a href="#cb12-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-219"><a href="#cb12-219" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Female GCA Effects</span></span>
+<span id="cb12-220"><a href="#cb12-220" aria-hidden="true" tabindex="-1"></a>gca_female_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-221"><a href="#cb12-221" aria-hidden="true" tabindex="-1"></a>  <span class="at">Female_Parent =</span> <span class="fu">names</span>(gca_female_fixed),</span>
+<span id="cb12-222"><a href="#cb12-222" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Yield =</span> <span class="fu">round</span>(female_means, <span class="dv">3</span>),</span>
+<span id="cb12-223"><a href="#cb12-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_female_fixed, <span class="dv">4</span>)</span>
+<span id="cb12-224"><a href="#cb12-224" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-225"><a href="#cb12-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-226"><a href="#cb12-226" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_female_df, <span class="at">caption =</span> <span class="st">"Estimated GCA Effects for Female Parents (CIMMYT Lines)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-227"><a href="#cb12-227" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-228"><a href="#cb12-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-229"><a href="#cb12-229" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Male GCA Effects</span></span>
+<span id="cb12-230"><a href="#cb12-230" aria-hidden="true" tabindex="-1"></a>gca_male_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-231"><a href="#cb12-231" aria-hidden="true" tabindex="-1"></a>  <span class="at">Male_Parent =</span> <span class="fu">names</span>(gca_male_fixed),</span>
+<span id="cb12-232"><a href="#cb12-232" aria-hidden="true" tabindex="-1"></a>  <span class="at">Mean_Yield =</span> <span class="fu">round</span>(male_means, <span class="dv">3</span>),</span>
+<span id="cb12-233"><a href="#cb12-233" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_male_fixed, <span class="dv">4</span>)</span>
+<span id="cb12-234"><a href="#cb12-234" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-235"><a href="#cb12-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-236"><a href="#cb12-236" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">"Estimated GCA Effects for Male Parents (Local Testers)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-237"><a href="#cb12-237" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-238"><a href="#cb12-238" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-239"><a href="#cb12-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-240"><a href="#cb12-240" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-241"><a href="#cb12-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-242"><a href="#cb12-242" aria-hidden="true" tabindex="-1"></a><span class="fu"># Mixed-Effects Calculations: Factorial Variance Component Analysis</span></span>
+<span id="cb12-243"><a href="#cb12-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-244"><a href="#cb12-244" aria-hidden="true" tabindex="-1"></a>In modern breeding, combining ability is analyzed using **Linear Mixed Models (LMMs)**. Parents are treated as random samples from a reference population. </span>
+<span id="cb12-245"><a href="#cb12-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-246"><a href="#cb12-246" aria-hidden="true" tabindex="-1"></a>We use the R package <span class="in">`sommer`</span> to fit the mixed model. Because female and male lines are distinct, **no matrix overlays are needed**. We analyze the **Low Phosphorus Stress environment (`env2`)** where selecting tolerant lines is critical.</span>
+<span id="cb12-247"><a href="#cb12-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-248"><a href="#cb12-248" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fitting the Mixed Model</span></span>
+<span id="cb12-249"><a href="#cb12-249" aria-hidden="true" tabindex="-1"></a>The random terms in our model are: <span class="in">`female`</span> (Female GCA), <span class="in">`male`</span> (Male GCA), <span class="in">`cross`</span> (SCA), and <span class="in">`block`</span> (RCBD replication).</span>
+<span id="cb12-250"><a href="#cb12-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-253"><a href="#cb12-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-254"><a href="#cb12-254" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixed-model-sommer</span></span>
+<span id="cb12-255"><a href="#cb12-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-256"><a href="#cb12-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for env2 (Low Phosphorus Stress)</span></span>
+<span id="cb12-257"><a href="#cb12-257" aria-hidden="true" tabindex="-1"></a>data_env2 <span class="ot">&lt;-</span> maize_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-258"><a href="#cb12-258" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(env <span class="sc">==</span> <span class="st">"env2"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-259"><a href="#cb12-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-260"><a href="#cb12-260" aria-hidden="true" tabindex="-1"></a>    <span class="at">female =</span> <span class="fu">as.factor</span>(female),</span>
+<span id="cb12-261"><a href="#cb12-261" aria-hidden="true" tabindex="-1"></a>    <span class="at">male =</span> <span class="fu">as.factor</span>(male),</span>
+<span id="cb12-262"><a href="#cb12-262" aria-hidden="true" tabindex="-1"></a>    <span class="at">cross =</span> <span class="fu">as.factor</span>(cross),</span>
+<span id="cb12-263"><a href="#cb12-263" aria-hidden="true" tabindex="-1"></a>    <span class="at">block =</span> <span class="fu">as.factor</span>(block)</span>
+<span id="cb12-264"><a href="#cb12-264" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-265"><a href="#cb12-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-266"><a href="#cb12-266" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit Mixed Model in sommer</span></span>
+<span id="cb12-267"><a href="#cb12-267" aria-hidden="true" tabindex="-1"></a><span class="co"># yield = fixed intercept + random female GCA + random male GCA + random SCA + random block</span></span>
+<span id="cb12-268"><a href="#cb12-268" aria-hidden="true" tabindex="-1"></a>fit_factorial <span class="ot">&lt;-</span> <span class="fu">mmer</span>(</span>
+<span id="cb12-269"><a href="#cb12-269" aria-hidden="true" tabindex="-1"></a>  <span class="at">fixed =</span> yield <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb12-270"><a href="#cb12-270" aria-hidden="true" tabindex="-1"></a>  <span class="at">random =</span> <span class="sc">~</span> female <span class="sc">+</span> male <span class="sc">+</span> cross <span class="sc">+</span> block,</span>
+<span id="cb12-271"><a href="#cb12-271" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_env2,</span>
+<span id="cb12-272"><a href="#cb12-272" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-273"><a href="#cb12-273" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-274"><a href="#cb12-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-275"><a href="#cb12-275" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract and display variance components</span></span>
+<span id="cb12-276"><a href="#cb12-276" aria-hidden="true" tabindex="-1"></a>var_comps <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_factorial)<span class="sc">$</span>varcomp</span>
+<span id="cb12-277"><a href="#cb12-277" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(var_comps, <span class="at">caption =</span> <span class="st">"Estimated Genetic and Environmental Variance Components in Low Phosphorus (env2)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-278"><a href="#cb12-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>))</span>
+<span id="cb12-279"><a href="#cb12-279" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-280"><a href="#cb12-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-281"><a href="#cb12-281" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting GCA BLUPs (sommer)</span></span>
+<span id="cb12-282"><a href="#cb12-282" aria-hidden="true" tabindex="-1"></a>We extract the General Combining Ability predictions (BLUPs) for both the female and male parent sets.</span>
+<span id="cb12-283"><a href="#cb12-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-286"><a href="#cb12-286" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-287"><a href="#cb12-287" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: gca-blups</span></span>
+<span id="cb12-288"><a href="#cb12-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-289"><a href="#cb12-289" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract random effects from fit</span></span>
+<span id="cb12-290"><a href="#cb12-290" aria-hidden="true" tabindex="-1"></a>female_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>female<span class="sc">$</span>yield</span>
+<span id="cb12-291"><a href="#cb12-291" aria-hidden="true" tabindex="-1"></a>male_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>male<span class="sc">$</span>yield</span>
+<span id="cb12-292"><a href="#cb12-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-293"><a href="#cb12-293" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up lists and print</span></span>
+<span id="cb12-294"><a href="#cb12-294" aria-hidden="true" tabindex="-1"></a>female_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-295"><a href="#cb12-295" aria-hidden="true" tabindex="-1"></a>  <span class="at">CIMMYT_Female =</span> <span class="fu">gsub</span>(<span class="st">"female"</span>, <span class="st">""</span>, <span class="fu">names</span>(female_blups)),</span>
+<span id="cb12-296"><a href="#cb12-296" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(female_blups), <span class="dv">4</span>)</span>
+<span id="cb12-297"><a href="#cb12-297" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-298"><a href="#cb12-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-299"><a href="#cb12-299" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(female_blups_df, <span class="at">caption =</span> <span class="st">"Female GCA BLUPs (CIMMYT Lines) under Low Phosphorus Stress"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-300"><a href="#cb12-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-301"><a href="#cb12-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-302"><a href="#cb12-302" aria-hidden="true" tabindex="-1"></a>male_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-303"><a href="#cb12-303" aria-hidden="true" tabindex="-1"></a>  <span class="at">Local_Male =</span> <span class="fu">gsub</span>(<span class="st">"male"</span>, <span class="st">""</span>, <span class="fu">names</span>(male_blups)),</span>
+<span id="cb12-304"><a href="#cb12-304" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(male_blups), <span class="dv">4</span>)</span>
+<span id="cb12-305"><a href="#cb12-305" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-306"><a href="#cb12-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-307"><a href="#cb12-307" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">"Male GCA BLUPs (Local Testers) under Low Phosphorus Stress"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-308"><a href="#cb12-308" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-309"><a href="#cb12-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-310"><a href="#cb12-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-311"><a href="#cb12-311" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
+<span id="cb12-312"><a href="#cb12-312" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`CML364`</span><span class="at"> and </span><span class="in">`CML366`</span><span class="at"> exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring.</span></span>
+<span id="cb12-313"><a href="#cb12-313" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`Local1`</span><span class="at"> and </span><span class="in">`Local2`</span><span class="at"> are the best local tester parents.</span></span>
+<span id="cb12-314"><a href="#cb12-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-315"><a href="#cb12-315" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting SCA BLUPs</span></span>
+<span id="cb12-316"><a href="#cb12-316" aria-hidden="true" tabindex="-1"></a>We extract the Specific Combining Ability predictions (dominance deviations) and format them into a symmetric $7 \times 7$ grid.</span>
+<span id="cb12-317"><a href="#cb12-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-320"><a href="#cb12-320" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-321"><a href="#cb12-321" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: sca-blups</span></span>
+<span id="cb12-322"><a href="#cb12-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-323"><a href="#cb12-323" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract SCA predictions</span></span>
+<span id="cb12-324"><a href="#cb12-324" aria-hidden="true" tabindex="-1"></a>cross_blups <span class="ot">&lt;-</span> fit_factorial<span class="sc">$</span>U<span class="sc">$</span>cross<span class="sc">$</span>yield</span>
+<span id="cb12-325"><a href="#cb12-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-326"><a href="#cb12-326" aria-hidden="true" tabindex="-1"></a>sca_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-327"><a href="#cb12-327" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cross =</span> <span class="fu">gsub</span>(<span class="st">"cross"</span>, <span class="st">""</span>, <span class="fu">names</span>(cross_blups)),</span>
+<span id="cb12-328"><a href="#cb12-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">SCA_BLUP =</span> <span class="fu">as.numeric</span>(cross_blups)</span>
+<span id="cb12-329"><a href="#cb12-329" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-330"><a href="#cb12-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-331"><a href="#cb12-331" aria-hidden="true" tabindex="-1"></a><span class="co"># Format into a 7x7 matrix (Females in rows, Males in columns)</span></span>
+<span id="cb12-332"><a href="#cb12-332" aria-hidden="true" tabindex="-1"></a>sca_matrix_blup <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow=</span><span class="dv">7</span>, <span class="at">ncol=</span><span class="dv">7</span>, <span class="at">dimnames=</span><span class="fu">list</span>(<span class="fu">levels</span>(data_env2<span class="sc">$</span>female), <span class="fu">levels</span>(data_env2<span class="sc">$</span>male)))</span>
+<span id="cb12-333"><a href="#cb12-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-334"><a href="#cb12-334" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(sca_df)) {</span>
+<span id="cb12-335"><a href="#cb12-335" aria-hidden="true" tabindex="-1"></a>  crs_name <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>Cross[i]</span>
+<span id="cb12-336"><a href="#cb12-336" aria-hidden="true" tabindex="-1"></a>  pts <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(crs_name, <span class="st">"_"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb12-337"><a href="#cb12-337" aria-hidden="true" tabindex="-1"></a>  p_fem <span class="ot">&lt;-</span> pts[<span class="dv">1</span>]</span>
+<span id="cb12-338"><a href="#cb12-338" aria-hidden="true" tabindex="-1"></a>  p_mal <span class="ot">&lt;-</span> pts[<span class="dv">2</span>]</span>
+<span id="cb12-339"><a href="#cb12-339" aria-hidden="true" tabindex="-1"></a>  val <span class="ot">&lt;-</span> sca_df<span class="sc">$</span>SCA_BLUP[i]</span>
+<span id="cb12-340"><a href="#cb12-340" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-341"><a href="#cb12-341" aria-hidden="true" tabindex="-1"></a>  sca_matrix_blup[p_fem, p_mal] <span class="ot">&lt;-</span> val</span>
+<span id="cb12-342"><a href="#cb12-342" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-343"><a href="#cb12-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-344"><a href="#cb12-344" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">round</span>(sca_matrix_blup, <span class="dv">4</span>), <span class="at">caption =</span> <span class="st">"7 × 7 Specific Combining Ability (SCA) BLUP Grid (env2)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-345"><a href="#cb12-345" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"bordered"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-346"><a href="#cb12-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">background =</span> <span class="st">"#4a5568"</span>, <span class="at">color =</span> <span class="st">"white"</span>)</span>
+<span id="cb12-347"><a href="#cb12-347" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-348"><a href="#cb12-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-349"><a href="#cb12-349" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-350"><a href="#cb12-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-351"><a href="#cb12-351" aria-hidden="true" tabindex="-1"></a><span class="fu"># Breeding Values (BV) and Genotypic Values (GV)</span></span>
+<span id="cb12-352"><a href="#cb12-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-353"><a href="#cb12-353" aria-hidden="true" tabindex="-1"></a>For hybrid breeding selection, we must calculate the **Expected Breeding Value (BV)** and the **Genotypic Value (GV)** of the crosses:</span>
+<span id="cb12-354"><a href="#cb12-354" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Breeding Value ($BV$):** The sum of the parent general combining abilities. $BV$ represents the purely additive value of the cross.</span>
+<span id="cb12-355"><a href="#cb12-355" aria-hidden="true" tabindex="-1"></a>    $$BV_{\text{Cross } PQ} = g_{F_p} + g_{M_q}$$</span>
+<span id="cb12-356"><a href="#cb12-356" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Genotypic Value ($GV$):** The total genetic value of the cross. $GV$ equals the Breeding Value plus the Specific Combining Ability (dominance deviation). $GV$ represents the commercial potential of the hybrid.</span>
+<span id="cb12-357"><a href="#cb12-357" aria-hidden="true" tabindex="-1"></a>    $$GV_{\text{Cross } PQ} = BV_{\text{Cross } PQ} + SCA_{PQ} = g_{F_p} + g_{M_q} + s_{pq}$$</span>
+<span id="cb12-358"><a href="#cb12-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-359"><a href="#cb12-359" aria-hidden="true" tabindex="-1"></a>We calculate these for all 49 crosses under Low Phosphorus stress (<span class="in">`env2`</span>) using our mixed model results.</span>
+<span id="cb12-360"><a href="#cb12-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-363"><a href="#cb12-363" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-364"><a href="#cb12-364" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: bv-gv-calc</span></span>
+<span id="cb12-365"><a href="#cb12-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-366"><a href="#cb12-366" aria-hidden="true" tabindex="-1"></a>genetic_values <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb12-367"><a href="#cb12-367" aria-hidden="true" tabindex="-1"></a>  <span class="at">Female =</span> <span class="fu">levels</span>(data_env2<span class="sc">$</span>female), </span>
+<span id="cb12-368"><a href="#cb12-368" aria-hidden="true" tabindex="-1"></a>  <span class="at">Male =</span> <span class="fu">levels</span>(data_env2<span class="sc">$</span>male), </span>
+<span id="cb12-369"><a href="#cb12-369" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb12-370"><a href="#cb12-370" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-371"><a href="#cb12-371" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-372"><a href="#cb12-372" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> female_blups_df<span class="sc">$</span>GCA_BLUP[female_blups_df<span class="sc">$</span>CIMMYT_Female <span class="sc">==</span> .x]),</span>
+<span id="cb12-373"><a href="#cb12-373" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>Local_Male <span class="sc">==</span> .x]),</span>
+<span id="cb12-374"><a href="#cb12-374" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
+<span id="cb12-375"><a href="#cb12-375" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
+<span id="cb12-376"><a href="#cb12-376" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
+<span id="cb12-377"><a href="#cb12-377" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-378"><a href="#cb12-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-379"><a href="#cb12-379" aria-hidden="true" tabindex="-1"></a><span class="co"># Display top 15 hybrids based on Genotypic Value</span></span>
+<span id="cb12-380"><a href="#cb12-380" aria-hidden="true" tabindex="-1"></a>genetic_values_sorted <span class="ot">&lt;-</span> genetic_values <span class="sc">%&gt;%</span></span>
+<span id="cb12-381"><a href="#cb12-381" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Genotypic_Value_GV))</span>
+<span id="cb12-382"><a href="#cb12-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-383"><a href="#cb12-383" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(genetic_values_sorted, <span class="dv">15</span>), <span class="at">caption =</span> <span class="st">"Top 15 Maize Factorial Hybrids Ranked by Genotypic Value (Low P, env2)"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-384"><a href="#cb12-384" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-385"><a href="#cb12-385" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-386"><a href="#cb12-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-387"><a href="#cb12-387" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
+<span id="cb12-388"><a href="#cb12-388" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The hybrid **`CML364_Local4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</span></span>
+<span id="cb12-389"><a href="#cb12-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-390"><a href="#cb12-390" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-391"><a href="#cb12-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-392"><a href="#cb12-392" aria-hidden="true" tabindex="-1"></a><span class="fu"># Heritability Estimation from Factorial Variance Components</span></span>
+<span id="cb12-393"><a href="#cb12-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-394"><a href="#cb12-394" aria-hidden="true" tabindex="-1"></a>We use the estimated genetic and environmental variance components from our mixed model (<span class="in">`fit_factorial`</span>) to calculate the narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities.</span>
+<span id="cb12-395"><a href="#cb12-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-396"><a href="#cb12-396" aria-hidden="true" tabindex="-1"></a><span class="fu">## Heritability Formulas for Factorial Designs</span></span>
+<span id="cb12-397"><a href="#cb12-397" aria-hidden="true" tabindex="-1"></a>According to Chapter 5 of Isik et al. (2017):</span>
+<span id="cb12-398"><a href="#cb12-398" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Additive Variance ($\sigma^2_A$):** Since female and male parental sets are distinct, additive variance is estimated as:</span>
+<span id="cb12-399"><a href="#cb12-399" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_A = 2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA<span class="sc">\_</span>M})$$</span>
+<span id="cb12-400"><a href="#cb12-400" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Dominance Variance ($\sigma^2_D$):** Estimated as:</span>
+<span id="cb12-401"><a href="#cb12-401" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_D = 4 \cdot \sigma^2_{SCA}$$</span>
+<span id="cb12-402"><a href="#cb12-402" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Phenotypic Variance among Individuals ($\sigma^2_{\text{phenotypic}}$):**</span>
+<span id="cb12-403"><a href="#cb12-403" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{\text{phenotypic}} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$</span>
+<span id="cb12-404"><a href="#cb12-404" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Narrow-Sense Individual Heritability ($h^2_i$):**</span>
+<span id="cb12-405"><a href="#cb12-405" aria-hidden="true" tabindex="-1"></a>    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
+<span id="cb12-406"><a href="#cb12-406" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Broad-Sense Individual Heritability ($H^2_{bs}$):**</span>
+<span id="cb12-407"><a href="#cb12-407" aria-hidden="true" tabindex="-1"></a>    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}) + 4 \cdot \sigma^2_{SCA}}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$</span>
+<span id="cb12-408"><a href="#cb12-408" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Full-Sib Family Heritability ($h^2_{FS}$):** Represents the accuracy of selection among whole families based on plot means:</span>
+<span id="cb12-409"><a href="#cb12-409" aria-hidden="true" tabindex="-1"></a>    $$\sigma^2_{FS\_mean} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$</span>
+<span id="cb12-410"><a href="#cb12-410" aria-hidden="true" tabindex="-1"></a>    $$h^2_{FS} = \frac{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}}{\sigma^2_{FS<span class="sc">\_</span>mean}}$$</span>
+<span id="cb12-411"><a href="#cb12-411" aria-hidden="true" tabindex="-1"></a>    where $r = 3$ replicates.</span>
+<span id="cb12-412"><a href="#cb12-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-413"><a href="#cb12-413" aria-hidden="true" tabindex="-1"></a><span class="fu">## Direct R Calculations</span></span>
+<span id="cb12-414"><a href="#cb12-414" aria-hidden="true" tabindex="-1"></a>We execute these calculations in R using the variance components retrieved from <span class="in">`fit_factorial`</span>.</span>
+<span id="cb12-415"><a href="#cb12-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-418"><a href="#cb12-418" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb12-419"><a href="#cb12-419" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: heritability-factorial</span></span>
+<span id="cb12-420"><a href="#cb12-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-421"><a href="#cb12-421" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract individual variance components from sommer output</span></span>
+<span id="cb12-422"><a href="#cb12-422" aria-hidden="true" tabindex="-1"></a>var_gca_f <span class="ot">&lt;-</span> var_comps[<span class="st">"female:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
+<span id="cb12-423"><a href="#cb12-423" aria-hidden="true" tabindex="-1"></a>var_gca_m <span class="ot">&lt;-</span> var_comps[<span class="st">"male:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
+<span id="cb12-424"><a href="#cb12-424" aria-hidden="true" tabindex="-1"></a>var_sca <span class="ot">&lt;-</span> var_comps[<span class="st">"cross:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
+<span id="cb12-425"><a href="#cb12-425" aria-hidden="true" tabindex="-1"></a>var_res <span class="ot">&lt;-</span> var_comps[<span class="st">"units:yield:yield"</span>, <span class="st">"VarComp"</span>]</span>
+<span id="cb12-426"><a href="#cb12-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-427"><a href="#cb12-427" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate genetic variances</span></span>
+<span id="cb12-428"><a href="#cb12-428" aria-hidden="true" tabindex="-1"></a>var_A <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (var_gca_f <span class="sc">+</span> var_gca_m)</span>
+<span id="cb12-429"><a href="#cb12-429" aria-hidden="true" tabindex="-1"></a>var_D <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">*</span> var_sca</span>
+<span id="cb12-430"><a href="#cb12-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-431"><a href="#cb12-431" aria-hidden="true" tabindex="-1"></a><span class="co"># Individual Phenotypic Variance</span></span>
+<span id="cb12-432"><a href="#cb12-432" aria-hidden="true" tabindex="-1"></a>var_phen_ind <span class="ot">&lt;-</span> var_gca_f <span class="sc">+</span> var_gca_m <span class="sc">+</span> var_sca <span class="sc">+</span> var_res</span>
+<span id="cb12-433"><a href="#cb12-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-434"><a href="#cb12-434" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Individual Heritabilities</span></span>
+<span id="cb12-435"><a href="#cb12-435" aria-hidden="true" tabindex="-1"></a>h2_individual_ns <span class="ot">&lt;-</span> var_A <span class="sc">/</span> var_phen_ind</span>
+<span id="cb12-436"><a href="#cb12-436" aria-hidden="true" tabindex="-1"></a>H2_individual_bs <span class="ot">&lt;-</span> (var_A <span class="sc">+</span> var_D) <span class="sc">/</span> var_phen_ind</span>
+<span id="cb12-437"><a href="#cb12-437" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-438"><a href="#cb12-438" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-Sib Family mean Phenotypic Variance (r = 3 replicates)</span></span>
+<span id="cb12-439"><a href="#cb12-439" aria-hidden="true" tabindex="-1"></a>r_rep <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb12-440"><a href="#cb12-440" aria-hidden="true" tabindex="-1"></a>var_phen_fs <span class="ot">&lt;-</span> var_gca_f <span class="sc">+</span> var_gca_m <span class="sc">+</span> var_sca <span class="sc">+</span> (var_res <span class="sc">/</span> r_rep)</span>
+<span id="cb12-441"><a href="#cb12-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-442"><a href="#cb12-442" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Family Heritability</span></span>
+<span id="cb12-443"><a href="#cb12-443" aria-hidden="true" tabindex="-1"></a>h2_family_fs <span class="ot">&lt;-</span> (var_gca_f <span class="sc">+</span> var_gca_m) <span class="sc">/</span> var_phen_fs</span>
+<span id="cb12-444"><a href="#cb12-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-445"><a href="#cb12-445" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb12-446"><a href="#cb12-446" aria-hidden="true" tabindex="-1"></a>heritability_results <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb12-447"><a href="#cb12-447" aria-hidden="true" tabindex="-1"></a>  <span class="at">Parameter =</span> <span class="fu">c</span>(</span>
+<span id="cb12-448"><a href="#cb12-448" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Additive Genetic Variance (Va)"</span>, </span>
+<span id="cb12-449"><a href="#cb12-449" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Dominance Genetic Variance (Vd)"</span>, </span>
+<span id="cb12-450"><a href="#cb12-450" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Individual Phenotypic Variance (Vp_ind)"</span>,</span>
+<span id="cb12-451"><a href="#cb12-451" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Narrow-Sense Individual Heritability (h2_i)"</span>, </span>
+<span id="cb12-452"><a href="#cb12-452" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Broad-Sense Individual Heritability (H2_bs)"</span>,</span>
+<span id="cb12-453"><a href="#cb12-453" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Narrow-Sense Full-Sib Family Heritability (h2_FS)"</span></span>
+<span id="cb12-454"><a href="#cb12-454" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-455"><a href="#cb12-455" aria-hidden="true" tabindex="-1"></a>  <span class="at">Value =</span> <span class="fu">round</span>(<span class="fu">c</span>(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), <span class="dv">4</span>)</span>
+<span id="cb12-456"><a href="#cb12-456" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-457"><a href="#cb12-457" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-458"><a href="#cb12-458" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(heritability_results, <span class="at">caption =</span> <span class="st">"Estimated Genetic Variances and Heritabilities under Low P Stress"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-459"><a href="#cb12-459" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span>))</span>
+<span id="cb12-460"><a href="#cb12-460" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb12-461"><a href="#cb12-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-462"><a href="#cb12-462" aria-hidden="true" tabindex="-1"></a>***</span>
+<span id="cb12-463"><a href="#cb12-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-464"><a href="#cb12-464" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step-by-Step Checklist for Stelio</span></span>
+<span id="cb12-465"><a href="#cb12-465" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-466"><a href="#cb12-466" aria-hidden="true" tabindex="-1"></a>To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:</span>
+<span id="cb12-467"><a href="#cb12-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-468"><a href="#cb12-468" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>**Prepare the Data:** Format the dataset with columns <span class="in">`env`</span>, <span class="in">`block`</span>, <span class="in">`female`</span> (CIMMYT lines), <span class="in">`male`</span> (local testers), <span class="in">`cross`</span> (female_male sorted ID), and <span class="in">`yield`</span>.</span>
+<span id="cb12-469"><a href="#cb12-469" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>**Import to R:** Load <span class="in">`tidyverse`</span> and <span class="in">`sommer`</span>, and import the data from a CSV file.</span>
+<span id="cb12-470"><a href="#cb12-470" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>**Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset's general performance.</span>
+<span id="cb12-471"><a href="#cb12-471" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>**Perform Mixed Modeling:** Fit a mixed model using <span class="in">`sommer::mmer`</span>. Model <span class="in">`female`</span> and <span class="in">`male`</span> as separate random effects, and <span class="in">`cross`</span> as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.</span>
+<span id="cb12-472"><a href="#cb12-472" aria-hidden="true" tabindex="-1"></a><span class="ss">5.  </span>**Calculate Breeding Values and Genotypic Values:**</span>
+<span id="cb12-473"><a href="#cb12-473" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.</span>
+<span id="cb12-474"><a href="#cb12-474" aria-hidden="true" tabindex="-1"></a><span class="ss">    *   </span>Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.</span>
+<span id="cb12-475"><a href="#cb12-475" aria-hidden="true" tabindex="-1"></a><span class="ss">6.  </span>**Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

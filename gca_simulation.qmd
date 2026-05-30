@@ -12,7 +12,6 @@ format:
     number-sections: true
     code-fold: show
     code-tools: true
-    css: custom.css
 ---
 
 > [!NOTE]
