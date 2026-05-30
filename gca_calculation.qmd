@@ -74,7 +74,13 @@ The mating design (§1.1) and field layout (§1.2) determine the structure of th
 
 $$\sigma^2_{cross} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$$
 
-For trials evaluated across more than one environment, the same partition is applied to the genotype-by-environment interaction. Rather than estimating a single undifferentiated $(cross \times E)$ term, we model **female GCA × E**, **male GCA × E**, and **SCA × E** as separate random effects. This is the canonical multi-environment combining-ability model presented in Eq. 5.4 of @isik2017 [Chapter on Diallel Mating Designs], where female and male GCA-by-location terms ($LG_{ik}$, $LG_{il}$) and an SCA-by-location term ($LS_{ikl}$) appear as distinct random effects. The motivation is twofold:
+For trials evaluated across more than one environment, the same partition is applied to the genotype-by-environment interaction. Rather than estimating a single undifferentiated $(cross \times E)$ term, we model **female GCA × E**, **male GCA × E**, and **SCA × E** as separate random effects. This is the canonical multi-environment combining-ability model presented in the *Factorial Mating Designs* section of @isik2017 [Chapter 5, Eq. 5.21]:
+
+$$y_{ijpqk} = \mu + L_i + B_{j(i)} + F_p + M_q + FM_{pq} + LF_{ip} + LM_{iq} + LFM_{ipq} + \epsilon_{ijpqk}$$
+
+where $F_p$ and $M_q$ are female and male GCA, $FM_{pq}$ is the cross (SCA) effect, and $LF_{ip}$, $LM_{iq}$, $LFM_{ipq}$ are the female-by-location, male-by-location, and cross-by-location random interactions. Isik notes that for a factorial design "we do NOT use a field definition like `male !AS female`" because the male and female parental sets are distinct — exactly Stelio's case (CIMMYT donors vs. Mozambican testers), which is why we fit `female` and `male` as separate random effects rather than overlaying them as one would in a diallel.
+
+The motivation for this partitioning is twofold:
 
 *   **Interpretive.** GCA×E variance tells us whether a parent's breeding value is environment-stable (selectable on a single-environment trial) or sensitive to the target environment; SCA×E is only exploitable through specific hybrid identity. Lumping them into one cross×E term destroys this distinction.
 
