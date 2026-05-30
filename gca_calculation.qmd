@@ -13,6 +13,8 @@ format:
     number-sections: true
     code-fold: show
     code-tools: true
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
 ---
 
 > [!NOTE]
@@ -67,7 +69,18 @@ The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (R
 ***
 
 ## Phenotype Model (Mathematical Equation)
-To analyze the phenotypic yield data, we model the value of a plot containing hybrid $pq$ (cross of female parent $p$ and male parent $q$) in block $j$ of environment $i$ as:
+
+The mating design (§1.1) and field layout (§1.2) determine the structure of the linear model. We follow the **North Carolina Design II / Line × Tester** variance partition originally derived by @comstock1948, which decomposes the total genetic variance of a factorial cross into additive components transmitted through each parental set (GCA) and a non-additive component specific to each hybrid combination (SCA):
+
+$$\sigma^2_{cross} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$$
+
+For trials evaluated across more than one environment, the same partition is applied to the genotype-by-environment interaction. Rather than estimating a single undifferentiated $(cross \times E)$ term, we model **female GCA × E**, **male GCA × E**, and **SCA × E** as separate random effects. This is the canonical multi-environment combining-ability model presented in Eq. 5.4 of @isik2017 [Chapter on Diallel Mating Designs], where female and male GCA-by-location terms ($LG_{ik}$, $LG_{il}$) and an SCA-by-location term ($LS_{ikl}$) appear as distinct random effects. The motivation is twofold:
+
+*   **Interpretive.** GCA×E variance tells us whether a parent's breeding value is environment-stable (selectable on a single-environment trial) or sensitive to the target environment; SCA×E is only exploitable through specific hybrid identity. Lumping them into one cross×E term destroys this distinction.
+
+*   **Empirical.** As @isik2017 show, explicitly modelling GCA×E as a random effect instead of leaving it inside the plot residual reduces $\sigma^2_\epsilon$ and yields a cleaner additive-by-environment variance estimate.
+
+With those modelling choices, we model the value of a plot containing hybrid $pq$ (cross of female parent $p$ and male parent $q$) in block $j$ of environment $i$ as:
 
 $$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$
 
@@ -498,7 +511,7 @@ To obtain unbiased estimates of the genetic variances and to quantify how much o
 
     *   `cross:env`  — SCA × Environment
 
-This is the standard partition for combining-ability designs evaluated across environments — separating additive (GCA×E) from non-additive (SCA×E) interaction variance — and matches Eq. 5.4 of Isik, Holland & Maltecca (2017), where female and male GCA-by-location terms (`LG_ik`, `LG_il`) and an SCA-by-location term (`LS_ikl`) appear as distinct random effects. See [References](#references).
+This is the multi-environment combining-ability model motivated in §1.3 [@isik2017].
 
 ```{r}
 #| label: gxe-model
@@ -648,8 +661,7 @@ To complete the GCA and SCA analysis for his PhD, Stelio should follow these str
 
 ***
 
-# References {#references}
+# References {.unnumbered}
 
-*   Isik, F., Holland, J., & Maltecca, C. (2017). *Genetic Data Analysis for Plant and Animal Breeding*. Springer. — Chapter on diallel mating designs introduces the multi-environment model with GCA×location (`LG_ik`, `LG_il`) and SCA×location (`LS_ikl`) variance components (Eq. 5.4), the canonical partition adopted here. The text also shows empirically that splitting GCA×E out of the residual produces a smaller plot-error variance and a cleaner additive-by-environment estimate.
-
-*   Comstock, R. E., & Robinson, H. F. (1948). The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. *Biometrics*, 4(4), 254–266. — Original derivation of the North Carolina Design II (Line × Tester) variance partition that underlies this analysis.
+::: {#refs}
+:::

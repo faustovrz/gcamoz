@@ -106,6 +106,8 @@ quarto render gca_calculation.qmd
 
 ## References
 
-*   **Isik, F., Holland, J., & Maltecca, C. (2017).** *Genetic Data Analysis for Plant and Animal Breeding*. Springer. — The diallel-mating-designs chapter (Eq. 5.4) is the source of the G×E partition used in `gca_calculation.qmd`: separate `LG_ik` / `LG_il` (female and male GCA × location) and `LS_ikl` (SCA × location) random effects instead of a single cross-by-environment term.
+Bibliographic metadata for both works lives in [`references.bib`](references.bib) and is rendered automatically by Quarto in `gca_calculation.qmd` (see §1.3, Phenotype Model).
 
-*   **Comstock, R. E., & Robinson, H. F. (1948).** The components of genetic variance in populations of biparental progenies and their use in estimating the average degree of dominance. *Biometrics*, 4(4), 254–266. — Original North Carolina Design II / Line × Tester variance partition.
+*   Comstock, R. E., & Robinson, H. F. (1948). The Components of Genetic Variance in Populations of Biparental Progenies and Their Use in Estimating the Average Degree of Dominance. *Biometrics*, 4(4), 254–266. [doi:10.2307/3001412](https://doi.org/10.2307/3001412)
+
+*   Isik, F., Holland, J., & Maltecca, C. (2017). *Genetic Data Analysis for Plant and Animal Breeding*. Springer International Publishing. [doi:10.1007/978-3-319-55177-7](https://doi.org/10.1007/978-3-319-55177-7)
