@@ -10,6 +10,7 @@ format:
     theme:
       light: flatly
       dark: darkly
+    embed-resources: true
     code-fold: show
     code-tools: true
     df-print: paged

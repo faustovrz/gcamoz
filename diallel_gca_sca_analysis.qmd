@@ -6,6 +6,7 @@ date: "2026-05-30"
 format:
   html:
     theme: cosmo
+    embed-resources: true
     toc: true
     toc-depth: 3
     toc-float: true
