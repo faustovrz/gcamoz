@@ -1,6 +1,6 @@
 project:
   type: default
-  output-dir: results
+  output-dir: docs
   render:
     - gca_simulation.qmd
     - gca_calculation.qmd
