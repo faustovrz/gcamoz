@@ -55,6 +55,7 @@ set.seed(88)
 
 ## Parameter Definitions
 We define the genetic and environmental parameters that will determine the phenotypic yield:
+
 1.  **Base Mean ($\mu$):** 8.2 tons/ha.
 
 2.  **Environment Effects ($E$):** Normal P (`env1`) adds $+1.1$ t/ha; Low P (`env2`) reduces yield by $-1.3$ t/ha.

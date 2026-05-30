@@ -103,6 +103,7 @@ ggplot(iris, aes(x = Species, y = Petal.Length, fill = Species)) +
 ## 2. Fitting the One-Way ANOVA Model
 
 We formulate our statistical hypothesis as follows:
+
 *   **Null Hypothesis ($H_0$):** The mean petal length is identical across all three species ($\mu_{\text{setosa}} = \mu_{\text{versicolor}} = \mu_{\text{virginica}}$).
 
 *   **Alternative Hypothesis ($H_1$):** At least one species has a mean petal length that differs from the others.

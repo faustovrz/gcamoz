@@ -44,6 +44,7 @@ set.seed(42)
 # Simulating a 7 × 7 Diallel Maize Dataset
 
 To prepare for real data analysis, we will simulate a **7 × 7 full diallel cross** evaluated for a single trait (**Yield**, in tons per hectare) in **two environments**:
+
 1.  **env1:** Normal Phosphorus (optimal conditions)
 
 2.  **env2:** Low Phosphorus Stress (phosphorus-deficient conditions)
@@ -52,6 +53,7 @@ The trial is laid out as a **Randomized Complete Block Design (RCBD)** with **3 
 
 ## Biological Parameters of the Simulation
 To make this simulation biologically realistic for maize, we incorporate:
+
 *   **A Base Yield ($\mu$):** 8.5 tons/ha.
 
 *   **Environmental Stress Effect ($E$):** Normal P (`env1`) adds $+1.0$ t/ha, while Low P (`env2`) reduces yield by $-1.2$ t/ha.
@@ -246,14 +248,18 @@ We will demonstrate the direct arithmetic calculations from family means. This p
 
 ## Arithmetic Formulas
 Let $Y_{ij}$ be the mean of the cross between female $i$ and male $j$ across replications and environments.
+
 *   **Grand Mean ($\mu$):** The overall mean of the $p \times p$ diallel table.
     $$\bar{Y}_{..} = \frac{1}{p^2} \sum_{i} \sum_{j} \bar{Y}_{ij}$$
+
 *   **Parental Average Means:** The row mean ($\bar{Y}_{i.}$) and column mean ($\bar{Y}_{.i}$) represent the average performance of parent $i$ as a female and male, respectively.
 
 *   **GCA Effect of Parent $i$ ($g_i$):**
     $$g_i = \frac{\bar{Y}_{i.} + \bar{Y}_{.i}}{2} - \bar{Y}_{..}$$
+
 *   **Reciprocal Effect of Cross $ij$ ($r_{ij}$):**
     $$r_{ij} = \frac{\bar{Y}_{ij} - \bar{Y}_{ji}}{2}$$
+
 *   **SCA Effect of Cross $ij$ ($s_{ij}$):**
     $$s_{ij} = \frac{\bar{Y}_{ij} + \bar{Y}_{ji}}{2} - g_i - g_j - \bar{Y}_{..} \quad (\text{for } i \neq j)$$
     $$s_{ii} = \bar{Y}_{ii} - 2g_i - \bar{Y}_{..} \quad (\text{for selfs } i = j)$$
@@ -326,6 +332,7 @@ kable(gca_fixed_df, caption = "Arithmetically Calculated GCA Effects (Griffing M
 # Mixed-Effects Calculations: Overlay Matrix Modeling
 
 While fixed-effects arithmetic is excellent for balanced trials, modern breeding relies on **Linear Mixed Models (LMMs)**. Mixed models:
+
 1.  Handle unbalanced datasets (e.g., missing crosses).
 
 2.  Incorporate pedigree relationship matrices ($A$-matrix).
@@ -336,6 +343,7 @@ While fixed-effects arithmetic is excellent for balanced trials, modern breeding
 
 ## The Challenge of Diallel Mixed Models in R
 In a diallel design, the same individual appears as both `female` and `male`. 
+
 *   If we fit standard random effects like `(1|female) + (1|male)` in `lme4`, the software treats them as two completely separate variables, yielding separate female and male variance components and GCA predictions.
 
 *   To estimate a single, consistent GCA effect for each parent, we must **overlay** the random incidence matrices $Z_{\text{female}}$ and $Z_{\text{male}}$ so that the statistical model restricts their distributions to be identical.
@@ -443,8 +451,10 @@ kable(round(sca_matrix_blup, 4), caption = "Symmetric 7x7 Specific Combining Abi
 A key task for breeding students is to calculate and distinguish the **Breeding Value (BV)** and the **Genotypic Value (GV)** of individual crosses.
 
 According to Chapter 5 of Isik et al. (2017):
+
 1.  **Expected Breeding Value ($BV$):** The sum of the parent general combining abilities. Breeding value is completely additive and determines the response to selection when parents are recombined:
     $$BV_{\text{Cross } AB} = g_A + g_B$$
+
 2.  **Genotypic Value ($GV$):** The total genetic value of the cross, equal to the Breeding Value plus the dominance Specific Combining Ability deviation. GV determines the commercial performance of the $F_1$ hybrid:
     $$GV_{\text{Cross } AB} = BV_{\text{Cross } AB} + SCA_{AB} = g_A + g_B + s_{AB}$$
 
@@ -476,22 +486,27 @@ Finally, we use the estimated variance components from the mixed model to calcul
 
 ## Heritability Formulas for Individuals
 From Equation 5.7 and 5.8 in the NCSU curriculum (`isik2017_chapter4.txt`):
+
 *   **Additive Variance:** $\sigma^2_A = 4 \times \sigma^2_{GCA}$
 
 *   **Dominance Variance:** $\sigma^2_D = 4 \times \sigma^2_{SCA}$
 
 *   **Phenotypic Variance among Individuals:**
     $$\sigma^2_{\text{phenotypic}} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
+
 *   **Individual Narrow-Sense Heritability ($h^2_i$):**
     $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+
 *   **Individual Broad-Sense Heritability ($H^2_{bs}$):**
     $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{4\sigma^2_{GCA} + 4\sigma^2_{SCA}}{2\sigma^2_{GCA} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
 
 ## Heritability of Family Means
 For a breeder selecting based on whole-family means:
+
 *   **Phenotypic Variance of Full-Sib Family Means ($\sigma^2_{FS}$):**
     $$\sigma^2_{FS} = 2\sigma^2_{GCA} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$
     where $r = 3$ is the number of replications.
+
 *   **Full-Sib Family Heritability ($h^2_{FS}$):**
     $$h^2_{FS} = \frac{2\sigma^2_{GCA}}{\sigma^2_{FS}}$$
 

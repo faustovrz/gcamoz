@@ -26,8 +26,10 @@ Before performing calculations in R, we must define the genetic breeding scheme,
 
 ## Breeding Scheme (Line × Tester)
 Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).
+
 *   **Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:
     $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$
+
 *   **Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled `MOZ1` to `MOZ7`).
 
 *   **Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. 
@@ -51,6 +53,7 @@ Each cell represents an $F_1$ hybrid family evaluated in the field.
 
 ## Experimental Design
 The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** per environment.
+
 *   **Environments ($E$):** The trials are conducted across **2 environments** representing phosphorus treatment levels:
 
     1.  **env1:** Normal/High Phosphorus conditions.
@@ -69,6 +72,7 @@ To analyze the phenotypic yield data, we model the value of a plot containing hy
 $$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$
 
 Where:
+
 * $y_{ijpq}$ is the grain yield observed in the plot.
 
 *   $\mu$ is the overall mean grain yield of the population.
@@ -180,10 +184,13 @@ Let $\bar{Y}_{..}$ be the overall grand mean of all crosses in the factorial gri
 
 *   **Grand Mean:**
     $$\bar{Y}_{..} = \frac{1}{f \cdot m} \sum_{p} \sum_{q} \bar{Y}_{pq}$$
+
 *   **GCA of Female Parent $p$ ($g_{F_p}$):**
     $$g_{F_p} = \bar{Y}_{p.} - \bar{Y}_{..}$$
+
 *   **GCA of Male Parent $q$ ($g_{M_q}$):**
     $$g_{M_q} = \bar{Y}_{.q} - \bar{Y}_{..}$$
+
 *   **SCA of Cross $pq$ ($s_{pq}$):**
     $$s_{pq} = \bar{Y}_{pq} - g_{F_p} - g_{M_q} - \bar{Y}_{..} = \bar{Y}_{pq} - \bar{Y}_{p.} - \bar{Y}_{.q} + \bar{Y}_{..}$$
 
@@ -353,8 +360,10 @@ kable(round(sca_matrix_blup, 4), caption = "7 × 7 Specific Combining Ability (S
 # Breeding Values (BV) and Genotypic Values (GV)
 
 For hybrid breeding selection, we must calculate the **Expected Breeding Value (BV)** and the **Genotypic Value (GV)** of the crosses:
+
 1.  **Breeding Value ($BV$):** The sum of the parent general combining abilities. $BV$ represents the purely additive value of the cross.
     $$BV_{\text{Cross } PQ} = g_{F_p} + g_{M_q}$$
+
 2.  **Genotypic Value ($GV$):** The total genetic value of the cross. $GV$ equals the Breeding Value plus the Specific Combining Ability (dominance deviation). $GV$ represents the commercial potential of the hybrid.
     $$GV_{\text{Cross } PQ} = BV_{\text{Cross } PQ} + SCA_{PQ} = g_{F_p} + g_{M_q} + s_{pq}$$
 
