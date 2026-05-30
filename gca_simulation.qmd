@@ -1,7 +1,7 @@
 ---
 title: "Genetic Simulation of a Maize Factorial Cross"
 subtitle: "Generating Yield Data under Normal and Low Phosphorus Conditions"
-author: "Antigravity Genetics & Breeding Lab (NCSU)"
+author: "Fausto Rodríguez Zapata, assisted by Antigravity and Claude Code"
 date: "2026-05-30"
 format:
   html:

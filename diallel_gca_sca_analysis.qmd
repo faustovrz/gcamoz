@@ -1,7 +1,7 @@
 ---
 title: "Combining Ability Analysis (GCA and SCA) in Maize"
 subtitle: "A Step-by-Step R Quarto Tutorial for Diallel Crosses"
-author: "Antigravity Genetics & Breeding Lab (NCSU)"
+author: "Fausto Rodríguez Zapata, assisted by Antigravity and Claude Code"
 date: "2026-05-30"
 format:
   html:

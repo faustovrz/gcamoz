@@ -1,7 +1,7 @@
 ---
 title: "Combining Ability Analysis of a Maize Factorial Cross"
 subtitle: "General Combining Ability (GCA) and Specific Combining Ability (SCA) from a 7 × 7 Factorial Design"
-author: "Antigravity Genetics & Breeding Lab (NCSU)"
+author: "Fausto Rodríguez Zapata, assisted by Antigravity and Claude Code"
 date: "2026-05-30"
 format:
   html:
@@ -388,21 +388,27 @@ kable(head(genetic_values_sorted, 15), caption = "Top 15 Maize Factorial Hybrids
 We use the estimated genetic and environmental variance components from our mixed model (`fit_factorial`) to calculate the narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities.
 
 ## Heritability Formulas for Factorial Designs
-According to Chapter 5 of Isik et al. (2017):
-*   **Additive Variance ($\sigma^2_A$):** Since female and male parental sets are distinct, additive variance is estimated as:
+Following Chapter 5 of Isik et al. (2017). Because female and male parental sets come from **distinct gene pools** (CIMMYT lines vs MOZ testers), the genetic variances of the hybrid population decompose as:
+
+*   **Additive Variance ($\sigma^2_A$):**
     $$\sigma^2_A = 2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})$$
-*   **Dominance Variance ($\sigma^2_D$):** Estimated as:
+
+*   **Dominance Variance ($\sigma^2_D$):**
     $$\sigma^2_D = 4 \cdot \sigma^2_{SCA}$$
-*   **Phenotypic Variance among Individuals ($\sigma^2_{\text{phenotypic}}$):**
-    $$\sigma^2_{\text{phenotypic}} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
+
+*   **Individual-Plot Phenotypic Variance** — the *total* genetic + residual variance on the underlying plot scale, **not** the sum of estimated random-effect variances. The mixed-model random-effect variances ($\sigma^2_{GCA\_F},\,\sigma^2_{GCA\_M},\,\sigma^2_{SCA}$) are variances of cross-mean components; to compare additive variance against a phenotypic variance on the same plot scale, $\sigma^2_P$ must use $\sigma^2_A$ and $\sigma^2_D$ directly:
+    $$\sigma^2_{P,\,\text{ind}} = \sigma^2_A + \sigma^2_D + \sigma^2_{\text{residual}} = 2(\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}) + 4\sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
+    Using $\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$ in the denominator (a common mistake) mixes the two scales and produces $h^2 > 1$.
+
 *   **Narrow-Sense Individual Heritability ($h^2_i$):**
-    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{P,\,\text{ind}}}$$
+
 *   **Broad-Sense Individual Heritability ($H^2_{bs}$):**
-    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}) + 4 \cdot \sigma^2_{SCA}}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
-*   **Full-Sib Family Heritability ($h^2_{FS}$):** Represents the accuracy of selection among whole families based on plot means:
-    $$\sigma^2_{FS\_mean} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$
-    $$h^2_{FS} = \frac{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}}{\sigma^2_{FS\_mean}}$$
-    where $r = 3$ replicates.
+    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{P,\,\text{ind}}}$$
+
+*   **Full-Sib Family-Mean Heritability ($h^2_{FS}$):** Accuracy of selecting whole families on their across-replicate means, with $r$ reps:
+    $$\sigma^2_{P,\,\bar{x}} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}, \qquad h^2_{FS} = \frac{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}}{\sigma^2_{P,\,\bar{x}}}$$
+    The family-mean form uses the GCA/SCA variances directly (no factor of 2 or 4) because it asks how much of the *cross-mean* variance is repeatable additive signal.
 
 ## Direct R Calculations
 We execute these calculations in R using the variance components retrieved from `fit_factorial`.
@@ -410,18 +416,21 @@ We execute these calculations in R using the variance components retrieved from 
 ```{r}
 #| label: heritability-factorial
 
-# Extract individual variance components from sommer output
-var_gca_f <- var_comps["female:yield:yield", "VarComp"]
-var_gca_m <- var_comps["male:yield:yield", "VarComp"]
-var_sca <- var_comps["cross:yield:yield", "VarComp"]
-var_res <- var_comps["units:yield:yield", "VarComp"]
+# Extract individual variance components from sommer output.
+# sommer names varcomp rows as "<term>.<trait>-<trait>" (e.g. "female.yield-yield"),
+# so we index with that exact convention — older "term:trait:trait" forms return NA.
+var_gca_f <- var_comps["female.yield-yield", "VarComp"]
+var_gca_m <- var_comps["male.yield-yield", "VarComp"]
+var_sca   <- var_comps["cross.yield-yield", "VarComp"]
+var_res   <- var_comps["units.yield-yield", "VarComp"]
 
 # Calculate genetic variances
 var_A <- 2 * (var_gca_f + var_gca_m)
 var_D <- 4 * var_sca
 
-# Individual Phenotypic Variance
-var_phen_ind <- var_gca_f + var_gca_m + var_sca + var_res
+# Individual-plot phenotypic variance on the same scale as Va and Vd:
+# Vp_ind = Va + Vd + sigma^2_residual
+var_phen_ind <- var_A + var_D + var_res
 
 # Calculate Individual Heritabilities
 h2_individual_ns <- var_A / var_phen_ind
@@ -450,6 +459,153 @@ heritability_results <- tibble(
 kable(heritability_results, caption = "Estimated Genetic Variances and Heritabilities under Low P Stress") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
+
+> [!CAUTION]
+> These heritabilities are **conditional on Low P stress**. Because the model uses a single environment, any genotype-by-environment interaction is absorbed into the GCA and SCA variances, so $h^2$ and $H^2$ here are **upward-biased relative to the across-environment values**. The next section refits the model across both environments to separate G × E from the pure genetic terms.
+
+***
+
+# Across-Environment Heritability with G × E
+
+To obtain unbiased estimates of the genetic variances and to quantify how much of the apparent genetic signal is actually G×E, we refit the mixed model **jointly across `env1` (Normal P) and `env2` (Low P)**.
+
+## Model Structure
+
+*   `env` enters as a **fixed effect** (different overall means in High vs Low P).
+
+*   `env:block` captures blocks nested within environment (block 1 in env1 ≠ block 1 in env2).
+
+*   Each combining-ability term gets a paired interaction random term so its G×E variance can be estimated separately:
+
+    *   `female:env` — Female GCA × Environment
+
+    *   `male:env`   — Male GCA × Environment
+
+    *   `cross:env`  — SCA × Environment
+
+```{r}
+#| label: gxe-model
+
+data_gxe <- maize_data %>%
+  mutate(
+    env    = as.factor(env),
+    female = as.factor(female),
+    male   = as.factor(male),
+    cross  = as.factor(cross),
+    block  = as.factor(block)
+  )
+
+fit_gxe <- mmer(
+  fixed  = yield ~ env,
+  random = ~ female + male + cross +
+             female:env + male:env + cross:env +
+             env:block,
+  data   = data_gxe,
+  verbose = FALSE
+)
+
+var_comps_gxe <- summary(fit_gxe)$varcomp
+kable(var_comps_gxe, caption = "Variance Components — Joint Model across env1 and env2") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Entry-Mean Heritability Formulas (Across Environments)
+
+We report **entry-mean (full-sib family-mean) heritability** — the accuracy with which cross rankings can be selected based on their mean across replicates and environments. This is the most useful statistic for multi-environment breeding decisions, and it extends the `h²_FS` formula from §8 to multiple environments. With $e$ environments and $r$ reps per environment:
+
+*   **Genetic variance of cross means:**
+
+    $$\sigma^2_G = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$$
+
+*   **Additive component (entry mean):**
+
+$$\sigma^2_{A,\bar{x}} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M}$$
+
+*   **Dominance component (entry mean):**
+
+$$\sigma^2_{D,\bar{x}} = \sigma^2_{SCA}$$
+
+*   **Total G × E variance:**
+
+$$\sigma^2_{GE} = \sigma^2_{GCA_F \times E} + \sigma^2_{GCA_M \times E} + \sigma^2_{SCA \times E}$$
+
+*   **Entry-mean phenotypic variance:**
+
+    $$\sigma^2_{P,\bar{x}} = \sigma^2_G + \frac{\sigma^2_{GE}}{e} + \frac{\sigma^2_{\text{res}}}{e \cdot r}$$
+
+*   **Narrow-sense entry-mean heritability:**
+
+$$h^2_{\bar{x}} = \sigma^2_{A,\bar{x}} / \sigma^2_{P,\bar{x}}$$
+
+*   **Broad-sense entry-mean heritability:**
+
+$$H^2_{\bar{x}} = \sigma^2_G / \sigma^2_{P,\bar{x}}$$
+
+Both heritabilities are bounded in $[0, 1]$, which is what we expect from a properly specified entry-mean form.
+
+```{r}
+#| label: gxe-heritability
+
+# Pick variance components by regex on rowname (interaction terms can appear as
+# "female:env" or "env:female" depending on sommer's term ordering; we match both).
+pick_vc <- function(vc, pat) {
+  idx <- grep(pat, rownames(vc))
+  if (length(idx) == 0) 0 else sum(vc[idx, "VarComp"])
+}
+
+var_gca_f_g <- pick_vc(var_comps_gxe, "^female\\.")
+var_gca_m_g <- pick_vc(var_comps_gxe, "^male\\.")
+var_sca_g   <- pick_vc(var_comps_gxe, "^cross\\.")
+var_gca_f_e <- pick_vc(var_comps_gxe, "female:env|env:female")
+var_gca_m_e <- pick_vc(var_comps_gxe, "male:env|env:male")
+var_sca_e   <- pick_vc(var_comps_gxe, "cross:env|env:cross")
+var_res_g   <- pick_vc(var_comps_gxe, "^units\\.")
+
+e_env <- 2   # number of environments
+r_rep <- 3   # reps per environment
+
+var_G_mean  <- var_gca_f_g + var_gca_m_g + var_sca_g
+var_A_mean  <- var_gca_f_g + var_gca_m_g
+var_D_mean  <- var_sca_g
+var_GE      <- var_gca_f_e + var_gca_m_e + var_sca_e
+
+var_phen_mean_g <- var_G_mean + var_GE / e_env + var_res_g / (e_env * r_rep)
+
+h2_mean_g <- var_A_mean / var_phen_mean_g
+H2_mean_g <- var_G_mean / var_phen_mean_g
+
+gxe_results <- tibble(
+  Parameter = c(
+    "GCA Female variance",
+    "GCA Male variance",
+    "SCA variance",
+    "GCA_F × Env variance",
+    "GCA_M × Env variance",
+    "SCA × Env variance",
+    "Total G × E variance",
+    "Residual variance",
+    "Genetic variance of cross means (Vg)",
+    "Entry-mean phenotypic variance (Vp_mean)",
+    "Narrow-sense h² (entry mean across envs)",
+    "Broad-sense H² (entry mean across envs)"
+  ),
+  Value = round(c(
+    var_gca_f_g, var_gca_m_g, var_sca_g,
+    var_gca_f_e, var_gca_m_e, var_sca_e,
+    var_GE, var_res_g,
+    var_G_mean, var_phen_mean_g,
+    h2_mean_g, H2_mean_g
+  ), 4)
+)
+
+kable(gxe_results, caption = "Genetic Variances, G × E, and Entry-Mean Heritabilities — Joint Two-Environment Model") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!TIP]
+> *   If $\sigma^2_{GE}$ is a substantial fraction of $\sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$, the ranking of parents and crosses is **environment-dependent** — selection should be done within target environments (e.g., Low P) rather than on across-environment means.
+>
+> *   Compare the within-Low-P heritabilities from §8 with the entry-mean heritabilities here. A drop signals that part of what looked like genetic variance in §8 was actually G×E.
 
 ***
 

@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Iris Petal Length: ANOVA and Compact Letter Display (CLD)"
 subtitle: "A modern, publication-ready statistical workflow in R using Quarto"
-author: "Antigravity Analytics"
+author: "Fausto Rodríguez Zapata, assisted by Antigravity and Claude Code"
 date: today
 format:
   html:
