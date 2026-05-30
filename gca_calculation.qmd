@@ -1,0 +1,458 @@
+---
+title: "Combining Ability Analysis of a Maize Factorial Cross"
+subtitle: "General Combining Ability (GCA) and Specific Combining Ability (SCA) from a 7 × 7 Factorial Design"
+author: "Antigravity Genetics & Breeding Lab (NCSU)"
+date: "2026-05-30"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    css: custom.css
+---
+
+> [!NOTE]
+> This Quarto notebook is designed to guide Stelio Boaventura Nuvunga through the statistical calculations for General Combining Ability (GCA) and Specific Combining Ability (SCA). It uses the simulated maize dataset representing his actual PhD research setup: a **7 × 7 Factorial Mating (Line × Tester) F1 hybrid cross evaluated across 2 environments in an RCBD with 3 replications**.
+
+***
+
+# Theoretical Foundation & Experimental Setup
+
+Before performing calculations in R, we must define the genetic breeding scheme, the field experimental design, and the mathematical phenotype model.
+
+## Breeding Scheme (Line × Tester)
+Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).
+*   **Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:
+    $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$
+*   **Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled `Local1` to `Local7`).
+*   **Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. 
+*   **Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.
+
+### Stelio's Factorial Mating Grid
+Each cell represents an $F_1$ hybrid family evaluated in the field.
+
+| CIMMYT Donors (Females) | Local1 | Local2 | Local3 | Local4 | Local5 | Local6 | Local7 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CML364** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML366** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML434** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML435** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML439** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML440** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+| **CML532** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
+
+***
+
+## Experimental Design
+The 49 $F_1$ hybrids are evaluated under a **Randomized Complete Block Design (RCBD)** with **3 replications (blocks)** per environment.
+*   **Environments ($E$):** The trials are conducted across **2 environments** representing phosphorus treatment levels:
+    1.  **env1:** Normal/High Phosphorus conditions.
+    2.  **env2:** Low Phosphorus Stress conditions.
+*   **Trait Evaluated:** Grain Yield (tons/ha).
+*   **Total Plots:** $2 \text{ environments} \times 3 \text{ replications} \times 49 \text{ hybrid entries} = 294$ plot evaluations.
+
+***
+
+## Phenotype Model (Mathematical Equation)
+To analyze the phenotypic yield data, we model the value of a plot containing hybrid $pq$ (cross of female parent $p$ and male parent $q$) in block $j$ of environment $i$ as:
+
+$$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$
+
+Where:
+*   $y_{ijpq}$ is the grain yield observed in the plot.
+*   $\mu$ is the overall mean grain yield of the population.
+*   $E_i$ is the fixed effect of the $i$-th environment (phosphorus treatment).
+*   $B_{j(i)}$ is the random effect of the $j$-th block nested within the $i$-th environment, assumed $B_{j(i)} \sim \text{NID}(0, \sigma^2_{B(E)})$.
+*   $g_{F_p}$ is the random General Combining Ability (GCA) effect of the $p$-th female parent, assumed $g_{F_p} \sim \text{NID}(0, \sigma^2_{GCA\_F})$. This represents the additive breeding value transmitted by the CIMMYT donor.
+*   $g_{M_q}$ is the random GCA effect of the $q$-th male parent, assumed $g_{M_q} \sim \text{NID}(0, \sigma^2_{GCA\_M})$. This represents the additive breeding value transmitted by the local tester.
+*   $s_{pq}$ is the random Specific Combining Ability (SCA) effect of the cross between female $p$ and male $q$, assumed $s_{pq} \sim \text{NID}(0, \sigma^2_{SCA})$. This represents dominance deviations (heterosis/hybrid vigor).
+*   $(Eg_{F})_{ip}$ and $(Eg_{M})_{iq}$ are the random interactions of the parental GCA effects with the environment, modeling how additive breeding values respond to low-phosphorus stress.
+*   $(Es)_{ipq}$ is the random interaction of the SCA effect with the environment, representing specific hybrid adaptability to stress.
+*   $\epsilon_{ijpq}$ is the residual experimental plot error, assumed $\epsilon_{ijpq} \sim \text{NID}(0, \sigma^2_{\epsilon})$.
+
+> [!IMPORTANT]
+> Because Stelio's design uses distinct female and male lines (a factorial mating scheme), the parental effects are mutually exclusive. Unlike a diallel, **we do not need to overlay design matrices or use overlay functions** in mixed models. This significantly simplifies our mixed model code in R!
+
+***
+
+# R Environment & Data Import
+
+We load the necessary libraries and read the simulated maize dataset, which is stored in `/data/maize_factorial_yield.csv`.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(sommer)
+library(knitr)
+library(kableExtra)
+
+# Load the dataset
+maize_data <- read_csv("data/maize_factorial_yield.csv")
+
+# Convert design factors to R factors
+maize_data <- maize_data %>%
+  mutate(
+    env = as.factor(env),
+    block = as.factor(block),
+    female = as.factor(female),
+    male = as.factor(male),
+    cross = as.factor(cross)
+  )
+```
+
+***
+
+# Exploratory Data Analysis (EDA)
+
+We visualize the grain yields of the 49 crosses across the two environments to understand the stress impact.
+
+## Mean Yield Grid
+Let's construct a grid of mean yields across all 3 replications, combined for both environments.
+
+```{r}
+#| label: eda-grid
+
+mean_yields <- maize_data %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = round(mean(yield), 2), .groups = 'drop') %>%
+  pivot_wider(names_from = male, values_from = mean_yield)
+
+kable(mean_yields, caption = "7 × 7 Factorial F1 Yield Grid (Combined Environments, tons/ha)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#cc0000", color = "white")
+```
+
+## Performance across Environments
+Let's visualize the yield distribution under Normal Phosphorus (`env1`) versus Low Phosphorus Stress (`env2`).
+
+```{r}
+#| label: eda-plot
+#| fig.width: 10
+#| fig.height: 6
+
+ggplot(maize_data, aes(x = env, y = yield, fill = env)) +
+  geom_boxplot(alpha = 0.8, outlier.color = "red") +
+  scale_fill_manual(values = c("env1" = "#3182ce", "env2" = "#dd6b20")) +
+  labs(
+    title = "Maize Grain Yield under Normal vs. Low Phosphorus Conditions",
+    subtitle = "Grain Yield of 49 Factorial Hybrids across 3 Blocks per Environment",
+    x = "Environment (Treatment)",
+    y = "Yield (tons/ha)",
+    fill = "Treatment"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", color = "#1a202c"))
+```
+
+***
+
+# Fixed-Effects Calculations: Factorial Combining Ability
+
+In a balanced factorial cross, GCA and SCA can be calculated arithmetically from family means. This provides a transparent foundation before using mixed models.
+
+## Arithmetic Formulas
+Let $\bar{Y}_{p.}$ be the mean yield of all crosses involving female parent $p$.
+Let $\bar{Y}_{.q}$ be the mean yield of all crosses involving male parent $q$.
+Let $\bar{Y}_{pq}$ be the mean yield of the hybrid cross between female $p$ and male $q$.
+Let $\bar{Y}_{..}$ be the overall grand mean of all crosses in the factorial grid.
+
+*   **Grand Mean:**
+    $$\bar{Y}_{..} = \frac{1}{f \cdot m} \sum_{p} \sum_{q} \bar{Y}_{pq}$$
+*   **GCA of Female Parent $p$ ($g_{F_p}$):**
+    $$g_{F_p} = \bar{Y}_{p.} - \bar{Y}_{..}$$
+*   **GCA of Male Parent $q$ ($g_{M_q}$):**
+    $$g_{M_q} = \bar{Y}_{.q} - \bar{Y}_{..}$$
+*   **SCA of Cross $pq$ ($s_{pq}$):**
+    $$s_{pq} = \bar{Y}_{pq} - g_{F_p} - g_{M_q} - \bar{Y}_{..} = \bar{Y}_{pq} - \bar{Y}_{p.} - \bar{Y}_{.q} + \bar{Y}_{..}$$
+
+## Direct R Arithmetic
+
+We calculate these effects arithmetically from the entire dataset.
+
+```{r}
+#| label: arithmetic-calculations
+
+# 1. Calculate family means
+family_means <- maize_data %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = mean(yield), .groups = 'drop')
+
+# 2. Reshape to a 7x7 matrix (7 females in rows, 7 males in columns)
+Y_matrix <- matrix(0, nrow = 7, ncol = 7, dimnames = list(levels(maize_data$female), levels(maize_data$male)))
+for(i in 1:nrow(family_means)) {
+  Y_matrix[as.character(family_means$female[i]), as.character(family_means$male[i])] <- family_means$mean_yield[i]
+}
+
+# 3. Grand mean
+mu_hat <- mean(Y_matrix)
+
+# 4. Female and Male means
+female_means <- rowMeans(Y_matrix)
+male_means <- colMeans(Y_matrix)
+
+# 5. GCA effects
+gca_female_fixed <- female_means - mu_hat
+gca_male_fixed <- male_means - mu_hat
+
+# 6. SCA effects
+sca_fixed <- matrix(0, nrow = 7, ncol = 7, dimnames = list(levels(maize_data$female), levels(maize_data$male)))
+for(p in rownames(sca_fixed)) {
+  for(q in colnames(sca_fixed)) {
+    sca_fixed[p, q] <- Y_matrix[p, q] - gca_female_fixed[p] - gca_male_fixed[q] - mu_hat
+  }
+}
+
+# Print Female GCA Effects
+gca_female_df <- tibble(
+  Female_Parent = names(gca_female_fixed),
+  Mean_Yield = round(female_means, 3),
+  Estimated_GCA = round(gca_female_fixed, 4)
+)
+
+kable(gca_female_df, caption = "Estimated GCA Effects for Female Parents (CIMMYT Lines)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+# Print Male GCA Effects
+gca_male_df <- tibble(
+  Male_Parent = names(gca_male_fixed),
+  Mean_Yield = round(male_means, 3),
+  Estimated_GCA = round(gca_male_fixed, 4)
+)
+
+kable(gca_male_df, caption = "Estimated GCA Effects for Male Parents (Local Testers)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+***
+
+# Mixed-Effects Calculations: Factorial Variance Component Analysis
+
+In modern breeding, combining ability is analyzed using **Linear Mixed Models (LMMs)**. Parents are treated as random samples from a reference population. 
+
+We use the R package `sommer` to fit the mixed model. Because female and male lines are distinct, **no matrix overlays are needed**. We analyze the **Low Phosphorus Stress environment (`env2`)** where selecting tolerant lines is critical.
+
+## Fitting the Mixed Model
+The random terms in our model are: `female` (Female GCA), `male` (Male GCA), `cross` (SCA), and `block` (RCBD replication).
+
+```{r}
+#| label: mixed-model-sommer
+
+# Filter for env2 (Low Phosphorus Stress)
+data_env2 <- maize_data %>%
+  filter(env == "env2") %>%
+  mutate(
+    female = as.factor(female),
+    male = as.factor(male),
+    cross = as.factor(cross),
+    block = as.factor(block)
+  )
+
+# Fit Mixed Model in sommer
+# yield = fixed intercept + random female GCA + random male GCA + random SCA + random block
+fit_factorial <- mmer(
+  fixed = yield ~ 1,
+  random = ~ female + male + cross + block,
+  data = data_env2,
+  verbose = FALSE
+)
+
+# Extract and display variance components
+var_comps <- summary(fit_factorial)$varcomp
+kable(var_comps, caption = "Estimated Genetic and Environmental Variance Components in Low Phosphorus (env2)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Extracting GCA BLUPs (sommer)
+We extract the General Combining Ability predictions (BLUPs) for both the female and male parent sets.
+
+```{r}
+#| label: gca-blups
+
+# Extract random effects from fit
+female_blups <- fit_factorial$U$female$yield
+male_blups <- fit_factorial$U$male$yield
+
+# Clean up lists and print
+female_blups_df <- tibble(
+  CIMMYT_Female = gsub("female", "", names(female_blups)),
+  GCA_BLUP = round(as.numeric(female_blups), 4)
+)
+
+kable(female_blups_df, caption = "Female GCA BLUPs (CIMMYT Lines) under Low Phosphorus Stress") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+male_blups_df <- tibble(
+  Local_Male = gsub("male", "", names(male_blups)),
+  GCA_BLUP = round(as.numeric(male_blups), 4)
+)
+
+kable(male_blups_df, caption = "Male GCA BLUPs (Local Testers) under Low Phosphorus Stress") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!NOTE]
+> *   `CML364` and `CML366` exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring.
+> *   `Local1` and `Local2` are the best local tester parents.
+
+## Extracting SCA BLUPs
+We extract the Specific Combining Ability predictions (dominance deviations) and format them into a symmetric $7 \times 7$ grid.
+
+```{r}
+#| label: sca-blups
+
+# Extract SCA predictions
+cross_blups <- fit_factorial$U$cross$yield
+
+sca_df <- tibble(
+  Cross = gsub("cross", "", names(cross_blups)),
+  SCA_BLUP = as.numeric(cross_blups)
+)
+
+# Format into a 7x7 matrix (Females in rows, Males in columns)
+sca_matrix_blup <- matrix(0, nrow=7, ncol=7, dimnames=list(levels(data_env2$female), levels(data_env2$male)))
+
+for(i in 1:nrow(sca_df)) {
+  crs_name <- sca_df$Cross[i]
+  pts <- strsplit(crs_name, "_")[[1]]
+  p_fem <- pts[1]
+  p_mal <- pts[2]
+  val <- sca_df$SCA_BLUP[i]
+  
+  sca_matrix_blup[p_fem, p_mal] <- val
+}
+
+kable(round(sca_matrix_blup, 4), caption = "7 × 7 Specific Combining Ability (SCA) BLUP Grid (env2)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#4a5568", color = "white")
+```
+
+***
+
+# Breeding Values (BV) and Genotypic Values (GV)
+
+For hybrid breeding selection, we must calculate the **Expected Breeding Value (BV)** and the **Genotypic Value (GV)** of the crosses:
+1.  **Breeding Value ($BV$):** The sum of the parent general combining abilities. $BV$ represents the purely additive value of the cross.
+    $$BV_{\text{Cross } PQ} = g_{F_p} + g_{M_q}$$
+2.  **Genotypic Value ($GV$):** The total genetic value of the cross. $GV$ equals the Breeding Value plus the Specific Combining Ability (dominance deviation). $GV$ represents the commercial potential of the hybrid.
+    $$GV_{\text{Cross } PQ} = BV_{\text{Cross } PQ} + SCA_{PQ} = g_{F_p} + g_{M_q} + s_{pq}$$
+
+We calculate these for all 49 crosses under Low Phosphorus stress (`env2`) using our mixed model results.
+
+```{r}
+#| label: bv-gv-calc
+
+genetic_values <- expand.grid(
+  Female = levels(data_env2$female), 
+  Male = levels(data_env2$male), 
+  stringsAsFactors = FALSE
+) %>%
+  mutate(
+    GCA_Female = map_dbl(Female, ~ female_blups_df$GCA_BLUP[female_blups_df$CIMMYT_Female == .x]),
+    GCA_Male = map_dbl(Male, ~ male_blups_df$GCA_BLUP[male_blups_df$Local_Male == .x]),
+    SCA = map2_dbl(Female, Male, ~ sca_matrix_blup[.x, .y]),
+    Breeding_Value_BV = GCA_Female + GCA_Male,
+    Genotypic_Value_GV = Breeding_Value_BV + SCA
+  )
+
+# Display top 15 hybrids based on Genotypic Value
+genetic_values_sorted <- genetic_values %>%
+  arrange(desc(Genotypic_Value_GV))
+
+kable(head(genetic_values_sorted, 15), caption = "Top 15 Maize Factorial Hybrids Ranked by Genotypic Value (Low P, env2)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!TIP]
+> The hybrid **`CML364_Local4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).
+
+***
+
+# Heritability Estimation from Factorial Variance Components
+
+We use the estimated genetic and environmental variance components from our mixed model (`fit_factorial`) to calculate the narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities.
+
+## Heritability Formulas for Factorial Designs
+According to Chapter 5 of Isik et al. (2017):
+*   **Additive Variance ($\sigma^2_A$):** Since female and male parental sets are distinct, additive variance is estimated as:
+    $$\sigma^2_A = 2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})$$
+*   **Dominance Variance ($\sigma^2_D$):** Estimated as:
+    $$\sigma^2_D = 4 \cdot \sigma^2_{SCA}$$
+*   **Phenotypic Variance among Individuals ($\sigma^2_{\text{phenotypic}}$):**
+    $$\sigma^2_{\text{phenotypic}} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}$$
+*   **Narrow-Sense Individual Heritability ($h^2_i$):**
+    $$h^2_i = \frac{\sigma^2_A}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M})}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+*   **Broad-Sense Individual Heritability ($H^2_{bs}$):**
+    $$H^2_{bs} = \frac{\sigma^2_A + \sigma^2_D}{\sigma^2_{\text{phenotypic}}} = \frac{2 \cdot (\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}) + 4 \cdot \sigma^2_{SCA}}{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \sigma^2_{\text{residual}}}$$
+*   **Full-Sib Family Heritability ($h^2_{FS}$):** Represents the accuracy of selection among whole families based on plot means:
+    $$\sigma^2_{FS\_mean} = \sigma^2_{GCA\_F} + \sigma^2_{GCA\_M} + \sigma^2_{SCA} + \frac{\sigma^2_{\text{residual}}}{r}$$
+    $$h^2_{FS} = \frac{\sigma^2_{GCA\_F} + \sigma^2_{GCA\_M}}{\sigma^2_{FS\_mean}}$$
+    where $r = 3$ replicates.
+
+## Direct R Calculations
+We execute these calculations in R using the variance components retrieved from `fit_factorial`.
+
+```{r}
+#| label: heritability-factorial
+
+# Extract individual variance components from sommer output
+var_gca_f <- var_comps["female:yield:yield", "VarComp"]
+var_gca_m <- var_comps["male:yield:yield", "VarComp"]
+var_sca <- var_comps["cross:yield:yield", "VarComp"]
+var_res <- var_comps["units:yield:yield", "VarComp"]
+
+# Calculate genetic variances
+var_A <- 2 * (var_gca_f + var_gca_m)
+var_D <- 4 * var_sca
+
+# Individual Phenotypic Variance
+var_phen_ind <- var_gca_f + var_gca_m + var_sca + var_res
+
+# Calculate Individual Heritabilities
+h2_individual_ns <- var_A / var_phen_ind
+H2_individual_bs <- (var_A + var_D) / var_phen_ind
+
+# Full-Sib Family mean Phenotypic Variance (r = 3 replicates)
+r_rep <- 3
+var_phen_fs <- var_gca_f + var_gca_m + var_sca + (var_res / r_rep)
+
+# Calculate Family Heritability
+h2_family_fs <- (var_gca_f + var_gca_m) / var_phen_fs
+
+# Print results
+heritability_results <- tibble(
+  Parameter = c(
+    "Additive Genetic Variance (Va)", 
+    "Dominance Genetic Variance (Vd)", 
+    "Individual Phenotypic Variance (Vp_ind)",
+    "Narrow-Sense Individual Heritability (h2_i)", 
+    "Broad-Sense Individual Heritability (H2_bs)",
+    "Narrow-Sense Full-Sib Family Heritability (h2_FS)"
+  ),
+  Value = round(c(var_A, var_D, var_phen_ind, h2_individual_ns, H2_individual_bs, h2_family_fs), 4)
+)
+
+kable(heritability_results, caption = "Estimated Genetic Variances and Heritabilities under Low P Stress") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+***
+
+# Step-by-Step Checklist for Stelio
+
+To complete the GCA and SCA analysis for his PhD, Stelio should follow these structured steps:
+
+1.  **Prepare the Data:** Format the dataset with columns `env`, `block`, `female` (CIMMYT lines), `male` (local testers), `cross` (female_male sorted ID), and `yield`.
+2.  **Import to R:** Load `tidyverse` and `sommer`, and import the data from a CSV file.
+3.  **Run Griffing Arithmetic:** Hand-calculate GCA and SCA effects using simple averages to understand the dataset's general performance.
+4.  **Perform Mixed Modeling:** Fit a mixed model using `sommer::mmer`. Model `female` and `male` as separate random effects, and `cross` as a random effect. Do NOT use overlay matrix functions because parental lines are completely distinct.
+5.  **Calculate Breeding Values and Genotypic Values:**
+    *   Use parental GCA BLUPs to calculate Breeding Value ($BV = g_F + g_M$) for parental recombination selection.
+    *   Use $GV = BV + SCA$ for selecting the best commercial hybrid entries.
+6.  **Estimate Heritability:** Extract variance components and apply the Line × Tester formulas to check selection accuracy.
