@@ -26,7 +26,7 @@ Our simulation is modeled exactly on Stelio's PhD experimental setup:
 
     *   **Females (Lines):** 7 Low-Phosphorus tolerant CIMMYT inbred lines (`CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532`).
 
-    *   **Males (Testers):** 7 elite local Mozambican lines (`Local1` to `Local7`).
+    *   **Males (Testers):** 7 elite local Mozambican lines (`MOZ1` to `MOZ7`).
 
     *   **Crosses:** All $7 \times 7 = 49$ unique $F_1$ hybrid combinations. (No selfs, no reciprocals).
 
@@ -76,17 +76,17 @@ We define the genetic and environmental parameters that will determine the pheno
 
 # Parental lines
 females <- c("CML364", "CML366", "CML434", "CML435", "CML439", "CML440", "CML532")
-males <- paste0("Local", 1:7)
+males <- paste0("MOZ", 1:7)
 
 # GCA effects
 gca_female <- c(CML364=1.2, CML366=0.8, CML434=0.4, CML435=0.0, CML439=-0.3, CML440=-0.7, CML532=-1.1)
-gca_male <- c(Local1=0.9, Local2=0.5, Local3=0.1, Local4=-0.2, Local5=-0.5, Local6=-0.8, Local7=-1.2)
+gca_male <- c(MOZ1=0.9, MOZ2=0.5, MOZ3=0.1, MOZ4=-0.2, MOZ5=-0.5, MOZ6=-0.8, MOZ7=-1.2)
 
 # Specific Combining Ability (SCA) matrix
 sca_matrix <- matrix(0, nrow=7, ncol=7, dimnames=list(females, males))
-sca_matrix["CML364", "Local4"] <- 0.5   # Specific positive combining ability
-sca_matrix["CML435", "Local1"] <- 0.4
-sca_matrix["CML366", "Local6"] <- -0.4  # Specific negative incompatibility
+sca_matrix["CML364", "MOZ4"] <- 0.5   # Specific positive combining ability
+sca_matrix["CML435", "MOZ1"] <- 0.4
+sca_matrix["CML366", "MOZ6"] <- -0.4  # Specific negative incompatibility
 ```
 
 ***

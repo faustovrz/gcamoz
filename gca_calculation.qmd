@@ -28,14 +28,14 @@ Before performing calculations in R, we must define the genetic breeding scheme,
 Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).
 *   **Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:
     $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$
-*   **Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled `Local1` to `Local7`).
+*   **Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled `MOZ1` to `MOZ7`).
 *   **Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. 
 *   **Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.
 
 ### Stelio's Factorial Mating Grid
 Each cell represents an $F_1$ hybrid family evaluated in the field.
 
-| CIMMYT Donors (Females) | Local1 | Local2 | Local3 | Local4 | Local5 | Local6 | Local7 |
+| CIMMYT Donors (Females) | MOZ1 | MOZ2 | MOZ3 | MOZ4 | MOZ5 | MOZ6 | MOZ7 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **CML364** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
 | **CML366** | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ | $F_1$ |
@@ -235,7 +235,7 @@ gca_male_df <- tibble(
   Estimated_GCA = round(gca_male_fixed, 4)
 )
 
-kable(gca_male_df, caption = "Estimated GCA Effects for Male Parents (Local Testers)") %>%
+kable(gca_male_df, caption = "Estimated GCA Effects for Male Parents (MOZ Testers)") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
@@ -298,17 +298,17 @@ kable(female_blups_df, caption = "Female GCA BLUPs (CIMMYT Lines) under Low Phos
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 male_blups_df <- tibble(
-  Local_Male = gsub("male", "", names(male_blups)),
+  MOZ_Male = gsub("male", "", names(male_blups)),
   GCA_BLUP = round(as.numeric(male_blups), 4)
 )
 
-kable(male_blups_df, caption = "Male GCA BLUPs (Local Testers) under Low Phosphorus Stress") %>%
+kable(male_blups_df, caption = "Male GCA BLUPs (MOZ Testers) under Low Phosphorus Stress") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 > [!NOTE]
 > *   `CML364` and `CML366` exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring.
-> *   `Local1` and `Local2` are the best local tester parents.
+> *   `MOZ1` and `MOZ2` are the best local tester parents.
 
 ## Extracting SCA BLUPs
 We extract the Specific Combining Ability predictions (dominance deviations) and format them into a symmetric $7 \times 7$ grid.
@@ -364,7 +364,7 @@ genetic_values <- expand.grid(
 ) %>%
   mutate(
     GCA_Female = map_dbl(Female, ~ female_blups_df$GCA_BLUP[female_blups_df$CIMMYT_Female == .x]),
-    GCA_Male = map_dbl(Male, ~ male_blups_df$GCA_BLUP[male_blups_df$Local_Male == .x]),
+    GCA_Male = map_dbl(Male, ~ male_blups_df$GCA_BLUP[male_blups_df$MOZ_Male == .x]),
     SCA = map2_dbl(Female, Male, ~ sca_matrix_blup[.x, .y]),
     Breeding_Value_BV = GCA_Female + GCA_Male,
     Genotypic_Value_GV = Breeding_Value_BV + SCA
@@ -379,7 +379,7 @@ kable(head(genetic_values_sorted, 15), caption = "Top 15 Maize Factorial Hybrids
 ```
 
 > [!TIP]
-> The hybrid **`CML364_Local4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).
+> The hybrid **`CML364_MOZ4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).
 
 ***
 

@@ -2651,7 +2651,7 @@ window.Quarto = {
 <p>Before performing calculations in R, we must define the genetic breeding scheme, the field experimental design, and the mathematical phenotype model.</p>
 <section id="breeding-scheme-line-tester" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="breeding-scheme-line-tester"><span class="header-section-number">1.1</span> Breeding Scheme (Line × Tester)</h2>
-<p>Stelio’s research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a <strong>Factorial Mating Design</strong> (often referred to as a <strong>Line × Tester / North Carolina Design II</strong>). * <strong>Female Parents (Lines - PUE Donors from CIMMYT):</strong> 7 low-P tolerant inbred lines: <span class="math display">\[\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}\]</span> * <strong>Male Parents (Testers - Local elite lines from Mozambique):</strong> 7 well-adapted but susceptible lines (labeled <code>Local1</code> to <code>Local7</code>). * <strong>Hybrid Families (<span class="math inline">\(F_1\)</span>):</strong> All possible crosses between the 7 females and 7 males are made, yielding a total of <strong>49 unique <span class="math inline">\(F_1\)</span> hybrid combinations</strong>. * <strong>Genetic Advantage:</strong> Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.</p>
+<p>Stelio’s research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a <strong>Factorial Mating Design</strong> (often referred to as a <strong>Line × Tester / North Carolina Design II</strong>). * <strong>Female Parents (Lines - PUE Donors from CIMMYT):</strong> 7 low-P tolerant inbred lines: <span class="math display">\[\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}\]</span> * <strong>Male Parents (Testers - Local elite lines from Mozambique):</strong> 7 well-adapted but susceptible lines (labeled <code>MOZ1</code> to <code>MOZ7</code>). * <strong>Hybrid Families (<span class="math inline">\(F_1\)</span>):</strong> All possible crosses between the 7 females and 7 males are made, yielding a total of <strong>49 unique <span class="math inline">\(F_1\)</span> hybrid combinations</strong>. * <strong>Genetic Advantage:</strong> Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.</p>
 <section id="stelios-factorial-mating-grid" class="level3" data-number="1.1.1">
 <h3 data-number="1.1.1" class="anchored" data-anchor-id="stelios-factorial-mating-grid"><span class="header-section-number">1.1.1</span> Stelio’s Factorial Mating Grid</h3>
 <p>Each cell represents an <span class="math inline">\(F_1\)</span> hybrid family evaluated in the field.</p>
@@ -2669,13 +2669,13 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th style="text-align: left;">CIMMYT Donors (Females)</th>
-<th style="text-align: center;">Local1</th>
-<th style="text-align: center;">Local2</th>
-<th style="text-align: center;">Local3</th>
-<th style="text-align: center;">Local4</th>
-<th style="text-align: center;">Local5</th>
-<th style="text-align: center;">Local6</th>
-<th style="text-align: center;">Local7</th>
+<th style="text-align: center;">MOZ1</th>
+<th style="text-align: center;">MOZ2</th>
+<th style="text-align: center;">MOZ3</th>
+<th style="text-align: center;">MOZ4</th>
+<th style="text-align: center;">MOZ5</th>
+<th style="text-align: center;">MOZ6</th>
+<th style="text-align: center;">MOZ7</th>
 </tr>
 </thead>
 <tbody>
@@ -2832,13 +2832,13 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">female</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local1</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local2</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local3</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local4</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local5</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local6</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">Local7</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ1</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ2</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ3</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ4</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ5</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ6</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(204, 0, 0, 255) !important;">MOZ7</th>
 </tr>
 </thead>
 <tbody>
@@ -3064,12 +3064,12 @@ window.Quarto = {
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_male_fixed, <span class="dv">4</span>)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">&quot;Estimated GCA Effects for Male Parents (Local Testers)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">&quot;Estimated GCA Effects for Male Parents (MOZ Testers)&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-striped table-hover table-condensed caption-top table-sm small">
-<caption>Estimated GCA Effects for Male Parents (Local Testers)</caption>
+<caption>Estimated GCA Effects for Male Parents (MOZ Testers)</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Male_Parent</th>
@@ -3079,37 +3079,37 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">9.239</td>
 <td style="text-align: right;">1.2461</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">8.661</td>
 <td style="text-align: right;">0.6687</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local3</td>
+<td style="text-align: left;">MOZ3</td>
 <td style="text-align: right;">8.287</td>
 <td style="text-align: right;">0.2943</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local4</td>
+<td style="text-align: left;">MOZ4</td>
 <td style="text-align: right;">7.906</td>
 <td style="text-align: right;">-0.0868</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local5</td>
+<td style="text-align: left;">MOZ5</td>
 <td style="text-align: right;">7.614</td>
 <td style="text-align: right;">-0.3783</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local6</td>
+<td style="text-align: left;">MOZ6</td>
 <td style="text-align: right;">7.296</td>
 <td style="text-align: right;">-0.6964</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local7</td>
+<td style="text-align: left;">MOZ7</td>
 <td style="text-align: right;">6.945</td>
 <td style="text-align: right;">-1.0477</td>
 </tr>
@@ -3270,49 +3270,49 @@ window.Quarto = {
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>male_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Local_Male =</span> <span class="fu">gsub</span>(<span class="st">&quot;male&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(male_blups)),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">MOZ_Male =</span> <span class="fu">gsub</span>(<span class="st">&quot;male&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(male_blups)),</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(male_blups), <span class="dv">4</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">&quot;Male GCA BLUPs (Local Testers) under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">&quot;Male GCA BLUPs (MOZ Testers) under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-striped table-hover table-condensed caption-top table-sm small">
-<caption>Male GCA BLUPs (Local Testers) under Low Phosphorus Stress</caption>
+<caption>Male GCA BLUPs (MOZ Testers) under Low Phosphorus Stress</caption>
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Local_Male</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">MOZ_Male</th>
 <th style="text-align: right;" data-quarto-table-cell-role="th">GCA_BLUP</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">1.4120</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">0.7962</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local3</td>
+<td style="text-align: left;">MOZ3</td>
 <td style="text-align: right;">0.2874</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local4</td>
+<td style="text-align: left;">MOZ4</td>
 <td style="text-align: right;">-0.2151</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local5</td>
+<td style="text-align: left;">MOZ5</td>
 <td style="text-align: right;">-0.3594</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Local6</td>
+<td style="text-align: left;">MOZ6</td>
 <td style="text-align: right;">-0.8037</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Local7</td>
+<td style="text-align: left;">MOZ7</td>
 <td style="text-align: right;">-1.1173</td>
 </tr>
 </tbody>
@@ -3320,7 +3320,7 @@ window.Quarto = {
 </div>
 </div>
 <blockquote class="blockquote">
-<p>[!NOTE] * <code>CML364</code> and <code>CML366</code> exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring. * <code>Local1</code> and <code>Local2</code> are the best local tester parents.</p>
+<p>[!NOTE] * <code>CML364</code> and <code>CML366</code> exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring. * <code>MOZ1</code> and <code>MOZ2</code> are the best local tester parents.</p>
 </blockquote>
 </section>
 <section id="extracting-sca-blups" class="level2" data-number="5.3">
@@ -3360,13 +3360,13 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;"></th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local1</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local2</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local3</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local4</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local5</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local6</th>
-<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">Local7</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ1</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ2</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ3</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ4</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ5</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ6</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(74, 85, 104, 255) !important;">MOZ7</th>
 </tr>
 </thead>
 <tbody>
@@ -3461,7 +3461,7 @@ window.Quarto = {
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> female_blups_df<span class="sc">$</span>GCA_BLUP[female_blups_df<span class="sc">$</span>CIMMYT_Female <span class="sc">==</span> .x]),</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>Local_Male <span class="sc">==</span> .x]),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>MOZ_Male <span class="sc">==</span> .x]),</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
@@ -3491,7 +3491,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">1.4120</td>
 <td style="text-align: right;">-0.0014370</td>
@@ -3500,7 +3500,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">0.7962</td>
 <td style="text-align: right;">-0.0004879</td>
@@ -3509,7 +3509,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML366</td>
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">0.8961</td>
 <td style="text-align: right;">1.4120</td>
 <td style="text-align: right;">-0.0541076</td>
@@ -3518,7 +3518,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML434</td>
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">0.5113</td>
 <td style="text-align: right;">1.4120</td>
 <td style="text-align: right;">-0.0295557</td>
@@ -3527,7 +3527,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local3</td>
+<td style="text-align: left;">MOZ3</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">0.2874</td>
 <td style="text-align: right;">-0.0546137</td>
@@ -3536,7 +3536,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML366</td>
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">0.8961</td>
 <td style="text-align: right;">0.7962</td>
 <td style="text-align: right;">0.0401323</td>
@@ -3545,7 +3545,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local4</td>
+<td style="text-align: left;">MOZ4</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">-0.2151</td>
 <td style="text-align: right;">0.0827696</td>
@@ -3554,7 +3554,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML435</td>
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">-0.0237</td>
 <td style="text-align: right;">1.4120</td>
 <td style="text-align: right;">0.0541037</td>
@@ -3563,7 +3563,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML434</td>
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">0.5113</td>
 <td style="text-align: right;">0.7962</td>
 <td style="text-align: right;">0.0525874</td>
@@ -3572,7 +3572,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local5</td>
+<td style="text-align: left;">MOZ5</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">-0.3594</td>
 <td style="text-align: right;">0.0046780</td>
@@ -3581,7 +3581,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML366</td>
-<td style="text-align: left;">Local3</td>
+<td style="text-align: left;">MOZ3</td>
 <td style="text-align: right;">0.8961</td>
 <td style="text-align: right;">0.2874</td>
 <td style="text-align: right;">0.0287326</td>
@@ -3590,7 +3590,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML439</td>
-<td style="text-align: left;">Local1</td>
+<td style="text-align: left;">MOZ1</td>
 <td style="text-align: right;">-0.4118</td>
 <td style="text-align: right;">1.4120</td>
 <td style="text-align: right;">0.0453608</td>
@@ -3599,7 +3599,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML434</td>
-<td style="text-align: left;">Local3</td>
+<td style="text-align: left;">MOZ3</td>
 <td style="text-align: right;">0.5113</td>
 <td style="text-align: right;">0.2874</td>
 <td style="text-align: right;">0.0125424</td>
@@ -3608,7 +3608,7 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td style="text-align: left;">CML364</td>
-<td style="text-align: left;">Local6</td>
+<td style="text-align: left;">MOZ6</td>
 <td style="text-align: right;">1.6033</td>
 <td style="text-align: right;">-0.8037</td>
 <td style="text-align: right;">-0.0053917</td>
@@ -3617,7 +3617,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;">CML435</td>
-<td style="text-align: left;">Local2</td>
+<td style="text-align: left;">MOZ2</td>
 <td style="text-align: right;">-0.0237</td>
 <td style="text-align: right;">0.7962</td>
 <td style="text-align: right;">0.0105364</td>
@@ -3629,7 +3629,7 @@ window.Quarto = {
 </div>
 </div>
 <blockquote class="blockquote">
-<p>[!TIP] The hybrid <strong><code>CML364_Local4</code></strong> ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</p>
+<p>[!TIP] The hybrid <strong><code>CML364_MOZ4</code></strong> ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</p>
 </blockquote>
 <hr>
 </section>
@@ -4229,14 +4229,14 @@ window.Quarto = {
 <span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>Stelio&#39;s research focuses on the genetic architecture of low-phosphorus use efficiency (PUE) in maize. The mating design is a **Factorial Mating Design** (often referred to as a **Line × Tester / North Carolina Design II**).</span>
 <span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Female Parents (Lines - PUE Donors from CIMMYT):** 7 low-P tolerant inbred lines:</span>
 <span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    $$\text{CML364, CML366, CML434, CML435, CML439, CML440, and CML532}$$</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled <span class="in">`Local1`</span> to <span class="in">`Local7`</span>).</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Male Parents (Testers - Local elite lines from Mozambique):** 7 well-adapted but susceptible lines (labeled <span class="in">`MOZ1`</span> to <span class="in">`MOZ7`</span>).</span>
 <span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Hybrid Families ($F_1$):** All possible crosses between the 7 females and 7 males are made, yielding a total of **49 unique $F_1$ hybrid combinations**. </span>
 <span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="ss">*   </span>**Genetic Advantage:** Unlike a diallel, a factorial mating design utilizes two distinct, mutually exclusive parental sets. This prevents selfing or reciprocal cross complications.</span>
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### Stelio&#39;s Factorial Mating Grid</span></span>
 <span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>Each cell represents an $F_1$ hybrid family evaluated in the field.</span>
 <span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CIMMYT Donors (Females) <span class="pp">|</span> Local1 <span class="pp">|</span> Local2 <span class="pp">|</span> Local3 <span class="pp">|</span> Local4 <span class="pp">|</span> Local5 <span class="pp">|</span> Local6 <span class="pp">|</span> Local7 <span class="pp">|</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> CIMMYT Donors (Females) <span class="pp">|</span> MOZ1 <span class="pp">|</span> MOZ2 <span class="pp">|</span> MOZ3 <span class="pp">|</span> MOZ4 <span class="pp">|</span> MOZ5 <span class="pp">|</span> MOZ6 <span class="pp">|</span> MOZ7 <span class="pp">|</span></span>
 <span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
 <span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML364** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
 <span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **CML366** <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span> $F_1$ <span class="pp">|</span></span>
@@ -4436,7 +4436,7 @@ window.Quarto = {
 <span id="cb12-243"><a href="#cb12-243" aria-hidden="true" tabindex="-1"></a>  <span class="at">Estimated_GCA =</span> <span class="fu">round</span>(gca_male_fixed, <span class="dv">4</span>)</span>
 <span id="cb12-244"><a href="#cb12-244" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-245"><a href="#cb12-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-246"><a href="#cb12-246" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">&quot;Estimated GCA Effects for Male Parents (Local Testers)&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-246"><a href="#cb12-246" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(gca_male_df, <span class="at">caption =</span> <span class="st">&quot;Estimated GCA Effects for Male Parents (MOZ Testers)&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-247"><a href="#cb12-247" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
 <span id="cb12-248"><a href="#cb12-248" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb12-249"><a href="#cb12-249" aria-hidden="true" tabindex="-1"></a></span>
@@ -4499,17 +4499,17 @@ window.Quarto = {
 <span id="cb12-310"><a href="#cb12-310" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
 <span id="cb12-311"><a href="#cb12-311" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-312"><a href="#cb12-312" aria-hidden="true" tabindex="-1"></a>male_blups_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb12-313"><a href="#cb12-313" aria-hidden="true" tabindex="-1"></a>  <span class="at">Local_Male =</span> <span class="fu">gsub</span>(<span class="st">&quot;male&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(male_blups)),</span>
+<span id="cb12-313"><a href="#cb12-313" aria-hidden="true" tabindex="-1"></a>  <span class="at">MOZ_Male =</span> <span class="fu">gsub</span>(<span class="st">&quot;male&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">names</span>(male_blups)),</span>
 <span id="cb12-314"><a href="#cb12-314" aria-hidden="true" tabindex="-1"></a>  <span class="at">GCA_BLUP =</span> <span class="fu">round</span>(<span class="fu">as.numeric</span>(male_blups), <span class="dv">4</span>)</span>
 <span id="cb12-315"><a href="#cb12-315" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-316"><a href="#cb12-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-317"><a href="#cb12-317" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">&quot;Male GCA BLUPs (Local Testers) under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-317"><a href="#cb12-317" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(male_blups_df, <span class="at">caption =</span> <span class="st">&quot;Male GCA BLUPs (MOZ Testers) under Low Phosphorus Stress&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-318"><a href="#cb12-318" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
 <span id="cb12-319"><a href="#cb12-319" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb12-320"><a href="#cb12-320" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-321"><a href="#cb12-321" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
 <span id="cb12-322"><a href="#cb12-322" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`CML364`</span><span class="at"> and </span><span class="in">`CML366`</span><span class="at"> exhibit strong positive GCA BLUPs. This means they are superior donor parents that will transmit phosphorus use efficiency alleles reliably to their offspring.</span></span>
-<span id="cb12-323"><a href="#cb12-323" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`Local1`</span><span class="at"> and </span><span class="in">`Local2`</span><span class="at"> are the best local tester parents.</span></span>
+<span id="cb12-323"><a href="#cb12-323" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *   </span><span class="in">`MOZ1`</span><span class="at"> and </span><span class="in">`MOZ2`</span><span class="at"> are the best local tester parents.</span></span>
 <span id="cb12-324"><a href="#cb12-324" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-325"><a href="#cb12-325" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extracting SCA BLUPs</span></span>
 <span id="cb12-326"><a href="#cb12-326" aria-hidden="true" tabindex="-1"></a>We extract the Specific Combining Ability predictions (dominance deviations) and format them into a symmetric $7 \times 7$ grid.</span>
@@ -4565,7 +4565,7 @@ window.Quarto = {
 <span id="cb12-380"><a href="#cb12-380" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-381"><a href="#cb12-381" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb12-382"><a href="#cb12-382" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Female =</span> <span class="fu">map_dbl</span>(Female, <span class="sc">~</span> female_blups_df<span class="sc">$</span>GCA_BLUP[female_blups_df<span class="sc">$</span>CIMMYT_Female <span class="sc">==</span> .x]),</span>
-<span id="cb12-383"><a href="#cb12-383" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>Local_Male <span class="sc">==</span> .x]),</span>
+<span id="cb12-383"><a href="#cb12-383" aria-hidden="true" tabindex="-1"></a>    <span class="at">GCA_Male =</span> <span class="fu">map_dbl</span>(Male, <span class="sc">~</span> male_blups_df<span class="sc">$</span>GCA_BLUP[male_blups_df<span class="sc">$</span>MOZ_Male <span class="sc">==</span> .x]),</span>
 <span id="cb12-384"><a href="#cb12-384" aria-hidden="true" tabindex="-1"></a>    <span class="at">SCA =</span> <span class="fu">map2_dbl</span>(Female, Male, <span class="sc">~</span> sca_matrix_blup[.x, .y]),</span>
 <span id="cb12-385"><a href="#cb12-385" aria-hidden="true" tabindex="-1"></a>    <span class="at">Breeding_Value_BV =</span> GCA_Female <span class="sc">+</span> GCA_Male,</span>
 <span id="cb12-386"><a href="#cb12-386" aria-hidden="true" tabindex="-1"></a>    <span class="at">Genotypic_Value_GV =</span> Breeding_Value_BV <span class="sc">+</span> SCA</span>
@@ -4580,7 +4580,7 @@ window.Quarto = {
 <span id="cb12-395"><a href="#cb12-395" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb12-396"><a href="#cb12-396" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-397"><a href="#cb12-397" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!TIP</span><span class="co">]</span></span>
-<span id="cb12-398"><a href="#cb12-398" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The hybrid **`CML364_Local4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</span></span>
+<span id="cb12-398"><a href="#cb12-398" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The hybrid **`CML364_MOZ4`** ranks highly because it combines excellent maternal GCA (+1.08) and paternal GCA (+0.43) with a strong positive specific combining ability (SCA = +0.44).</span></span>
 <span id="cb12-399"><a href="#cb12-399" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-400"><a href="#cb12-400" aria-hidden="true" tabindex="-1"></a>***</span>
 <span id="cb12-401"><a href="#cb12-401" aria-hidden="true" tabindex="-1"></a></span>
