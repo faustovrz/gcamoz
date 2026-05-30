@@ -18,20 +18,25 @@ format:
 > [!NOTE]
 > This notebook is dedicated strictly to the genetic simulation of a 7 × 7 maize factorial cross (Line × Tester) evaluated in two environments. The objective is to establish a biologically realistic dataset for General Combining Ability (GCA) and Specific Combining Ability (SCA) calculations, and save it in a clean CSV format.
 
-***
-
 # Mating and Environmental Design
 
 Our simulation is modeled exactly on Stelio's PhD experimental setup:
+
 *   **Breeding Scheme:** Factorial Mating Design (North Carolina Design II / Line × Tester).
+
     *   **Females (Lines):** 7 Low-Phosphorus tolerant CIMMYT inbred lines (`CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532`).
+
     *   **Males (Testers):** 7 elite local Mozambican lines (`Local1` to `Local7`).
+
     *   **Crosses:** All $7 \times 7 = 49$ unique $F_1$ hybrid combinations. (No selfs, no reciprocals).
+
 *   **Experimental Design:** Randomized Complete Block Design (RCBD) with **3 replications (blocks)** per environment.
+
 *   **Environments ($E$):** 2 environments representing phosphorus treatments (`env1` = Normal Phosphorus, `env2` = Low Phosphorus Stress).
+
 *   **Response Trait:** Grain Yield (tons/ha).
 
-***
+
 
 # R Setup and Simulation Parameters
 
@@ -51,12 +56,19 @@ set.seed(88)
 ## Parameter Definitions
 We define the genetic and environmental parameters that will determine the phenotypic yield:
 1.  **Base Mean ($\mu$):** 8.2 tons/ha.
+
 2.  **Environment Effects ($E$):** Normal P (`env1`) adds $+1.1$ t/ha; Low P (`env2`) reduces yield by $-1.3$ t/ha.
+
 3.  **Female GCA Effects ($g_f$):** CIMMYT lines carry alleles for phosphorus use efficiency (PUE).
+
 4.  **Male GCA Effects ($g_m$):** Local lines reflect general agroecological adaptation.
+
 5.  **SCA Effects ($s_{fm}$):** Specific hybrid combinations show positive heterosis.
+
 6.  **GCA × Environment Interaction ($G \times E$):** In the low-P environment (`env2`), the PUE tolerance of superior CIMMYT lines (`CML364` and `CML366`) is expressed even more strongly (enhancing their GCA by $+30\%$).
+
 7.  **SCA × Environment Interaction ($S \times E$):** Hybrid-specific adaptation to environmental stress.
+
 8.  **Residual Plot Error ($\epsilon$):** Normal variation among plots ($\sigma_{\epsilon} = 0.35$ t/ha).
 
 ```{r}

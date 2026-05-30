@@ -63,15 +63,24 @@ To analyze the phenotypic yield data, we model the value of a plot containing hy
 $$y_{ijpq} = \mu + E_i + B_{j(i)} + g_{F_p} + g_{M_q} + s_{pq} + (Eg_{F})_{ip} + (Eg_{M})_{iq} + (Es)_{ipq} + \epsilon_{ijpq}$$
 
 Where:
-*   $y_{ijpq}$ is the grain yield observed in the plot.
+* $y_{ijpq}$ is the grain yield observed in the plot.
+
 *   $\mu$ is the overall mean grain yield of the population.
+
 *   $E_i$ is the fixed effect of the $i$-th environment (phosphorus treatment).
+
 *   $B_{j(i)}$ is the random effect of the $j$-th block nested within the $i$-th environment, assumed $B_{j(i)} \sim \text{NID}(0, \sigma^2_{B(E)})$.
+
 *   $g_{F_p}$ is the random General Combining Ability (GCA) effect of the $p$-th female parent, assumed $g_{F_p} \sim \text{NID}(0, \sigma^2_{GCA\_F})$. This represents the additive breeding value transmitted by the CIMMYT donor.
+
 *   $g_{M_q}$ is the random GCA effect of the $q$-th male parent, assumed $g_{M_q} \sim \text{NID}(0, \sigma^2_{GCA\_M})$. This represents the additive breeding value transmitted by the local tester.
+
 *   $s_{pq}$ is the random Specific Combining Ability (SCA) effect of the cross between female $p$ and male $q$, assumed $s_{pq} \sim \text{NID}(0, \sigma^2_{SCA})$. This represents dominance deviations (heterosis/hybrid vigor).
+
 *   $(Eg_{F})_{ip}$ and $(Eg_{M})_{iq}$ are the random interactions of the parental GCA effects with the environment, modeling how additive breeding values respond to low-phosphorus stress.
+
 *   $(Es)_{ipq}$ is the random interaction of the SCA effect with the environment, representing specific hybrid adaptability to stress.
+
 *   $\epsilon_{ijpq}$ is the residual experimental plot error, assumed $\epsilon_{ijpq} \sim \text{NID}(0, \sigma^2_{\epsilon})$.
 
 > [!IMPORTANT]
