@@ -91,6 +91,8 @@ This would make the real dataset parallel to the simulated RCBD file, which alre
 
 ## Experimental Design
 
+> The alpha-lattice design is the actual field-plot arrangement used to evaluate the 49 genotypes produced by the 7 x 7 line-by-tester crossing design.
+
 Stelio's real field trial is a **multilocation alpha-lattice design**. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio's statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:
 
 $$49 = 7 \times 7$$

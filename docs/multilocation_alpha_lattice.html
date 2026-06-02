@@ -2863,6 +2863,9 @@ Warning
 </section>
 <section id="experimental-design" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="experimental-design"><span class="header-section-number">1.4</span> Experimental Design</h2>
+<blockquote class="blockquote">
+<p>The alpha-lattice design is the actual field-plot arrangement used to evaluate the 49 genotypes produced by the 7 x 7 line-by-tester crossing design.</p>
+</blockquote>
 <p>Stelio’s real field trial is a <strong>multilocation alpha-lattice design</strong>. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio’s statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:</p>
 <p><span class="math display">\[49 = 7 \times 7\]</span></p>
 <section id="locations-environments" class="level3" data-number="1.4.1">
@@ -4268,276 +4271,278 @@ Important
 <span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="fu">## Experimental Design</span></span>
 <span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>Stelio&#39;s real field trial is a **multilocation alpha-lattice design**. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio&#39;s statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:</span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; The alpha-lattice design is the actual field-plot arrangement used to evaluate the 49 genotypes produced by the 7 x 7 line-by-tester crossing design.</span></span>
 <span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>$$49 = 7 \times 7$$</span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>Stelio&#39;s real field trial is a **multilocation alpha-lattice design**. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio&#39;s statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:</span>
 <span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a><span class="fu">### Locations / Environments</span></span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a>$$49 = 7 \times 7$$</span>
 <span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a>The trial contains four environments/locations, recorded in the <span class="in">`ENV`</span> column:</span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a><span class="fu">### Locations / Environments</span></span>
 <span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Location code in <span class="in">`ENV`</span> <span class="pp">|</span> Interpretation in this notebook <span class="pp">|</span></span>
-<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
-<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`CHOKWE STS`</span> <span class="pp">|</span> Chokwe stress environment <span class="pp">|</span></span>
-<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`CKOKWE OPT`</span> <span class="pp">|</span> Chokwe optimum environment, as spelled in the CSV <span class="pp">|</span></span>
-<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`NHACOONGO`</span> <span class="pp">|</span> Nhacoongo environment <span class="pp">|</span></span>
-<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`SUSSUNDENGA`</span> <span class="pp">|</span> Sussundenga environment <span class="pp">|</span></span>
-<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="fu">### Alpha-Lattice Layout Within Each Location</span></span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a>The trial contains four environments/locations, recorded in the <span class="in">`ENV`</span> column:</span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Location code in <span class="in">`ENV`</span> <span class="pp">|</span> Interpretation in this notebook <span class="pp">|</span></span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`CHOKWE STS`</span> <span class="pp">|</span> Chokwe stress environment <span class="pp">|</span></span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`CKOKWE OPT`</span> <span class="pp">|</span> Chokwe optimum environment, as spelled in the CSV <span class="pp">|</span></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`NHACOONGO`</span> <span class="pp">|</span> Nhacoongo environment <span class="pp">|</span></span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="in">`SUSSUNDENGA`</span> <span class="pp">|</span> Sussundenga environment <span class="pp">|</span></span>
 <span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a>Within each location and replication:</span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a><span class="fu">### Alpha-Lattice Layout Within Each Location</span></span>
 <span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>there are **7 incomplete blocks**;</span>
-<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>each incomplete block contains **7 plots/genotypes**;</span>
-<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>all 49 genotypes appear once per replication;</span>
-<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>the replication is therefore a complete replicate, but it is subdivided into smaller incomplete blocks.</span>
-<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a>Across the trial:</span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a>Within each location and replication:</span>
+<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>there are **7 incomplete blocks**;</span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>each incomplete block contains **7 plots/genotypes**;</span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>all 49 genotypes appear once per replication;</span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>the replication is therefore a complete replicate, but it is subdivided into smaller incomplete blocks.</span>
 <span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Replications (`REP`)**: <span class="in">`I`</span>, <span class="in">`II`</span>, and <span class="in">`III`</span> within each environment.</span>
-<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Genotypes (`GEN`)**: 49 unique entries.</span>
-<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Traits**: grain yield, yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.</span>
-<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a>This is different from an RCBD. In an RCBD, each replication is treated as one large complete block of 49 plots. In an alpha lattice, each replication is split into incomplete blocks, so the field error model can account for local variation among smaller neighboring plot groups.</span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a>Across the trial:</span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Replications (`REP`)**: <span class="in">`I`</span>, <span class="in">`II`</span>, and <span class="in">`III`</span> within each environment.</span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Genotypes (`GEN`)**: 49 unique entries.</span>
+<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Traits**: grain yield, yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.</span>
 <span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a><span class="fu">## How the Data Fit the Alpha Lattice</span></span>
+<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a>This is different from an RCBD. In an RCBD, each replication is treated as one large complete block of 49 plots. In an alpha lattice, each replication is split into incomplete blocks, so the field error model can account for local variation among smaller neighboring plot groups.</span>
 <span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a>The clean alpha-lattice expectation is:</span>
+<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## How the Data Fit the Alpha Lattice</span></span>
 <span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>$$4\ \text{environments} \times 3\ \text{replications} \times 7\ \text{incomplete blocks} \times 7\ \text{plots} = 588\ \text{plots}$$</span>
+<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>The clean alpha-lattice expectation is:</span>
 <span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a>The file has 597 rows, not 588. The reason is specific and diagnosable: in three environments (<span class="in">`CHOKWE STS`</span>, <span class="in">`CKOKWE OPT`</span>, and <span class="in">`SUSSUNDENGA`</span>), each replication has one duplicated record for <span class="in">`GEN = 49`</span>. <span class="in">`NHACOONGO`</span> has the expected 49 rows per replication.</span>
+<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a>$$4\ \text{environments} \times 3\ \text{replications} \times 7\ \text{incomplete blocks} \times 7\ \text{plots} = 588\ \text{plots}$$</span>
 <span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>Therefore, the design evidence is:</span>
+<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a>The file has 597 rows, not 588. The reason is specific and diagnosable: in three environments (<span class="in">`CHOKWE STS`</span>, <span class="in">`CKOKWE OPT`</span>, and <span class="in">`SUSSUNDENGA`</span>), each replication has one duplicated record for <span class="in">`GEN = 49`</span>. <span class="in">`NHACOONGO`</span> has the expected 49 rows per replication.</span>
 <span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>The genotype set is exactly 49 entries.</span>
-<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Every <span class="in">`ENV x REP`</span> combination has 49 unique genotypes.</span>
-<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`NHACOONGO`</span> is exactly <span class="in">`3 x 7 x 7`</span>.</span>
-<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>The other environments contain one extra plot record per replication, always a duplicated <span class="in">`GEN = 49`</span>.</span>
-<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Row order reveals a repeated 7-by-7 lattice order, so the incomplete-block labels can be reconstructed as <span class="in">`ceiling(plot_order / 7)`</span> after the duplicate issue is resolved.</span>
-<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
-<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>The original fieldbook should be checked for the duplicate <span class="in">`GEN = 49`</span> rows before final analysis. For the design illustration below, <span class="in">`NHACOONGO`</span> is used because it is the clean location with exactly 49 plots in each replication.</span>
-<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a><span class="fu">## Phenotypic Model</span></span>
+<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a>Therefore, the design evidence is:</span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>The genotype set is exactly 49 entries.</span>
+<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Every <span class="in">`ENV x REP`</span> combination has 49 unique genotypes.</span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`NHACOONGO`</span> is exactly <span class="in">`3 x 7 x 7`</span>.</span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>The other environments contain one extra plot record per replication, always a duplicated <span class="in">`GEN = 49`</span>.</span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Row order reveals a repeated 7-by-7 lattice order, so the incomplete-block labels can be reconstructed as <span class="in">`ceiling(plot_order / 7)`</span> after the duplicate issue is resolved.</span>
+<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
+<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a>The original fieldbook should be checked for the duplicate <span class="in">`GEN = 49`</span> rows before final analysis. For the design illustration below, <span class="in">`NHACOONGO`</span> is used because it is the clean location with exactly 49 plots in each replication.</span>
+<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a>For a single trait such as grain yield, a practical multilocation alpha-lattice model is:</span>
+<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a><span class="fu">## Phenotypic Model</span></span>
 <span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>$$y_{hijk} = \mu + E_h + R_{i(h)} + B_{j(hi)} + G_k + (EG)_{hk} + \epsilon_{hijk}$$</span>
+<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a>For a single trait such as grain yield, a practical multilocation alpha-lattice model is:</span>
 <span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>$$y_{hijk} = \mu + E_h + R_{i(h)} + B_{j(hi)} + G_k + (EG)_{hk} + \epsilon_{hijk}$$</span>
 <span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$y_{hijk}$ is the observed phenotype of genotype $k$ in incomplete block $j$, replication $i$, and environment $h$.</span>
-<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mu$ is the overall mean.</span>
-<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$E_h$ is the environment effect.</span>
-<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$R_{i(h)}$ is the replication effect nested within environment.</span>
-<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$B_{j(hi)}$ is the incomplete-block effect nested within replication and environment.</span>
-<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$G_k$ is the genotype effect.</span>
-<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$(EG)_{hk}$ is the genotype-by-environment interaction.</span>
-<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\epsilon_{hijk}$ is plot error.</span>
-<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>For cultivar evaluation, <span class="in">`GEN`</span> and <span class="in">`ENV`</span> may be fitted as fixed effects. For breeding-value prediction, <span class="in">`GEN`</span>, <span class="in">`GEN x ENV`</span>, and incomplete-block terms are often fitted as random effects. For GCA/SCA, the model can be extended once a pedigree key is available:</span>
+<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a>where:</span>
+<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$y_{hijk}$ is the observed phenotype of genotype $k$ in incomplete block $j$, replication $i$, and environment $h$.</span>
+<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mu$ is the overall mean.</span>
+<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$E_h$ is the environment effect.</span>
+<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$R_{i(h)}$ is the replication effect nested within environment.</span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$B_{j(hi)}$ is the incomplete-block effect nested within replication and environment.</span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$G_k$ is the genotype effect.</span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$(EG)_{hk}$ is the genotype-by-environment interaction.</span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\epsilon_{hijk}$ is plot error.</span>
 <span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>$$G_k = g_{F_p} + g_{M_q} + s_{pq}$$</span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>For cultivar evaluation, <span class="in">`GEN`</span> and <span class="in">`ENV`</span> may be fitted as fixed effects. For breeding-value prediction, <span class="in">`GEN`</span>, <span class="in">`GEN x ENV`</span>, and incomplete-block terms are often fitted as random effects. For GCA/SCA, the model can be extended once a pedigree key is available:</span>
 <span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>for genotype/cross $k = (p,q)$, where $g_{F_p}$ is female GCA, $g_{M_q}$ is male GCA, and $s_{pq}$ is SCA.</span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>$$G_k = g_{F_p} + g_{M_q} + s_{pq}$$</span>
 <span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a><span class="fu"># R Setup and Data Import</span></span>
+<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a>for genotype/cross $k = (p,q)$, where $g_{F_p}$ is female GCA, $g_{M_q}$ is male GCA, and $s_{pq}$ is SCA.</span>
 <span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
-<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
-<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(aplot)</span>
-<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/multilocation.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(ENV),</span>
-<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a>    <span class="at">REP =</span> <span class="fu">factor</span>(REP, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>)),</span>
-<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">factor</span>(GEN)</span>
-<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a><span class="fu"># Design Diagnostics</span></span>
+<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a><span class="fu"># R Setup and Data Import</span></span>
+<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: setup</span></span>
+<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(aplot)</span>
+<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/multilocation.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(ENV),</span>
+<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a>    <span class="at">REP =</span> <span class="fu">factor</span>(REP, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>)),</span>
+<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">factor</span>(GEN)</span>
+<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## Basic Dimensions</span></span>
+<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a><span class="fu"># Design Diagnostics</span></span>
 <span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: design-summary</span></span>
-<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a>design_summary <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> <span class="fu">n</span>(),</span>
-<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>    <span class="at">environments =</span> <span class="fu">n_distinct</span>(ENV),</span>
-<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a>    <span class="at">replications =</span> <span class="fu">n_distinct</span>(REP),</span>
-<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a>    <span class="at">genotypes =</span> <span class="fu">n_distinct</span>(GEN)</span>
-<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(design_summary, <span class="at">caption =</span> <span class="st">&quot;Basic dimensions of Stelio&#39;s multilocation dataset&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## Replication Completeness</span></span>
+<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a><span class="fu">## Basic Dimensions</span></span>
+<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: design-summary</span></span>
+<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a>design_summary <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a>    <span class="at">rows =</span> <span class="fu">n</span>(),</span>
+<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a>    <span class="at">environments =</span> <span class="fu">n_distinct</span>(ENV),</span>
+<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a>    <span class="at">replications =</span> <span class="fu">n_distinct</span>(REP),</span>
+<span id="cb9-207"><a href="#cb9-207" aria-hidden="true" tabindex="-1"></a>    <span class="at">genotypes =</span> <span class="fu">n_distinct</span>(GEN)</span>
+<span id="cb9-208"><a href="#cb9-208" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-209"><a href="#cb9-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-210"><a href="#cb9-210" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(design_summary, <span class="at">caption =</span> <span class="st">&quot;Basic dimensions of Stelio&#39;s multilocation dataset&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-211"><a href="#cb9-211" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb9-212"><a href="#cb9-212" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-213"><a href="#cb9-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-216"><a href="#cb9-216" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-217"><a href="#cb9-217" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: replication-completeness</span></span>
-<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a>rep_summary <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(ENV, REP, <span class="at">name =</span> <span class="st">&quot;observed_rows&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>    raw_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarize</span>(<span class="at">unique_genotypes =</span> <span class="fu">n_distinct</span>(GEN), <span class="at">.by =</span> <span class="fu">c</span>(ENV, REP)),</span>
-<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;ENV&quot;</span>, <span class="st">&quot;REP&quot;</span>)</span>
-<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>    <span class="at">expected_alpha_lattice_rows =</span> <span class="dv">49</span>,</span>
-<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_rows =</span> observed_rows <span class="sc">-</span> expected_alpha_lattice_rows</span>
-<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(rep_summary, <span class="at">caption =</span> <span class="st">&quot;Observed rows and unique genotypes per environment-by-replication&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a><span class="fu">## Duplicate Records to Verify</span></span>
+<span id="cb9-214"><a href="#cb9-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## Replication Completeness</span></span>
+<span id="cb9-215"><a href="#cb9-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-218"><a href="#cb9-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-219"><a href="#cb9-219" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: replication-completeness</span></span>
+<span id="cb9-220"><a href="#cb9-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-221"><a href="#cb9-221" aria-hidden="true" tabindex="-1"></a>rep_summary <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-222"><a href="#cb9-222" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(ENV, REP, <span class="at">name =</span> <span class="st">&quot;observed_rows&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-223"><a href="#cb9-223" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb9-224"><a href="#cb9-224" aria-hidden="true" tabindex="-1"></a>    raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-225"><a href="#cb9-225" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarize</span>(<span class="at">unique_genotypes =</span> <span class="fu">n_distinct</span>(GEN), <span class="at">.by =</span> <span class="fu">c</span>(ENV, REP)),</span>
+<span id="cb9-226"><a href="#cb9-226" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;ENV&quot;</span>, <span class="st">&quot;REP&quot;</span>)</span>
+<span id="cb9-227"><a href="#cb9-227" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-228"><a href="#cb9-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-229"><a href="#cb9-229" aria-hidden="true" tabindex="-1"></a>    <span class="at">expected_alpha_lattice_rows =</span> <span class="dv">49</span>,</span>
+<span id="cb9-230"><a href="#cb9-230" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_rows =</span> observed_rows <span class="sc">-</span> expected_alpha_lattice_rows</span>
+<span id="cb9-231"><a href="#cb9-231" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-232"><a href="#cb9-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-233"><a href="#cb9-233" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(rep_summary, <span class="at">caption =</span> <span class="st">&quot;Observed rows and unique genotypes per environment-by-replication&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-234"><a href="#cb9-234" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb9-235"><a href="#cb9-235" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-236"><a href="#cb9-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-239"><a href="#cb9-239" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-240"><a href="#cb9-240" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: duplicate-records</span></span>
-<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a>duplicate_records <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_order =</span> <span class="fu">row_number</span>(), <span class="at">.by =</span> <span class="fu">c</span>(ENV, REP)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ENV, REP, GEN) <span class="sc">%&gt;%</span></span>
-<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ENV, REP, plot_order, GEN, <span class="st">`</span><span class="at">Yield t/ha</span><span class="st">`</span>)</span>
-<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(duplicate_records, <span class="at">caption =</span> <span class="st">&quot;Duplicated GEN records that should be checked against the fieldbook&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a><span class="fu"># Reconstructing the Alpha-Lattice Blocks</span></span>
+<span id="cb9-237"><a href="#cb9-237" aria-hidden="true" tabindex="-1"></a><span class="fu">## Duplicate Records to Verify</span></span>
+<span id="cb9-238"><a href="#cb9-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-241"><a href="#cb9-241" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-242"><a href="#cb9-242" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: duplicate-records</span></span>
+<span id="cb9-243"><a href="#cb9-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-244"><a href="#cb9-244" aria-hidden="true" tabindex="-1"></a>duplicate_records <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-245"><a href="#cb9-245" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">plot_order =</span> <span class="fu">row_number</span>(), <span class="at">.by =</span> <span class="fu">c</span>(ENV, REP)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-246"><a href="#cb9-246" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ENV, REP, GEN) <span class="sc">%&gt;%</span></span>
+<span id="cb9-247"><a href="#cb9-247" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-248"><a href="#cb9-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-249"><a href="#cb9-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ENV, REP, plot_order, GEN, <span class="st">`</span><span class="at">Yield t/ha</span><span class="st">`</span>)</span>
+<span id="cb9-250"><a href="#cb9-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-251"><a href="#cb9-251" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(duplicate_records, <span class="at">caption =</span> <span class="st">&quot;Duplicated GEN records that should be checked against the fieldbook&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-252"><a href="#cb9-252" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb9-253"><a href="#cb9-253" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-254"><a href="#cb9-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a>The CSV does not contain a column named <span class="in">`incomplete_block`</span>. However, for the clean location <span class="in">`NHACOONGO`</span>, the row order forms exactly 49 plots per replication. We can reconstruct the candidate alpha-lattice block as:</span>
+<span id="cb9-255"><a href="#cb9-255" aria-hidden="true" tabindex="-1"></a><span class="fu"># Reconstructing the Alpha-Lattice Blocks</span></span>
 <span id="cb9-256"><a href="#cb9-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a>$$\text{incomplete block} = \left\lceil \frac{\text{plot order within replication}}{7} \right\rceil$$</span>
+<span id="cb9-257"><a href="#cb9-257" aria-hidden="true" tabindex="-1"></a>The CSV does not contain a column named <span class="in">`incomplete_block`</span>. However, for the clean location <span class="in">`NHACOONGO`</span>, the row order forms exactly 49 plots per replication. We can reconstruct the candidate alpha-lattice block as:</span>
 <span id="cb9-258"><a href="#cb9-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-261"><a href="#cb9-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-262"><a href="#cb9-262" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct-nhacoongo</span></span>
-<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a>nhacoongo_lattice <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
-<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ENV <span class="sc">==</span> <span class="st">&quot;NHACOONGO&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(REP) <span class="sc">%&gt;%</span></span>
-<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_order =</span> <span class="fu">row_number</span>(),</span>
-<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">rep_plot =</span> <span class="fu">row_number</span>(),</span>
-<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> REP</span>
-<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_block =</span> <span class="fu">ceiling</span>(rep_plot <span class="sc">/</span> <span class="dv">7</span>),</span>
-<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_in_block =</span> ((rep_plot <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">7</span>) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a>nhacoongo_check <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
-<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(REP, incomplete_block, <span class="at">name =</span> <span class="st">&quot;plots&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_blocks =</span> <span class="fu">n_distinct</span>(incomplete_block),</span>
-<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_block_size =</span> <span class="fu">min</span>(plots),</span>
-<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_block_size =</span> <span class="fu">max</span>(plots),</span>
-<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> REP</span>
-<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(nhacoongo_check, <span class="at">caption =</span> <span class="st">&quot;NHACOONGO has 7 incomplete blocks of 7 plots in every replication&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-292"><a href="#cb9-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-293"><a href="#cb9-293" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: nhacoongo-layout-table</span></span>
-<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a>nhacoongo_table <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
-<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a>    REP,</span>
-<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_block =</span> <span class="fu">paste0</span>(<span class="st">&quot;IB&quot;</span>, incomplete_block),</span>
-<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_in_block =</span> <span class="fu">paste0</span>(<span class="st">&quot;Plot &quot;</span>, plot_in_block),</span>
-<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">as.character</span>(GEN)</span>
-<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> plot_in_block, <span class="at">values_from =</span> GEN)</span>
-<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-304"><a href="#cb9-304" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(nhacoongo_table, <span class="at">caption =</span> <span class="st">&quot;Reconstructed alpha-lattice layout for NHACOONGO&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
-<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a><span class="fu"># Alpha-Lattice Illustration with `aplot`</span></span>
+<span id="cb9-259"><a href="#cb9-259" aria-hidden="true" tabindex="-1"></a>$$\text{incomplete block} = \left\lceil \frac{\text{plot order within replication}}{7} \right\rceil$$</span>
+<span id="cb9-260"><a href="#cb9-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-263"><a href="#cb9-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-264"><a href="#cb9-264" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: reconstruct-nhacoongo</span></span>
+<span id="cb9-265"><a href="#cb9-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-266"><a href="#cb9-266" aria-hidden="true" tabindex="-1"></a>nhacoongo_lattice <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-267"><a href="#cb9-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ENV <span class="sc">==</span> <span class="st">&quot;NHACOONGO&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-268"><a href="#cb9-268" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(REP) <span class="sc">%&gt;%</span></span>
+<span id="cb9-269"><a href="#cb9-269" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-270"><a href="#cb9-270" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_order =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb9-271"><a href="#cb9-271" aria-hidden="true" tabindex="-1"></a>    <span class="at">rep_plot =</span> <span class="fu">row_number</span>(),</span>
+<span id="cb9-272"><a href="#cb9-272" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> REP</span>
+<span id="cb9-273"><a href="#cb9-273" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-274"><a href="#cb9-274" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-275"><a href="#cb9-275" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_block =</span> <span class="fu">ceiling</span>(rep_plot <span class="sc">/</span> <span class="dv">7</span>),</span>
+<span id="cb9-276"><a href="#cb9-276" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_in_block =</span> ((rep_plot <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%%</span> <span class="dv">7</span>) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb9-277"><a href="#cb9-277" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-278"><a href="#cb9-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-279"><a href="#cb9-279" aria-hidden="true" tabindex="-1"></a>nhacoongo_check <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
+<span id="cb9-280"><a href="#cb9-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(REP, incomplete_block, <span class="at">name =</span> <span class="st">&quot;plots&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-281"><a href="#cb9-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb9-282"><a href="#cb9-282" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_blocks =</span> <span class="fu">n_distinct</span>(incomplete_block),</span>
+<span id="cb9-283"><a href="#cb9-283" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_block_size =</span> <span class="fu">min</span>(plots),</span>
+<span id="cb9-284"><a href="#cb9-284" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_block_size =</span> <span class="fu">max</span>(plots),</span>
+<span id="cb9-285"><a href="#cb9-285" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> REP</span>
+<span id="cb9-286"><a href="#cb9-286" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-287"><a href="#cb9-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-288"><a href="#cb9-288" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(nhacoongo_check, <span class="at">caption =</span> <span class="st">&quot;NHACOONGO has 7 incomplete blocks of 7 plots in every replication&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-289"><a href="#cb9-289" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb9-290"><a href="#cb9-290" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-291"><a href="#cb9-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-294"><a href="#cb9-294" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-295"><a href="#cb9-295" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: nhacoongo-layout-table</span></span>
+<span id="cb9-296"><a href="#cb9-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-297"><a href="#cb9-297" aria-hidden="true" tabindex="-1"></a>nhacoongo_table <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
+<span id="cb9-298"><a href="#cb9-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb9-299"><a href="#cb9-299" aria-hidden="true" tabindex="-1"></a>    REP,</span>
+<span id="cb9-300"><a href="#cb9-300" aria-hidden="true" tabindex="-1"></a>    <span class="at">incomplete_block =</span> <span class="fu">paste0</span>(<span class="st">&quot;IB&quot;</span>, incomplete_block),</span>
+<span id="cb9-301"><a href="#cb9-301" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot_in_block =</span> <span class="fu">paste0</span>(<span class="st">&quot;Plot &quot;</span>, plot_in_block),</span>
+<span id="cb9-302"><a href="#cb9-302" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">as.character</span>(GEN)</span>
+<span id="cb9-303"><a href="#cb9-303" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-304"><a href="#cb9-304" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> plot_in_block, <span class="at">values_from =</span> GEN)</span>
+<span id="cb9-305"><a href="#cb9-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-306"><a href="#cb9-306" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(nhacoongo_table, <span class="at">caption =</span> <span class="st">&quot;Reconstructed alpha-lattice layout for NHACOONGO&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-307"><a href="#cb9-307" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span>
+<span id="cb9-308"><a href="#cb9-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-309"><a href="#cb9-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a>The figure below illustrates one location (<span class="in">`NHACOONGO`</span>). Each panel is a replication. Within a panel, rows are incomplete blocks (<span class="in">`IB1`</span> to <span class="in">`IB7`</span>) and columns are the seven plot positions within an incomplete block. The number inside each tile is the genotype code.</span>
+<span id="cb9-310"><a href="#cb9-310" aria-hidden="true" tabindex="-1"></a><span class="fu"># Alpha-Lattice Illustration with `aplot`</span></span>
 <span id="cb9-311"><a href="#cb9-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-314"><a href="#cb9-314" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb9-315"><a href="#cb9-315" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: alpha-lattice-aplot</span></span>
-<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
-<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 7</span></span>
-<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a>layout_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a>  nhacoongo_lattice,</span>
-<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> plot_in_block, <span class="at">y =</span> <span class="fu">factor</span>(incomplete_block), <span class="at">fill =</span> <span class="st">`</span><span class="at">Yield t/ha</span><span class="st">`</span>)</span>
-<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> GEN), <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> REP, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">limits =</span> rev) <span class="sc">+</span></span>
-<span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span></span>
-<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;C&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Yield</span><span class="sc">\n</span><span class="st">t/ha&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Alpha-lattice layout for NHACOONGO&quot;</span>,</span>
-<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;3 replications; each replication has 7 incomplete blocks of 7 plots&quot;</span>,</span>
-<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Plot position inside incomplete block&quot;</span>,</span>
-<span id="cb9-334"><a href="#cb9-334" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Incomplete block&quot;</span></span>
-<span id="cb9-335"><a href="#cb9-335" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-336"><a href="#cb9-336" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
-<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
-<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span></span>
-<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a>rep_counts <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
-<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(REP, <span class="at">name =</span> <span class="st">&quot;plots&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">&quot;Rep &quot;</span>, REP, <span class="st">&quot;: &quot;</span>, plots, <span class="st">&quot; plots&quot;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> REP, <span class="at">y =</span> plots)) <span class="sc">+</span></span>
-<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">&quot;#2b6cb0&quot;</span>, <span class="at">width =</span> <span class="fl">0.65</span>) <span class="sc">+</span></span>
-<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
-<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">56</span>)) <span class="sc">+</span></span>
-<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Plots per replication&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
-<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a>layout_plot <span class="sc">%&gt;%</span></span>
-<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insert_bottom</span>(rep_counts, <span class="at">height =</span> <span class="fl">0.24</span>)</span>
-<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a><span class="fu"># Analysis Implications</span></span>
+<span id="cb9-312"><a href="#cb9-312" aria-hidden="true" tabindex="-1"></a>The figure below illustrates one location (<span class="in">`NHACOONGO`</span>). Each panel is a replication. Within a panel, rows are incomplete blocks (<span class="in">`IB1`</span> to <span class="in">`IB7`</span>) and columns are the seven plot positions within an incomplete block. The number inside each tile is the genotype code.</span>
+<span id="cb9-313"><a href="#cb9-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-316"><a href="#cb9-316" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-317"><a href="#cb9-317" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: alpha-lattice-aplot</span></span>
+<span id="cb9-318"><a href="#cb9-318" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
+<span id="cb9-319"><a href="#cb9-319" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 7</span></span>
+<span id="cb9-320"><a href="#cb9-320" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb9-321"><a href="#cb9-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-322"><a href="#cb9-322" aria-hidden="true" tabindex="-1"></a>layout_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb9-323"><a href="#cb9-323" aria-hidden="true" tabindex="-1"></a>  nhacoongo_lattice,</span>
+<span id="cb9-324"><a href="#cb9-324" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> plot_in_block, <span class="at">y =</span> <span class="fu">factor</span>(incomplete_block), <span class="at">fill =</span> <span class="st">`</span><span class="at">Yield t/ha</span><span class="st">`</span>)</span>
+<span id="cb9-325"><a href="#cb9-325" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb9-326"><a href="#cb9-326" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb9-327"><a href="#cb9-327" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> GEN), <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">fontface =</span> <span class="st">&quot;bold&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-328"><a href="#cb9-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> REP, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-329"><a href="#cb9-329" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">limits =</span> rev) <span class="sc">+</span></span>
+<span id="cb9-330"><a href="#cb9-330" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>, <span class="at">expand =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb9-331"><a href="#cb9-331" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;C&quot;</span>, <span class="at">name =</span> <span class="st">&quot;Yield</span><span class="sc">\n</span><span class="st">t/ha&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-332"><a href="#cb9-332" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-333"><a href="#cb9-333" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Alpha-lattice layout for NHACOONGO&quot;</span>,</span>
+<span id="cb9-334"><a href="#cb9-334" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;3 replications; each replication has 7 incomplete blocks of 7 plots&quot;</span>,</span>
+<span id="cb9-335"><a href="#cb9-335" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Plot position inside incomplete block&quot;</span>,</span>
+<span id="cb9-336"><a href="#cb9-336" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Incomplete block&quot;</span></span>
+<span id="cb9-337"><a href="#cb9-337" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-338"><a href="#cb9-338" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb9-339"><a href="#cb9-339" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-340"><a href="#cb9-340" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-341"><a href="#cb9-341" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb9-342"><a href="#cb9-342" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb9-343"><a href="#cb9-343" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span></span>
+<span id="cb9-344"><a href="#cb9-344" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-345"><a href="#cb9-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-346"><a href="#cb9-346" aria-hidden="true" tabindex="-1"></a>rep_counts <span class="ot">&lt;-</span> nhacoongo_lattice <span class="sc">%&gt;%</span></span>
+<span id="cb9-347"><a href="#cb9-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(REP, <span class="at">name =</span> <span class="st">&quot;plots&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-348"><a href="#cb9-348" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">&quot;Rep &quot;</span>, REP, <span class="st">&quot;: &quot;</span>, plots, <span class="st">&quot; plots&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-349"><a href="#cb9-349" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> REP, <span class="at">y =</span> plots)) <span class="sc">+</span></span>
+<span id="cb9-350"><a href="#cb9-350" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">&quot;#2b6cb0&quot;</span>, <span class="at">width =</span> <span class="fl">0.65</span>) <span class="sc">+</span></span>
+<span id="cb9-351"><a href="#cb9-351" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
+<span id="cb9-352"><a href="#cb9-352" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">56</span>)) <span class="sc">+</span></span>
+<span id="cb9-353"><a href="#cb9-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Plots per replication&quot;</span>) <span class="sc">+</span></span>
+<span id="cb9-354"><a href="#cb9-354" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb9-355"><a href="#cb9-355" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb9-356"><a href="#cb9-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-357"><a href="#cb9-357" aria-hidden="true" tabindex="-1"></a>layout_plot <span class="sc">%&gt;%</span></span>
+<span id="cb9-358"><a href="#cb9-358" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insert_bottom</span>(rep_counts, <span class="at">height =</span> <span class="fl">0.24</span>)</span>
+<span id="cb9-359"><a href="#cb9-359" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-360"><a href="#cb9-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a>For the real dataset, the experimental-design terms should reflect the alpha lattice:</span>
+<span id="cb9-361"><a href="#cb9-361" aria-hidden="true" tabindex="-1"></a><span class="fu"># Analysis Implications</span></span>
 <span id="cb9-362"><a href="#cb9-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a><span class="co"># Conceptual fixed/random structure</span></span>
-<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a>trait <span class="sc">~</span> ENV <span class="sc">+</span> GEN <span class="sc">+</span> ENV<span class="sc">:</span>GEN <span class="sc">+</span> REP<span class="sc">:</span>ENV <span class="sc">+</span> incomplete_block<span class="sc">:</span>REP<span class="sc">:</span>ENV</span>
-<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb9-367"><a href="#cb9-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-368"><a href="#cb9-368" aria-hidden="true" tabindex="-1"></a>In practice:</span>
+<span id="cb9-363"><a href="#cb9-363" aria-hidden="true" tabindex="-1"></a>For the real dataset, the experimental-design terms should reflect the alpha lattice:</span>
+<span id="cb9-364"><a href="#cb9-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-365"><a href="#cb9-365" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb9-366"><a href="#cb9-366" aria-hidden="true" tabindex="-1"></a><span class="co"># Conceptual fixed/random structure</span></span>
+<span id="cb9-367"><a href="#cb9-367" aria-hidden="true" tabindex="-1"></a>trait <span class="sc">~</span> ENV <span class="sc">+</span> GEN <span class="sc">+</span> ENV<span class="sc">:</span>GEN <span class="sc">+</span> REP<span class="sc">:</span>ENV <span class="sc">+</span> incomplete_block<span class="sc">:</span>REP<span class="sc">:</span>ENV</span>
+<span id="cb9-368"><a href="#cb9-368" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb9-369"><a href="#cb9-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-370"><a href="#cb9-370" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Use <span class="in">`ENV`</span>, <span class="in">`REP`</span>, <span class="in">`GEN`</span>, and reconstructed or original incomplete-block labels.</span>
-<span id="cb9-371"><a href="#cb9-371" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Prefer the original fieldbook&#39;s incomplete-block column if Stelio can provide it.</span>
-<span id="cb9-372"><a href="#cb9-372" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Resolve the duplicated <span class="in">`GEN = 49`</span> records before estimating final means, genotype effects, heritability, or GCA/SCA.</span>
-<span id="cb9-373"><a href="#cb9-373" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Join a pedigree/cross key to <span class="in">`GEN`</span> before estimating female GCA, male GCA, and SCA.</span>
-<span id="cb9-374"><a href="#cb9-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-375"><a href="#cb9-375" aria-hidden="true" tabindex="-1"></a>The corrected theoretical statement is therefore:</span>
+<span id="cb9-370"><a href="#cb9-370" aria-hidden="true" tabindex="-1"></a>In practice:</span>
+<span id="cb9-371"><a href="#cb9-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-372"><a href="#cb9-372" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Use <span class="in">`ENV`</span>, <span class="in">`REP`</span>, <span class="in">`GEN`</span>, and reconstructed or original incomplete-block labels.</span>
+<span id="cb9-373"><a href="#cb9-373" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Prefer the original fieldbook&#39;s incomplete-block column if Stelio can provide it.</span>
+<span id="cb9-374"><a href="#cb9-374" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Resolve the duplicated <span class="in">`GEN = 49`</span> records before estimating final means, genotype effects, heritability, or GCA/SCA.</span>
+<span id="cb9-375"><a href="#cb9-375" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Join a pedigree/cross key to <span class="in">`GEN`</span> before estimating female GCA, male GCA, and SCA.</span>
 <span id="cb9-376"><a href="#cb9-376" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-377"><a href="#cb9-377" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Stelio&#39;s real multilocation dataset contains 49 maize genotypes evaluated across four environments with three replications per environment. The field design is best represented as a resolvable alpha-lattice design with seven incomplete blocks of seven plots within each replication. This layout should replace the earlier RCBD assumption used for the simulated dataset.</span></span>
+<span id="cb9-377"><a href="#cb9-377" aria-hidden="true" tabindex="-1"></a>The corrected theoretical statement is therefore:</span>
+<span id="cb9-378"><a href="#cb9-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-379"><a href="#cb9-379" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Stelio&#39;s real multilocation dataset contains 49 maize genotypes evaluated across four environments with three replications per environment. The field design is best represented as a resolvable alpha-lattice design with seven incomplete blocks of seven plots within each replication. This layout should replace the earlier RCBD assumption used for the simulated dataset.</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
