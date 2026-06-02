@@ -1,0 +1,305 @@
+---
+title: "Stelio's Multilocation Maize Trial as an Alpha-Lattice Design"
+subtitle: "Experimental-design notes and field-layout reconstruction from `data/multilocation.csv`"
+author: "Fausto Rodriguez Zapata"
+date: "2026-06-02"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
+::: {.callout-note}
+This notebook updates the experimental-design description for Stelio's real file, `data/multilocation.csv`. The older `gca_calculation.qmd` was built from simulated data under an RCBD assumption. The real file is more consistent with a **multilocation alpha-lattice trial**: 49 genotypes evaluated in 3 replications per environment, with each replication arranged as 7 incomplete blocks of 7 plots.
+:::
+
+# Theoretical Foundation & Experimental Setup
+
+Before fitting a genetic model, we must separate three ideas that are easy to mix together:
+
+1. The **genetic material** being evaluated.
+2. The **field layout** used to control local field variation.
+3. The **phenotypic model** used to analyze the traits.
+
+The file Stelio sent contains plot-level phenotypes from a multilocation maize trial. It does **not** contain female-parent and male-parent labels, so this notebook focuses on the field-design structure. A GCA/SCA analysis still requires a genotype key that maps each `GEN` code to its female and male parents.
+
+## Genetic Material
+
+The real data identify entries with the column `GEN`. In this file:
+
+* `GEN` has **49 unique levels**: `1` through `49`.
+* These 49 entries are the treatments/genotypes evaluated in the field.
+* The file does not include columns such as `female`, `male`, or `cross`, so `GEN` must be joined to an external pedigree/crossing key before line-by-tester GCA and SCA can be estimated.
+
+The earlier simulated notebook assumed the 49 entries were the complete set of hybrids from a `7 x 7` factorial mating design. That may still be true biologically, but it is not encoded directly in `multilocation.csv`.
+
+## Experimental Design: Alpha Lattice
+
+Stelio's statement that this is an **alpha lattice** matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:
+
+$$49 = 7 \times 7$$
+
+So, within each replication:
+
+* there are **7 incomplete blocks**;
+* each incomplete block contains **7 plots/genotypes**;
+* all 49 genotypes appear once per replication;
+* the replication is therefore a complete replicate, but it is subdivided into smaller incomplete blocks.
+
+Across the trial:
+
+* **Environments/locations (`ENV`)**: `CHOKWE STS`, `CKOKWE OPT`, `NHACOONGO`, and `SUSSUNDENGA`.
+* **Replications (`REP`)**: `I`, `II`, and `III` within each environment.
+* **Genotypes (`GEN`)**: 49 unique entries.
+* **Traits**: grain yield, yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.
+
+This is different from an RCBD. In an RCBD, each replication is treated as one large complete block of 49 plots. In an alpha lattice, each replication is split into incomplete blocks, so the field error model can account for local variation among smaller neighboring plot groups.
+
+## How the Data Fit the Alpha Lattice
+
+The clean alpha-lattice expectation is:
+
+$$4\ \text{environments} \times 3\ \text{replications} \times 7\ \text{incomplete blocks} \times 7\ \text{plots} = 588\ \text{plots}$$
+
+The file has 597 rows, not 588. The reason is specific and diagnosable: in three environments (`CHOKWE STS`, `CKOKWE OPT`, and `SUSSUNDENGA`), each replication has one duplicated record for `GEN = 49`. `NHACOONGO` has the expected 49 rows per replication.
+
+Therefore, the design evidence is:
+
+* The genotype set is exactly 49 entries.
+* Every `ENV x REP` combination has 49 unique genotypes.
+* `NHACOONGO` is exactly `3 x 7 x 7`.
+* The other environments contain one extra plot record per replication, always a duplicated `GEN = 49`.
+* Row order reveals a repeated 7-by-7 lattice order, so the incomplete-block labels can be reconstructed as `ceiling(plot_order / 7)` after the duplicate issue is resolved.
+
+::: {.callout-important}
+The original fieldbook should be checked for the duplicate `GEN = 49` rows before final analysis. For the design illustration below, `NHACOONGO` is used because it is the clean location with exactly 49 plots in each replication.
+:::
+
+## Phenotypic Model
+
+For a single trait such as grain yield, a practical multilocation alpha-lattice model is:
+
+$$y_{hijk} = \mu + E_h + R_{i(h)} + B_{j(hi)} + G_k + (EG)_{hk} + \epsilon_{hijk}$$
+
+where:
+
+* $y_{hijk}$ is the observed phenotype of genotype $k$ in incomplete block $j$, replication $i$, and environment $h$.
+* $\mu$ is the overall mean.
+* $E_h$ is the environment effect.
+* $R_{i(h)}$ is the replication effect nested within environment.
+* $B_{j(hi)}$ is the incomplete-block effect nested within replication and environment.
+* $G_k$ is the genotype effect.
+* $(EG)_{hk}$ is the genotype-by-environment interaction.
+* $\epsilon_{hijk}$ is plot error.
+
+For cultivar evaluation, `GEN` and `ENV` may be fitted as fixed effects. For breeding-value prediction, `GEN`, `GEN x ENV`, and incomplete-block terms are often fitted as random effects. For GCA/SCA, the model can be extended once a pedigree key is available:
+
+$$G_k = g_{F_p} + g_{M_q} + s_{pq}$$
+
+for genotype/cross $k = (p,q)$, where $g_{F_p}$ is female GCA, $g_{M_q}$ is male GCA, and $s_{pq}$ is SCA.
+
+# R Setup and Data Import
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(aplot)
+
+raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  mutate(
+    ENV = factor(ENV),
+    REP = factor(REP, levels = c("I", "II", "III")),
+    GEN = factor(GEN)
+  )
+```
+
+# Design Diagnostics
+
+## Basic Dimensions
+
+```{r}
+#| label: design-summary
+
+design_summary <- raw_data %>%
+  summarize(
+    rows = n(),
+    environments = n_distinct(ENV),
+    replications = n_distinct(REP),
+    genotypes = n_distinct(GEN)
+  )
+
+kable(design_summary, caption = "Basic dimensions of Stelio's multilocation dataset") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Replication Completeness
+
+```{r}
+#| label: replication-completeness
+
+rep_summary <- raw_data %>%
+  count(ENV, REP, name = "observed_rows") %>%
+  left_join(
+    raw_data %>%
+      summarize(unique_genotypes = n_distinct(GEN), .by = c(ENV, REP)),
+    by = c("ENV", "REP")
+  ) %>%
+  mutate(
+    expected_alpha_lattice_rows = 49,
+    extra_rows = observed_rows - expected_alpha_lattice_rows
+  )
+
+kable(rep_summary, caption = "Observed rows and unique genotypes per environment-by-replication") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Duplicate Records to Verify
+
+```{r}
+#| label: duplicate-records
+
+duplicate_records <- raw_data %>%
+  mutate(plot_order = row_number(), .by = c(ENV, REP)) %>%
+  group_by(ENV, REP, GEN) %>%
+  filter(n() > 1) %>%
+  ungroup() %>%
+  select(ENV, REP, plot_order, GEN, `Yield t/ha`)
+
+kable(duplicate_records, caption = "Duplicated GEN records that should be checked against the fieldbook") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+# Reconstructing the Alpha-Lattice Blocks
+
+The CSV does not contain a column named `incomplete_block`. However, for the clean location `NHACOONGO`, the row order forms exactly 49 plots per replication. We can reconstruct the candidate alpha-lattice block as:
+
+$$\text{incomplete block} = \left\lceil \frac{\text{plot order within replication}}{7} \right\rceil$$
+
+```{r}
+#| label: reconstruct-nhacoongo
+
+nhacoongo_lattice <- raw_data %>%
+  filter(ENV == "NHACOONGO") %>%
+  arrange(REP) %>%
+  mutate(
+    plot_order = row_number(),
+    rep_plot = row_number(),
+    .by = REP
+  ) %>%
+  mutate(
+    incomplete_block = ceiling(rep_plot / 7),
+    plot_in_block = ((rep_plot - 1) %% 7) + 1
+  )
+
+nhacoongo_check <- nhacoongo_lattice %>%
+  count(REP, incomplete_block, name = "plots") %>%
+  summarize(
+    incomplete_blocks = n_distinct(incomplete_block),
+    min_block_size = min(plots),
+    max_block_size = max(plots),
+    .by = REP
+  )
+
+kable(nhacoongo_check, caption = "NHACOONGO has 7 incomplete blocks of 7 plots in every replication") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+```{r}
+#| label: nhacoongo-layout-table
+
+nhacoongo_table <- nhacoongo_lattice %>%
+  transmute(
+    REP,
+    incomplete_block = paste0("IB", incomplete_block),
+    plot_in_block = paste0("Plot ", plot_in_block),
+    GEN = as.character(GEN)
+  ) %>%
+  pivot_wider(names_from = plot_in_block, values_from = GEN)
+
+kable(nhacoongo_table, caption = "Reconstructed alpha-lattice layout for NHACOONGO") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+# Alpha-Lattice Illustration with `aplot`
+
+The figure below illustrates one location (`NHACOONGO`). Each panel is a replication. Within a panel, rows are incomplete blocks (`IB1` to `IB7`) and columns are the seven plot positions within an incomplete block. The number inside each tile is the genotype code.
+
+```{r}
+#| label: alpha-lattice-aplot
+#| fig.width: 11
+#| fig.height: 7
+#| warning: false
+
+layout_plot <- ggplot(
+  nhacoongo_lattice,
+  aes(x = plot_in_block, y = factor(incomplete_block), fill = `Yield t/ha`)
+) +
+  geom_tile(color = "white", linewidth = 0.8) +
+  geom_text(aes(label = GEN), size = 3.5, fontface = "bold") +
+  facet_wrap(~ REP, nrow = 1) +
+  scale_y_discrete(limits = rev) +
+  scale_x_continuous(breaks = 1:7, expand = c(0, 0)) +
+  scale_fill_viridis_c(option = "C", name = "Yield\nt/ha") +
+  labs(
+    title = "Alpha-lattice layout for NHACOONGO",
+    subtitle = "3 replications; each replication has 7 incomplete blocks of 7 plots",
+    x = "Plot position inside incomplete block",
+    y = "Incomplete block"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    strip.text = element_text(face = "bold"),
+    plot.title = element_text(face = "bold"),
+    legend.position = "right"
+  )
+
+rep_counts <- nhacoongo_lattice %>%
+  count(REP, name = "plots") %>%
+  mutate(label = paste0("Rep ", REP, ": ", plots, " plots")) %>%
+  ggplot(aes(x = REP, y = plots)) +
+  geom_col(fill = "#2b6cb0", width = 0.65) +
+  geom_text(aes(label = label), vjust = -0.4, size = 3.4) +
+  coord_cartesian(ylim = c(0, 56)) +
+  labs(x = NULL, y = "Plots per replication") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.minor = element_blank())
+
+layout_plot %>%
+  insert_bottom(rep_counts, height = 0.24)
+```
+
+# Analysis Implications
+
+For the real dataset, the experimental-design terms should reflect the alpha lattice:
+
+```r
+# Conceptual fixed/random structure
+trait ~ ENV + GEN + ENV:GEN + REP:ENV + incomplete_block:REP:ENV
+```
+
+In practice:
+
+* Use `ENV`, `REP`, `GEN`, and reconstructed or original incomplete-block labels.
+* Prefer the original fieldbook's incomplete-block column if Stelio can provide it.
+* Resolve the duplicated `GEN = 49` records before estimating final means, genotype effects, heritability, or GCA/SCA.
+* Join a pedigree/cross key to `GEN` before estimating female GCA, male GCA, and SCA.
+
+The corrected theoretical statement is therefore:
+
+> Stelio's real multilocation dataset contains 49 maize genotypes evaluated across four environments with three replications per environment. The field design is best represented as a resolvable alpha-lattice design with seven incomplete blocks of seven plots within each replication. This layout should replace the earlier RCBD assumption used for the simulated dataset.
