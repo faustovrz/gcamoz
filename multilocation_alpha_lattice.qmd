@@ -33,7 +33,19 @@ Before fitting a genetic model, we must separate three ideas that are easy to mi
 
 The file Stelio sent contains plot-level phenotypes from a multilocation maize trial. It does **not** contain female-parent and male-parent labels, so this notebook focuses on the field-design structure. A GCA/SCA analysis still requires a genotype key that maps each `GEN` code to its female and male parents.
 
-## Genetic Material
+## Breeding Scheme (Line x Tester)
+
+Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency in maize. My current understanding follows the same genetic interpretation used in `docs/gca_calculation.html`, section **1.1.1 Stelio's Factorial Mating Grid**: the 49 genotypes are intended to represent a **Factorial Mating Design**, often referred to as a **Line x Tester** or **North Carolina Design II**.
+
+In this mating scheme, two distinct parental sets are crossed:
+
+* **Female parents / lines:** the CIMMYT CML tropical donor founders.
+* **Male parents / testers:** the Mozambique founder/tester lines.
+* **Hybrid families:** all possible crosses between the 7 female parents and 7 male parents, giving **49 F1 hybrid combinations**.
+
+This is the genetic design assumption. The field design for Stelio's real file is a separate issue: those 49 genotypes were evaluated in a multilocation alpha-lattice layout, not in the simulated RCBD layout used by the earlier teaching file.
+
+## Genetic Material and Pedigree Metadata
 
 The real data identify entries with the column `GEN`. In this file:
 
@@ -41,15 +53,62 @@ The real data identify entries with the column `GEN`. In this file:
 * These 49 entries are the treatments/genotypes evaluated in the field.
 * The file does not include columns such as `female`, `male`, or `cross`, so `GEN` must be joined to an external pedigree/crossing key before line-by-tester GCA and SCA can be estimated.
 
-The earlier simulated notebook assumed the 49 entries were the complete set of hybrids from a `7 x 7` factorial mating design. That may still be true biologically, but it is not encoded directly in `multilocation.csv`.
+The **known tropical founder parents** are the CIMMYT CML donor lines already described in the project. The Mozambique tester/founder identifiers are not yet available, so this notebook temporarily keeps the placeholder labels `MOZ1` to `MOZ7`.
 
-## Experimental Design: Alpha Lattice
+::: {.callout-warning}
+`MOZ1` to `MOZ7` are provisional identifiers. Stelio should replace these labels with the real Mozambique founder/tester IDs before final GCA/SCA analysis.
+:::
 
-Stelio's statement that this is an **alpha lattice** matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:
+| Parent set | Role in factorial design | Current IDs | Status |
+| :--- | :--- | :--- | :--- |
+| CIMMYT CML donors | Female/tropical donor founders | `CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532` | Known from the project description |
+| Mozambique founders/testers | Male local tester founders | `MOZ1`, `MOZ2`, `MOZ3`, `MOZ4`, `MOZ5`, `MOZ6`, `MOZ7` | Placeholder labels until Stelio supplies the real IDs |
+
+## Placeholder Factorial Mating Grid
+
+The table below repeats the factorial mating-grid assumption from the simulated RCBD notebook, but here it is explicitly a **placeholder pedigree map** for the real alpha-lattice dataset. It shows the expected `7 x 7 = 49` hybrid structure. Stelio needs to verify which `GEN` code in `multilocation.csv` corresponds to each cross.
+
+| CIMMYT donor / Mozambique tester | MOZ1 | MOZ2 | MOZ3 | MOZ4 | MOZ5 | MOZ6 | MOZ7 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **CML364** | CML364 x MOZ1 | CML364 x MOZ2 | CML364 x MOZ3 | CML364 x MOZ4 | CML364 x MOZ5 | CML364 x MOZ6 | CML364 x MOZ7 |
+| **CML366** | CML366 x MOZ1 | CML366 x MOZ2 | CML366 x MOZ3 | CML366 x MOZ4 | CML366 x MOZ5 | CML366 x MOZ6 | CML366 x MOZ7 |
+| **CML434** | CML434 x MOZ1 | CML434 x MOZ2 | CML434 x MOZ3 | CML434 x MOZ4 | CML434 x MOZ5 | CML434 x MOZ6 | CML434 x MOZ7 |
+| **CML435** | CML435 x MOZ1 | CML435 x MOZ2 | CML435 x MOZ3 | CML435 x MOZ4 | CML435 x MOZ5 | CML435 x MOZ6 | CML435 x MOZ7 |
+| **CML439** | CML439 x MOZ1 | CML439 x MOZ2 | CML439 x MOZ3 | CML439 x MOZ4 | CML439 x MOZ5 | CML439 x MOZ6 | CML439 x MOZ7 |
+| **CML440** | CML440 x MOZ1 | CML440 x MOZ2 | CML440 x MOZ3 | CML440 x MOZ4 | CML440 x MOZ5 | CML440 x MOZ6 | CML440 x MOZ7 |
+| **CML532** | CML532 x MOZ1 | CML532 x MOZ2 | CML532 x MOZ3 | CML532 x MOZ4 | CML532 x MOZ5 | CML532 x MOZ6 | CML532 x MOZ7 |
+
+For analysis, Stelio should add either a metadata file or columns to the field dataset with this minimum structure:
+
+| Required column | Meaning | Example value |
+| :--- | :--- | :--- |
+| `GEN` | Genotype code used in `multilocation.csv` | `1` |
+| `female` | CIMMYT CML donor parent | `CML364` |
+| `male` | Mozambique tester parent | `MOZ1` or real tester ID |
+| `cross` | Hybrid/cross identifier | `CML364 x MOZ1` |
+
+This would make the real dataset parallel to the simulated RCBD file, which already had `female`, `male`, and `cross` columns. Until this pedigree metadata is available, the real data can support alpha-lattice field-design diagnostics and genotype-level analysis, but not a defensible final GCA/SCA decomposition.
+
+## Experimental Design
+
+Stelio's real field trial is a **multilocation alpha-lattice design**. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio's statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block layout is:
 
 $$49 = 7 \times 7$$
 
-So, within each replication:
+### Locations / Environments
+
+The trial contains four environments/locations, recorded in the `ENV` column:
+
+| Location code in `ENV` | Interpretation in this notebook |
+| :--- | :--- |
+| `CHOKWE STS` | Chokwe stress environment |
+| `CKOKWE OPT` | Chokwe optimum environment, as spelled in the CSV |
+| `NHACOONGO` | Nhacoongo environment |
+| `SUSSUNDENGA` | Sussundenga environment |
+
+### Alpha-Lattice Layout Within Each Location
+
+Within each location and replication:
 
 * there are **7 incomplete blocks**;
 * each incomplete block contains **7 plots/genotypes**;
@@ -58,7 +117,6 @@ So, within each replication:
 
 Across the trial:
 
-* **Environments/locations (`ENV`)**: `CHOKWE STS`, `CKOKWE OPT`, `NHACOONGO`, and `SUSSUNDENGA`.
 * **Replications (`REP`)**: `I`, `II`, and `III` within each environment.
 * **Genotypes (`GEN`)**: 49 unique entries.
 * **Traits**: grain yield, yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.
