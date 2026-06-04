@@ -1,0 +1,278 @@
+---
+title: "Retrieving CML IDs for CIMMYT Maize Accessions from Genesys"
+author: "Fausto Rodríguez-Zapata"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+    code-fold: show
+    df-print: kable
+execute:
+  warning: false
+  message: false
+---
+
+## Why the API, not URL scraping
+
+The DOI strings in Genesys accession URLs are persistent identifiers
+(one per accession, minted in the ITPGRFA GLIS), not an addressing
+scheme you are meant to construct or parse. The web UI was never the
+intended retrieval path, so the lack of predictable URLs is expected
+rather than an anti-scraping measure.
+
+The supported route is the REST API at `https://api.genesys-pgr.org`,
+wrapped for R by the `genesysr` package. Genesys identifies an
+accession by the triplet **instituteCode + accessionNumber + genus**;
+where a DOI exists it is used as the unique key. Queries are expressed
+as a `filter` list (AND across filters, OR within a filter) plus the
+passport fields to return — this is the "complex multi-ID search" you
+remember, now as a JSON request body instead of a URL.
+
+**On CML IDs**: `CML` = *CIMMYT Maize Line*. This designation is not a
+dedicated Genesys field; it is carried in the accession name
+(`ACCENAME`). So the workflow is: fetch passport data for the target
+accessions, then extract the `CML###` token from that field.
+
+## Setup
+
+**Purpose**: Load `genesysr` and authenticate in a way that also works for
+scripted / rendered runs.
+
+**Approach**: `genesysr::user_login()` runs the OAuth2 authorization-code
+(browser) flow, but it only fires inside an *interactive* R session and keeps
+the token in memory — so it cannot be reused when this document is rendered or
+sourced. We instead use a small token bridge (`R/genesys_auth.R`) that runs the
+*same* browser/Google login once and persists the returned token, **including
+its refresh token**, to `~/.genesys_token.rds`. Every later run loads it and
+refreshes silently — no further browser trips. The OAuth client is genesysr's
+built-in public client; Genesys accepts Google as an identity provider.
+
+**Expected outcome**: An authenticated session against production.
+
+```{r setup}
+library(genesysr)
+library(tidyverse)
+
+# Token bridge: browser login (once) -> saved, auto-refreshing token.
+source("R/genesys_auth.R")
+
+# Production is the default; this is explicit for reproducibility.
+setup_production()
+```
+
+Run the browser login **once** (interactive; opens a browser for the Google
+login). It writes the refreshable token to disk, after which this chunk is not
+needed again:
+
+```{r login, eval=FALSE}
+genesys_browser_login()
+```
+
+Load (and, if expired, refresh) the saved token for this session:
+
+```{r auth}
+genesys_use_saved_token()
+```
+
+## Target accessions
+
+**Purpose**: Define the 21 CIMMYT maize accessions to resolve.
+
+**Approach**: Store the exact accession-number strings as given. CIMMYT
+prefixes its bank accession numbers (`CIMMYTMA`), so the numeric tail is
+also derived for defensive matching later.
+
+**Expected outcome**: A character vector plus a normalization helper.
+
+```{r targets}
+target_accessions <- c(
+  "CIMMYTMA 29755", "CIMMYTMA 29754", "CIMMYTMA 29753",
+  "CIMMYTMA 29752", "CIMMYTMA 29751", "CIMMYTMA 29750",
+  "CIMMYTMA 28038", "CIMMYTMA 28037", "CIMMYTMA 28035",
+  "CIMMYTMA 28034", "CIMMYTMA 28033", "CIMMYTMA 27991",
+  "CIMMYTMA 27990", "CIMMYTMA 27989", "CIMMYTMA 27988",
+  "CIMMYTMA 27987", "CIMMYTMA 27986", "CIMMYTMA 27985",
+  "CIMMYTMA 27984", "CIMMYTMA 27983", "CIMMYTMA 27982"
+)
+
+# Collapse internal whitespace so "CIMMYTMA 29755" and
+# "CIMMYTMA  29755" compare equal.
+normalize_accenumb <- function(x) {
+  str_squish(toupper(x))
+}
+```
+
+## Targeted query by accession number
+
+**Purpose**: Pull passport data for only the 21 accessions, avoiding a
+bulk download of CIMMYT's ~28k maize collection.
+
+**Approach**: Filter on institute (`MEX002`) and genus (`Zea`), and narrow to
+each accession with the API's free-text key, `_text`. The MCPD-style
+`accessionNumber` filter key returns **HTTP 500** on the current production API,
+and most other candidate keys (`acceNumb`, `accessionName`, …) are silently
+ignored — `_text` is the only key that actually narrows results (verified
+empirically). So we run one small `_text` search per accession and exact-match
+locally in the next section. Request the identifier and name fields plus the
+fields likely to hold the CML token.
+
+**Expected outcome**: A data frame with at least the 21 targets (a free-text
+search may also return a few near-matches, removed by the exact join below).
+
+```{r query-targeted}
+fields <- list(
+  "INSTCODE", "ACCENUMB", "DOI", "GENUS", "SPECIES", "ACCENAME"
+)
+
+base_filter <- list(
+  institute = list(code = list("MEX002")),
+  taxonomy  = list(genus = list("Zea"))
+)
+
+# One cheap free-text query per accession; combine and de-duplicate.
+acc_raw <- map_dfr(target_accessions, function(a) {
+  filt <- c(base_filter, list("_text" = a))
+  get_accessions(filters = filt, fields = fields)
+}) %>%
+  distinct()
+
+# Diagnostics
+cat("Rows returned:", nrow(acc_raw),
+    "| Targets requested:", length(target_accessions), "\n")
+```
+
+## Extract CML IDs
+
+**Purpose**: Pull the `CML###` token from the accession name and align
+it to the requested accession numbers.
+
+**Approach**: Because the query is issued with `mcpd = true`, the returned
+columns carry the MCPD field codes (`ACCENUMB`, `ACCENAME`, `DOI`), not the
+JSON property names. Locate the accession-number and name columns
+case-insensitively, extract `CML` followed by digits from the name, and
+left-join back onto the full target list so missing hits are explicit.
+
+**Expected outcome**: One row per target accession with `cml_id`
+populated where found, `NA` otherwise.
+
+```{r extract-cml}
+#' Find a column by case-insensitive name fragment
+#'
+#' @param df A data frame.
+#' @param fragment Substring to match against column names.
+#' @return Character vector of matching column names (possibly empty).
+find_cols <- function(df, fragment) {
+  names(df)[str_detect(names(df), regex(fragment, ignore_case = TRUE))]
+}
+
+acn_col  <- find_cols(acc_raw, "ACCENUMB")[1]
+name_col <- find_cols(acc_raw, "ACCENAME")[1]
+
+stopifnot(
+  !is.na(acn_col),
+  !is.na(name_col)
+)
+
+# CML token, with optional space normalized away (CML 579 -> CML579).
+cml_pattern <- "CML[[:space:]]?[0-9]+"
+
+acc_cml <- acc_raw %>%
+  mutate(
+    accenumb_norm = normalize_accenumb(.data[[acn_col]]),
+    cml_id = str_remove(
+      str_extract(.data[[name_col]], cml_pattern), "\\s"
+    )
+  )
+
+# Align to the requested set so unmatched targets are visible.
+result <- tibble(accession_number = target_accessions) %>%
+  mutate(accenumb_norm = normalize_accenumb(accession_number)) %>%
+  left_join(
+    acc_cml %>% select(accenumb_norm, cml_id, all_of(name_col)),
+    by = "accenumb_norm"
+  ) %>%
+  select(
+    accession_number, cml_id, accession_name = all_of(name_col)
+  )
+
+# Diagnostics
+cat("Matched:", sum(!is.na(result$cml_id)),
+    "| Unmatched:", sum(is.na(result$cml_id)), "\n")
+```
+
+```{r show-result}
+result
+```
+
+## Save outputs
+
+```{r save}
+dir.create("output", showWarnings = FALSE)
+write_csv(result, "output/cml_ids.csv")
+saveRDS(acc_raw, "output/genesys_passport_raw.rds")
+```
+
+## Fallback: institute + genus, match locally
+
+**Purpose**: A path that does not depend on per-accession filtering at all,
+in case `_text` behavior changes.
+
+**Approach**: Query CIMMYT maize once, fetching only identifier and name
+fields, then filter locally by normalized accession number. This pulls
+a large collection (~28k rows), so run it only if the targeted query failed.
+
+**Expected outcome**: Same `result` table, derived by local matching.
+
+```{r fallback, eval=FALSE}
+acc_all <- get_accessions(
+  filters = list(
+    institute = list(code = list("MEX002")),
+    taxonomy  = list(genus = list("Zea"))
+  ),
+  fields = fields
+)
+
+acn_col <- find_cols(acc_all, "ACCENUMB")[1]
+
+acc_all %>%
+  mutate(accenumb_norm = normalize_accenumb(.data[[acn_col]])) %>%
+  filter(accenumb_norm %in% normalize_accenumb(target_accessions))
+```
+
+## Appendix
+
+### On the accession-number filter key
+
+The MCPD-style `accessionNumber` filter key is **not** honored by the current
+production `/acn/query` endpoint: passing it (in any shape — list, scalar, or
+alone) returns **HTTP 500**. Other plausible keys (`acceNumb`, `accessionName`,
+`names.name`) are accepted but silently ignored (the filter is not applied, so
+all rows come back). Empirically, `_text` — the free-text search key — is the
+only one that narrows results, which is why the targeted query uses it.
+
+To re-check this against a future API version, open
+`https://www.genesys-pgr.org/a/overview`, search for one of these accessions in
+the UI, and inspect the POST body your browser sends in the Network tab; adopt
+whatever key it uses.
+
+### Headless authentication
+
+For scheduled or scripted runs, register a client with Genesys
+(`helpdesk@genesys-pgr.org`) and configure client credentials instead of
+`user_login()`:
+
+```{r headless, eval=FALSE}
+setup(
+  server        = "https://api.genesys-pgr.org",
+  client_id     = Sys.getenv("GENESYS_CLIENT_ID"),
+  client_secret = Sys.getenv("GENESYS_CLIENT_SECRET")
+)
+```
+
+### Rate limits
+
+The API is paginated and rate-limited, and bulk pulls are explicitly
+flagged "use sparingly." Prefer the targeted query; batch by institute
+or taxon if you ever scale this beyond a short ID list.
