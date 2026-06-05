@@ -1,147 +1,151 @@
-# Maize Combining Ability and Alpha-Lattice Trial Analysis
+# Maize Combining Ability Field-Trial Analysis (Line × Tester GCA/SCA)
 
-A structured R/Quarto repository designed to instruct plant breeding students in maize field-trial analysis, General Combining Ability (GCA), and Specific Combining Ability (SCA).
+A structured R/Quarto repository designed to instruct plant-breeding students in maize field-trial analysis, General Combining Ability (GCA), and Specific Combining Ability (SCA).
 
 This project is tailored specifically to Stélio Boaventura Nuvunga's PhD research on **"Genetic Analysis of Tolerance to Low Phosphorus in Maize"**.
 
 ***
 
-## Breeding and Experimental Design
+## Two connected workflows
 
-The repository now contains two connected workflows:
+1.  **Simulated teaching workflow** — `gca_calculation.qmd` on `data/maize_factorial_yield.csv`: a 7 × 7 Line × Tester / North Carolina Design II dataset under an **RCBD** assumption, used to teach the GCA/SCA calculations step by step. It uses placeholder parent IDs (`MOZ1`–`MOZ7`, and a `CML…440…` female set) and **2 environments** (`env1` normal-P, `env2` low-P stress), 294 plot rows.
 
-1.  **Simulated teaching workflow:** a 7 × 7 Line × Tester / North Carolina Design II dataset used to explain GCA and SCA calculations step by step.
+2.  **Stelio's real multilocation workflow** — `multilocation_alpha_lattice.qmd` on `data/multilocation.csv`: the real plot-level field trial, which now carries the line × tester **pedigree** and a replicated **check**, analyzed as a **randomized complete block design (RCBD) with row/column spatial control**.
 
-2.  **Stelio's real multilocation workflow:** `data/multilocation.csv`, a plot-level file sent by Stelio that is better represented as an **alpha-lattice field design**, not an RCBD.
+***
 
-### Breeding Mating Scheme
+## Breeding and Experimental Design (real trial)
 
-The intended genetic material remains a **7 × 7 Factorial Cross (Line × Tester / North Carolina Design II)**.
+### Mating scheme
 
-*   **Females (Lines):** 7 Low-Phosphorus tolerant inbred donor lines sourced from CIMMYT (`CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532`).
+A **7 × 7 Factorial Cross (Line × Tester / North Carolina Design II)**:
 
-*   **Males (Testers):** 7 elite local Mozambican inbred lines (`MOZ1` to `MOZ7`) adapted to local agroecological zones.
+*   **Females (lines):** 7 CIMMYT low-phosphorus donor lines — `CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML530`, `CML532`.
 
-*   **Evaluated Progeny:** $F_1$ factorial hybrids ($N = 49$ unique families). No selfs or reciprocals are represented in the primary line-by-tester analysis.
+*   **Males (testers):** 7 Mozambican local testers — `MOZL3`, `MOZL5`, `MOZL6`, `MOZL7`, `MOZL8`, `MOZL9`, `MOZL10`.
 
-The real `multilocation.csv` file currently identifies entries only with `GEN` codes (`1` to `49`). A genotype-to-cross key is still needed before estimating GCA and SCA from the real data.
+*   **Progeny:** 49 $F_1$ hybrid families (no selfs or reciprocals), plus a replicated commercial check, **`NAMULONGUE`** (`GEN = 0`).
 
-### Field Trial Layout
+The real file now carries the pedigree directly in the `Female`, `Male`, and `Female x Male` columns, so **no external genotype-to-cross key is needed**. (Note: the *simulated teaching* dataset uses the placeholder IDs `CML…440…` and `MOZ1`–`MOZ7`; an earlier draft mistakenly listed `CML440` for the real set — the real female set includes `CML530`.)
 
-The simulated dataset in `data/maize_factorial_yield.csv` uses an RCBD assumption for teaching arithmetic GCA/SCA.
+### Field-trial layout
 
-Stelio's real dataset in `data/multilocation.csv` fits an **alpha-lattice** interpretation:
+`data/multilocation.csv` is a balanced multilocation field trial analyzed as an **RCBD**:
 
-*   **49 genotypes** (`GEN = 1` to `49`).
+*   **50 entries per replication:** 49 hybrids (`GEN = 1`–`49`) + 1 `NAMULONGUE` check (`GEN = 0`).
 
-*   **4 environments/locations:** `CHOKWE STS`, `CKOKWE OPT`, `NHACOONGO`, and `SUSSUNDENGA`.
+*   **4 environments/locations:** `CHOKWE STS`, `CKOKWE OPT`, `NHACOONGO`, `SUSSUNDENGA`.
 
-*   **3 replications** per environment: `I`, `II`, and `III`.
+*   **3 replications** per environment: `I`, `II`, `III`.
 
-*   **Resolvable alpha lattice:** each replication is expected to contain **7 incomplete blocks × 7 plots = 49 plots**.
+*   **5 × 10 serpentine layout:** each replication is sown as **5 columns × 10 rows** (50 plots), first plot top-left, snaking down along the `ENTRY` planting order. Each plot is a **full field row of maize** (not a pot). Field **row** (1–10) and **column** (1–5) are recovered from the planting order and fit as nested spatial terms.
 
-*   **Expected clean plot count:** $4 \times 3 \times 7 \times 7 = 588$ plots.
+*   **600 plots total** (49 hybrids × 12 + 12 checks) — balanced, no duplicates. *(An earlier file version had 597 rows with the check mislabeled as a duplicate `GEN = 49`; the cleaned file fixes this with the check as its own `GEN = 0` entry.)*
 
-The CSV has **597 rows**, because `GEN = 49` is duplicated once in each replication for `CHOKWE STS`, `CKOKWE OPT`, and `SUSSUNDENGA`. `NHACOONGO` has the clean expected structure of 49 plots per replication. The duplicate records should be checked against the original fieldbook before final inference.
+**Design status — alpha-lattice vs. RCBD.** Stelio describes the trial as an **alpha (incomplete-block) design**, but the data show **no incomplete, repeated sub-blocks of hybrids** — the hybrids appear fully randomized within each 5 × 10 replication — so it is analyzed here as an **RCBD with row/column spatial control**. If Stelio provides the incomplete-block (sub-block) assignment per plot, an `env:rep:block` term can be added and compared (logLik / AIC) against the row/column model.
 
-### Evaluated Traits
+### Evaluated traits
 
-The real multilocation file includes grain yield (`Yield t/ha`) plus yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.
+Grain yield (`Yield t/ha`) plus `yield g/plant (g)`, `Plant Number`, `Ear weight (g)`, `grain weight (g)`, `Plant Height (m)`, `Culm Diameter (cm)`, flowering dates (`F. D. Female`, `F. D. Male`), `Dry matter mass (g)`, and `Root Weight (g)`.
 
 ***
 
 ## Repository Structure
 
-The directory is clean, neat, and organized into data, rendered docs, and source notebooks:
-
 ```text
-gca/
+gcamoz/
 ├── README.md                          # Repository documentation (this file)
-├── iris_anova_cld.qmd                 # Reference example: ANOVA and Compact Letter Display
-├── diallel_gca_sca_analysis.qmd       # Reference example: 7x7 full-diallel combining ability
-├── gca_simulation.qmd                 # Source notebook: Setup of simulation parameters and export
-├── gca_calculation.qmd                # Source notebook: Theoretical design, math equations, and R GCA/SCA analysis
-├── multilocation_alpha_lattice.qmd    # Source notebook: Stelio's real multilocation alpha-lattice design
+├── _quarto.yml                        # Quarto project config (output-dir: docs)
+├── references.bib                     # Bibliography (Comstock 1948; Isik et al. 2017)
+├── iris_anova_cld.qmd                 # Reference: ANOVA and Compact Letter Display
+├── diallel_gca_sca_analysis.qmd       # Reference: 7x7 full-diallel combining ability
+├── gca_simulation.qmd                 # Build and export the simulated teaching dataset
+├── gca_calculation.qmd                # Teaching GCA/SCA on the simulated dataset (RCBD, 2 envs)
+├── multilocation_alpha_lattice.qmd    # Stelio's real RCBD multilocation line x tester analysis
+├── retrieve_CML_genesys.qmd           # Retrieve CIMMYT CML passport data / IDs from Genesys
+├── R/
+│   ├── genesys_auth.R                 # Google-login token bridge for the Genesys API
+│   └── retrieve_cml.R                 # CML retrieval helpers
 ├── data/
-│   ├── maize_factorial_yield.csv      # Exported simulated dataset (294 plot observations)
-│   └── multilocation.csv              # Stelio's real multilocation plot-level data
-└── docs/
-    ├── iris_anova_cld.html            # Compiled HTML report for Iris ANOVA reference
-    ├── diallel_gca_sca_analysis.html  # Compiled HTML report for Diallel GCA/SCA reference
-    ├── gca_simulation.html            # Compiled HTML report for Maize Factorial simulation
-    ├── gca_calculation.html           # Compiled HTML report for Maize Factorial GCA/SCA calculations
-    └── multilocation_alpha_lattice.html # Compiled HTML report for real alpha-lattice data
+│   ├── maize_factorial_yield.csv      # Simulated dataset (294 plot rows)
+│   └── multilocation.csv              # Stelio's real plot-level data (600 rows)
+├── output/
+│   ├── cml_ids.csv                    # Retrieved CIMMYT CML IDs
+│   └── genesys_passport_raw.rds       # Raw Genesys passport data
+└── docs/                              # Rendered HTML (also served by GitHub Pages)
+    ├── iris_anova_cld.html
+    ├── diallel_gca_sca_analysis.html
+    ├── gca_simulation.html
+    ├── gca_calculation.html
+    ├── multilocation_alpha_lattice.html
+    └── retrieve_CML_genesys.html
 ```
 
-### File Details
+### Key notebooks
 
-*   `data/maize_factorial_yield.csv`: Simulated grain yields containing 294 rows with columns: `env`, `block`, `female`, `male`, `cross`, and `yield`. The dataset incorporates inbreeding depression on the parental lines, deterministic GCA effects, specific heterosis (SCA), and GCA × Environment interactions (amplified CIMMYT tolerance under low phosphorus stress).
+*   `gca_calculation.qmd` & `docs/gca_calculation.html`: Teaching notebook on the **simulated** dataset (Line × Tester under an RCBD assumption, 2 environments). Walks through Exploratory Data Analysis, fixed-effects arithmetic GCA/SCA, a `sommer` mixed model, Breeding Values ($BV$) and Genotypic Values ($GV$), and heritability (narrow-sense, broad-sense, family-mean, and an across-environment G × E model).
 
-*   `data/multilocation.csv`: Stelio's real plot-level multilocation file. It contains 49 genotype codes across four environments and three replications, with traits including `Yield t/ha`, `yield g/plant (g)`, `Plant Number`, `Ear weight (g)`, `grain weight (g)`, `Plant Higher (m)`, `Colm Diameter (cm)`, flowering dates, dry matter mass, and root weight.
+*   `multilocation_alpha_lattice.qmd` & `docs/multilocation_alpha_lattice.html`: Stelio's **real** data. Documents the RCBD **5 × 10 serpentine** field layout, then runs the full line × tester pipeline on `Yield t/ha` across all four environments:
 
-*   `gca_simulation.qmd` & `docs/gca_simulation.html`: The background script that sets up the parameters, builds the linear simulation model, and exports the data. Kept separate to keep Stelio's focus on calculations.
+    *   *EDA:* the 7 × 7 mean-yield grid and per-environment yield distributions (with the check overlaid).
 
-*   `gca_calculation.qmd` & `docs/gca_calculation.html`: Teaching notebook based on the simulated dataset. It outlines the **Breeding Scheme**, **Experimental Design**, and **Phenotype Model** for a Line × Tester design under the original RCBD teaching assumption. It reads the simulated CSV from `data/` and walks through:
-    
-    *   *Exploratory Data Analysis:* Visualizing yields across treatments.
+    *   *Fixed-effects arithmetic GCA/SCA* from family means.
 
-    *   *Fixed-Effects Arithmetic (Griffing/Line-Tester):* Step-by-step arithmetic to estimate combining abilities from cell averages.
-    
-    *   *Mixed-Effects Modeling:* Fitting the mixed model using `sommer` in R, extracting random GCA/SCA BLUPs and variance components under Low P stress (`env2`).
-    
-    *   *Breeding Values ($BV$) and Genotypic Values ($GV$):* Calculating parental additive contributions and hybrid commercial potentials.
-    
-    *   *Heritability Estimation:* Estimating narrow-sense, broad-sense, and family-mean heritabilities.
+    *   *Mixed-effects model* (`sommer::mmer`): `env` fixed; `env:rep`, `env:rep:row`, `env:rep:col` design terms; `female`, `male`, `cross` and their `:env` interactions — yielding GCA/SCA BLUPs and variance components.
 
-*   `multilocation_alpha_lattice.qmd` & `docs/multilocation_alpha_lattice.html`: New notebook for Stelio's real data. It explains why `multilocation.csv` fits an alpha-lattice layout, diagnoses the duplicated `GEN = 49` rows, reconstructs candidate incomplete-block labels from row order for the clean `NHACOONGO` location, and illustrates the alpha lattice using `aplot`.
+    *   *Breeding and Genotypic Values* for ranking hybrids.
+
+    *   *Entry-mean heritability with G × E*, plus a step-by-step checklist for Stelio.
+
+*   `retrieve_CML_genesys.qmd` + `R/`: retrieve CIMMYT CML founder passport data / accession IDs from the [Genesys](https://www.genesys-pgr.org/) plant genetic resources database (with a Google-login token bridge in `R/genesys_auth.R`).
+
+*   `gca_simulation.qmd`, `diallel_gca_sca_analysis.qmd`, `iris_anova_cld.qmd`: supporting/reference notebooks (data simulation, full-diallel combining ability, and an ANOVA + compact-letter-display example).
+
+### Data files
+
+*   `data/maize_factorial_yield.csv`: simulated grain yields, 294 rows, columns `env`, `block`, `female`, `male`, `cross`, `yield`. Encodes inbreeding depression, deterministic GCA effects, specific heterosis (SCA), and GCA × Environment interactions (amplified CIMMYT tolerance under low-P stress).
+
+*   `data/multilocation.csv`: Stelio's real plot-level file, **600 rows**, columns `ENTRY`, `ENV`, `REP`, `GEN`, `Female`, `Male`, `Female x Male`, `Yield t/ha`, `yield g/plant (g)`, `Plant Number`, `Ear weight (g)`, `grain weight (g)`, `Plant Height (m)`, `Culm Diameter (cm)`, `F. D. Female`, `F. D. Male`, `Dry matter mass (g)`, `Root Weight (g)`. `ENTRY` is the field planting order.
 
 ***
 
 ## Required R Packages
 
-To execute the `.qmd` notebooks, ensure the following R packages are installed:
-
 ```R
-install.packages(c("tidyverse", "sommer", "knitr", "kableExtra", "aplot"))
+install.packages(c("tidyverse", "sommer", "knitr", "kableExtra"))
 ```
 
-*   `tidyverse` is utilized for data manipulation, reshaping, and exploratory plotting.
+*   `tidyverse` — data manipulation, reshaping, and plotting.
 
-*   `sommer` is the standard quantitative genetics mixed-model package in R, running the mmer solver to partition variance components and calculate BLUPs.
+*   `sommer` — quantitative-genetics mixed-model package; the `mmer` solver partitions variance components and computes BLUPs (used in `gca_calculation.qmd`, `multilocation_alpha_lattice.qmd`, and `diallel_gca_sca_analysis.qmd`).
 
-*   `knitr` and `kableExtra` are used to render styled tables.
+*   `knitr` and `kableExtra` — render styled tables.
 
-*   `aplot` is used to combine the alpha-lattice layout plot with a supporting replication-count panel.
+*(The Genesys retrieval notebook `retrieve_CML_genesys.qmd` has its own HTTP/JSON dependencies — see that notebook and `R/`.)*
 
 ***
 
 ## Compilation Instructions
 
-This repository is configured as a Quarto project (see `_quarto.yml`), with `docs/` as the output directory and the notebooks registered for rendering. The `docs/` folder is also what GitHub Pages serves, so a fresh render publishes the site. To compile every notebook into `docs/` in one shot, run:
+This repository is a Quarto project (see `_quarto.yml`), with `docs/` as the output directory and the notebooks registered for rendering. The `docs/` folder is what GitHub Pages serves, so a fresh render publishes the site. To compile every notebook into `docs/`:
 
 ```bash
 quarto render
 ```
 
-To render a single notebook, pass its filename — the project-level `output-dir: docs` still applies:
-
-```bash
-quarto render gca_calculation.qmd
-```
-
-To render only the new alpha-lattice notebook:
+To render a single notebook (the project-level `output-dir: docs` still applies):
 
 ```bash
 quarto render multilocation_alpha_lattice.qmd
 ```
 
-*(Alternatively, you can open the `.qmd` files in RStudio or Positron and run the code chunks interactively).*
+*(Alternatively, open the `.qmd` files in RStudio or Positron and run the chunks interactively.)*
 
 ***
 
 ## References
 
-Bibliographic metadata for both works lives in [`references.bib`](references.bib) and is rendered automatically by Quarto in `gca_calculation.qmd` (see §1.3, Phenotype Model).
+Bibliographic metadata lives in [`references.bib`](references.bib) and is rendered automatically by Quarto in both `gca_calculation.qmd` and `multilocation_alpha_lattice.qmd` (see their Phenotypic Model sections).
 
 *   Comstock, R. E., & Robinson, H. F. (1948). The Components of Genetic Variance in Populations of Biparental Progenies and Their Use in Estimating the Average Degree of Dominance. *Biometrics*, 4(4), 254–266. [doi:10.2307/3001412](https://doi.org/10.2307/3001412)
 
