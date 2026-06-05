@@ -588,6 +588,9 @@ Both heritabilities are bounded in $[0, 1]$, which is what we expect from a prop
 
 # Pick variance components by regex on rowname (interaction terms can appear as
 # "female:env" or "env:female" depending on sommer's term ordering; we match both).
+# NOTE: every pattern is ANCHORED with ^. This is essential — an unanchored
+# "male:env" would also match "female:env" (the word "female" ends in "male"),
+# double-counting female GCA×E into the male term and inflating total G×E.
 pick_vc <- function(vc, pat) {
   idx <- grep(pat, rownames(vc))
   if (length(idx) == 0) 0 else sum(vc[idx, "VarComp"])
@@ -596,9 +599,9 @@ pick_vc <- function(vc, pat) {
 var_gca_f_g <- pick_vc(var_comps_gxe, "^female\\.")
 var_gca_m_g <- pick_vc(var_comps_gxe, "^male\\.")
 var_sca_g   <- pick_vc(var_comps_gxe, "^cross\\.")
-var_gca_f_e <- pick_vc(var_comps_gxe, "female:env|env:female")
-var_gca_m_e <- pick_vc(var_comps_gxe, "male:env|env:male")
-var_sca_e   <- pick_vc(var_comps_gxe, "cross:env|env:cross")
+var_gca_f_e <- pick_vc(var_comps_gxe, "^female:env|^env:female")
+var_gca_m_e <- pick_vc(var_comps_gxe, "^male:env|^env:male")
+var_sca_e   <- pick_vc(var_comps_gxe, "^cross:env|^env:cross")
 var_res_g   <- pick_vc(var_comps_gxe, "^units\\.")
 
 e_env <- 2   # number of environments

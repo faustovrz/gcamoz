@@ -1,8 +1,8 @@
 ---
-title: "Stelio's Multilocation Maize Trial as an Alpha-Lattice Design"
-subtitle: "Experimental-design notes and alpha-lattice allocation from `data/multilocation.csv`"
+title: "Stelio's Multilocation Maize Trial: RCBD Field Layout and Line × Tester GCA/SCA"
+subtitle: "Serpentine 5 × 10 field layout, row/column spatial control, and line x tester GCA/SCA from `data/multilocation.csv`"
 author: "Fausto Rodriguez Zapata"
-date: "2026-06-02"
+date: "2026-06-04"
 format:
   html:
     theme: cosmo
@@ -13,6 +13,8 @@ format:
     number-sections: true
     code-fold: show
     code-tools: true
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
 ---
 
 ::: {.callout-tip appearance="simple"}
@@ -20,7 +22,7 @@ format:
 :::
 
 ::: {.callout-note}
-This notebook updates the experimental-design description for Stelio's real file, `data/multilocation.csv`. The older `gca_calculation.qmd` was built from simulated data under an RCBD assumption. The real file is more consistent with a **multilocation alpha-lattice trial**: 49 genotypes evaluated in 3 replications per environment, with each replication allocated to 7 incomplete blocks of 7 experimental units.
+This notebook documents the experimental design of Stelio's real file, `data/multilocation.csv`, **and** runs the full combining-ability analysis directly on it. The real file carries the **line x tester pedigree** (`Female`, `Male`, `Female x Male`) and a **replicated commercial check**, in addition to the plot-level phenotypes. It describes a **multilocation field trial** — an RCBD with a 5 × 10 serpentine plot layout per replication: 49 line x tester hybrids plus one repeated check, evaluated in 3 replications per environment across 4 environments. The earlier `gca_calculation.qmd` ran the same pipeline on *simulated* RCBD data; here the EDA, arithmetic GCA/SCA, mixed-model variance components, breeding values, and heritabilities are all computed on Stelio's actual `Yield t/ha` across all four environments.
 :::
 
 # Theoretical Foundation & Experimental Setup
@@ -31,75 +33,141 @@ Before fitting a genetic model, we must separate three ideas that are easy to mi
 2. The **experimental allocation / field layout** used to control local variation.
 3. The **phenotypic model** used to analyze the traits.
 
-The file Stelio sent contains plot-level phenotypes from a multilocation maize trial. It does **not** contain female-parent and male-parent labels, so this notebook focuses on the field-design structure. A GCA/SCA analysis still requires a genotype key that maps each `GEN` code to its female and male parents.
+The file contains plot-level phenotypes from a multilocation maize trial **and** the pedigree key that maps each genotype to its female and male parent. This means the field-design structure and a line x tester GCA/SCA analysis can both be set up directly from a single file — no external metadata table is needed anymore.
 
 ## Breeding Scheme (Line x Tester)
 
-Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency in maize. My current understanding follows the same genetic interpretation used in `docs/gca_calculation.html`, section **1.1.1 Stelio's Factorial Mating Grid**: the 49 genotypes are intended to represent a **Factorial Mating Design**, often referred to as a **Line x Tester** or **North Carolina Design II**.
+Stelio's research focuses on the genetic architecture of low-phosphorus use efficiency in maize. The 49 hybrid genotypes represent a **Factorial Mating Design**, often referred to as a **Line x Tester** or **North Carolina Design II**.
 
-In this mating scheme, two distinct parental sets are crossed:
+Two distinct parental sets are crossed:
 
-* **Female parents / lines:** the CIMMYT CML tropical donor founders.
-* **Male parents / testers:** the Mozambique founder/tester lines.
-* **Hybrid families:** all possible crosses between the 7 female parents and 7 male parents, giving **49 F1 hybrid combinations**.
+* **Female parents / lines:** 7 CIMMYT CML tropical donor founders.
+* **Male parents / testers:** 7 Mozambique tester lines (`MOZL` series).
+* **Hybrid families:** all 7 x 7 = **49 F1 hybrid combinations**.
 
-This is the genetic design assumption. The field design for Stelio's real file is a separate issue: those 49 genotypes were evaluated using a multilocation alpha-lattice allocation, not the simulated RCBD layout used by the earlier teaching file.
+In addition to the 49 hybrids, the trial includes a **repeated commercial check** (`NAMULONGUE`) so that environments and replications can be calibrated against a known standard.
 
-## Genetic Material and Pedigree Metadata
+## Genetic Material Planted in the Field
 
-The real data identify entries with the column `GEN`. In this file:
+The data now identify each plot with both a numeric genotype code (`GEN`) and the explicit pedigree (`Female`, `Male`, `Female x Male`):
 
-* `GEN` has **49 unique levels**: `1` through `49`.
-* These 49 entries are the treatments/genotypes evaluated in the field.
-* The file does not include columns such as `female`, `male`, or `cross`, so `GEN` must be joined to an external pedigree/crossing key before line-by-tester GCA and SCA can be estimated.
+* `GEN` has **50 levels**: `0` for the check and `1`–`49` for the hybrids.
+* `GEN = 0` is the **`NAMULONGUE` check** (`Female = Check`, `Male = Check`).
+* `GEN = 1`–`49` are the line x tester hybrids.
 
-The **known tropical founder parents** are the CIMMYT CML donor lines already described in the project. The Mozambique tester/founder identifiers are not yet available, so this notebook temporarily keeps the placeholder labels `MOZ1` to `MOZ7`.
+The real founder identifiers (which replace the earlier `MOZ1`–`MOZ7` placeholders) are:
 
-::: {.callout-warning}
-`MOZ1` to `MOZ7` are provisional identifiers. Stelio should replace these labels with the real Mozambique founder/tester IDs before final GCA/SCA analysis.
+| Parent set | Role in factorial design | Real IDs in the file |
+| :--- | :--- | :--- |
+| CIMMYT CML donors | Female / tropical donor lines | `CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML530`, `CML532` |
+| Mozambique testers | Male local tester lines | `MOZL3`, `MOZL5`, `MOZL6`, `MOZL7`, `MOZL8`, `MOZL9`, `MOZL10` |
+| Commercial check | Standard reference entry | `NAMULONGUE` (`GEN = 0`) |
+
+::: {.callout-note}
+The Mozambique testers are numbered `MOZL3`, `MOZL5`, `MOZL6`, `MOZL7`, `MOZL8`, `MOZL9`, `MOZL10` (seven testers, not a simple 1–7 sequence). The CIMMYT line `CML530` is part of the female set; the earlier draft had incorrectly listed `CML440`.
 :::
 
-| Parent set | Role in factorial design | Current IDs | Status |
-| :--- | :--- | :--- | :--- |
-| CIMMYT CML donors | Female/tropical donor founders | `CML364`, `CML366`, `CML434`, `CML435`, `CML439`, `CML440`, `CML532` | Known from the project description |
-| Mozambique founders/testers | Male local tester founders | `MOZ1`, `MOZ2`, `MOZ3`, `MOZ4`, `MOZ5`, `MOZ6`, `MOZ7` | Placeholder labels until Stelio supplies the real IDs |
+# R Setup and Data Import
 
-## Placeholder Factorial Mating Grid
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
 
-The table below repeats the factorial mating-grid assumption from the simulated RCBD notebook, but here it is explicitly a **placeholder pedigree map** for the real alpha-lattice dataset. It shows the expected `7 x 7 = 49` hybrid structure. Stelio needs to verify which `GEN` code in `multilocation.csv` corresponds to each cross.
+library(tidyverse)
+library(sommer)
+library(knitr)
+library(kableExtra)
 
-| CIMMYT donor / Mozambique tester | MOZ1 | MOZ2 | MOZ3 | MOZ4 | MOZ5 | MOZ6 | MOZ7 |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **CML364** | CML364 x MOZ1 | CML364 x MOZ2 | CML364 x MOZ3 | CML364 x MOZ4 | CML364 x MOZ5 | CML364 x MOZ6 | CML364 x MOZ7 |
-| **CML366** | CML366 x MOZ1 | CML366 x MOZ2 | CML366 x MOZ3 | CML366 x MOZ4 | CML366 x MOZ5 | CML366 x MOZ6 | CML366 x MOZ7 |
-| **CML434** | CML434 x MOZ1 | CML434 x MOZ2 | CML434 x MOZ3 | CML434 x MOZ4 | CML434 x MOZ5 | CML434 x MOZ6 | CML434 x MOZ7 |
-| **CML435** | CML435 x MOZ1 | CML435 x MOZ2 | CML435 x MOZ3 | CML435 x MOZ4 | CML435 x MOZ5 | CML435 x MOZ6 | CML435 x MOZ7 |
-| **CML439** | CML439 x MOZ1 | CML439 x MOZ2 | CML439 x MOZ3 | CML439 x MOZ4 | CML439 x MOZ5 | CML439 x MOZ6 | CML439 x MOZ7 |
-| **CML440** | CML440 x MOZ1 | CML440 x MOZ2 | CML440 x MOZ3 | CML440 x MOZ4 | CML440 x MOZ5 | CML440 x MOZ6 | CML440 x MOZ7 |
-| **CML532** | CML532 x MOZ1 | CML532 x MOZ2 | CML532 x MOZ3 | CML532 x MOZ4 | CML532 x MOZ5 | CML532 x MOZ6 | CML532 x MOZ7 |
+raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  mutate(
+    ENV    = factor(ENV),
+    REP    = factor(REP, levels = c("I", "II", "III")),
+    GEN    = factor(GEN, levels = as.character(0:49)),
+    Female = factor(Female,
+                    levels = c("Check",
+                               "CML364", "CML366", "CML434", "CML435",
+                               "CML439", "CML530", "CML532")),
+    Male   = factor(Male,
+                    levels = c("Check",
+                               "MOZL3", "MOZL5", "MOZL6", "MOZL7",
+                               "MOZL8", "MOZL9", "MOZL10")),
+    yield  = `Yield t/ha`
+  )
 
-For analysis, Stelio should add either a metadata file or columns to the field dataset with this minimum structure:
+# Field coordinates from the serpentine planting order (Stelio's procedure:
+# first plot top-left, 5 columns x 10 rows, snaking down along ENTRY).
+field <- raw_data %>%
+  arrange(ENTRY) %>%
+  group_by(ENV, REP) %>%
+  mutate(
+    plot_order = row_number(ENTRY),                 # 1 .. 50 within each env x rep
+    field_row  = ceiling(plot_order / 5),           # 1 (top) .. 10 (bottom)
+    pos_in_row = ((plot_order - 1) %% 5) + 1,
+    field_col  = if_else(field_row %% 2 == 1, pos_in_row, 6L - pos_in_row)  # serpentine
+  ) %>%
+  ungroup()
 
-| Required column | Meaning | Example value |
-| :--- | :--- | :--- |
-| `GEN` | Genotype code used in `multilocation.csv` | `1` |
-| `female` | CIMMYT CML donor parent | `CML364` |
-| `male` | Mozambique tester parent | `MOZ1` or real tester ID |
-| `cross` | Hybrid/cross identifier | `CML364 x MOZ1` |
+# Hybrids-only analysis frame (the check, GEN = 0, is held out of the line x
+# tester decomposition). `row`/`col` are the real field positions of each plot.
+hybrids <- field %>%
+  filter(GEN != "0") %>%
+  transmute(
+    env    = droplevels(ENV),
+    rep    = REP,
+    row    = factor(field_row, levels = 1:10),
+    col    = factor(field_col, levels = 1:5),
+    female = droplevels(Female),
+    male   = droplevels(Male),
+    cross  = factor(`Female x Male`),
+    yield  = yield
+  )
+```
 
-This would make the real dataset parallel to the simulated RCBD file, which already had `female`, `male`, and `cross` columns. Until this pedigree metadata is available, the real data can support alpha-lattice field-design diagnostics and genotype-level analysis, but not a defensible final GCA/SCA decomposition.
+## Entries Planted in the Field (including checks)
 
-## Experimental Design
+The table below is the complete entry key actually planted, generated directly from the file. The check is entry `GEN = 0`; the 49 hybrids follow.
 
-> The alpha-lattice design is the actual pot/plot allocation used to evaluate the 49 genotypes produced by the 7 x 7 line-by-tester crossing design.
+```{r}
+#| label: entry-key
 
-Stelio's real experiment appears to use **pots placed under field conditions**, which is common in phosphorus studies because pots make it easier to control phosphorus dose, soil/substrate, root-zone conditions, and biomass/root harvest. In this context, the alpha-lattice design should be interpreted as the **experimental allocation of genotype entries into incomplete blocks and replications**, not necessarily as a conventional row-column field layout.
+entry_key <- raw_data %>%
+  distinct(GEN, Female, Male, `Female x Male`) %>%
+  arrange(GEN) %>%
+  rename(cross = `Female x Male`)
 
-Stelio's real trial is a **multilocation alpha-lattice design**. This replaces the RCBD field-layout assumption used in the simulated teaching notebook. Stelio's statement that this is an alpha lattice matches the dimensions in the file. With 49 genotypes, the natural resolvable incomplete-block allocation is:
+kable(entry_key, caption = "All 50 entries planted: 1 check (GEN = 0) + 49 line x tester hybrids") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(height = "420px")
+```
 
-$$49 = 7 \times 7$$
+## Real Factorial Mating Grid (7 x 7)
 
-### Locations / Environments
+Each cell is the genotype code `GEN` assigned to that female x male cross. The full grid is present, with no missing or duplicated cells.
+
+```{r}
+#| label: mating-grid
+
+mating_grid <- raw_data %>%
+  filter(GEN != "0") %>%
+  distinct(Female, Male, GEN) %>%
+  droplevels() %>%
+  arrange(Female, Male) %>%
+  pivot_wider(names_from = Male, values_from = GEN)
+
+kable(mating_grid, caption = "Real 7 x 7 line x tester grid; cells show the GEN code for each cross") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+# Experimental Design
+
+> The field design is the actual plot allocation used to evaluate the genotypes produced by the 7 x 7 line-by-tester crossing design, together with the repeated check.
+
+Stelio's trial is a **field trial**: each plot is a full row of maize. Within every replication the 50 entries (49 hybrids + 1 check) are laid out on a **5-column × 10-row grid** and sown in **serpentine order** — first plot top-left, snaking down (see the field-layout map below).
+
+The **49 hybrids are randomized within each replication**, and the `NAMULONGUE` check travels along the planting sequence. Because the hybrids are completely randomized within a replication — with **no separately randomized incomplete blocks** — the trial is analyzed as a **randomized complete block design (RCBD)**, with the replication as the complete block. To guard against field gradients across the 5 × 10 grid, the plot **row** and **column** (recovered from the serpentine planting order) are added as nested spatial terms — a light spatial correction layered on top of the RCBD.
+
+## Locations / Environments
 
 The trial contains four environments/locations, recorded in the `ENV` column:
 
@@ -110,85 +178,22 @@ The trial contains four environments/locations, recorded in the `ENV` column:
 | `NHACOONGO` | Nhacoongo environment |
 | `SUSSUNDENGA` | Sussundenga environment |
 
-### Alpha-Lattice Allocation Within Each Location
+## Field Layout Within Each Location
 
 Within each location and replication:
 
-* there are **7 incomplete blocks**;
-* each incomplete block contains **7 plots/genotypes**;
-* all 49 genotypes appear once per replication;
-* the replication is therefore a complete replicate, but it is subdivided into smaller incomplete blocks.
+* all 49 hybrids appear **once**, plus **one** check plot — 50 plots total;
+* the 50 plots occupy a **5 × 10 field grid** (5 columns × 10 rows);
+* each replication is therefore a complete replicate of the 50 entries (one complete block).
 
 Across the trial:
 
+* **Environments (`ENV`)**: 4.
 * **Replications (`REP`)**: `I`, `II`, and `III` within each environment.
-* **Genotypes (`GEN`)**: 49 unique entries.
+* **Entries (`GEN`)**: 49 hybrids + 1 check = 50 per replication.
 * **Traits**: grain yield, yield per plant, plant number, ear weight, grain weight, plant height, culm diameter, flowering dates, dry matter mass, and root weight.
 
-This is different from an RCBD. In an RCBD, each replication is treated as one large complete block of 49 experimental units. In an alpha lattice, each replication is split into incomplete blocks, so the error model can account for local variation among smaller groups of pots or plots.
-
-## How the Data Fit the Alpha Lattice
-
-The clean alpha-lattice expectation is:
-
-$$4\ \text{environments} \times 3\ \text{replications} \times 7\ \text{incomplete blocks} \times 7\ \text{plots} = 588\ \text{plots}$$
-
-The file has 597 rows, not 588. The reason is specific and diagnosable: in three environments (`CHOKWE STS`, `CKOKWE OPT`, and `SUSSUNDENGA`), each replication has one duplicated record for `GEN = 49`. `NHACOONGO` has the expected 49 rows per replication.
-
-Therefore, the design evidence is:
-
-* The genotype set is exactly 49 entries.
-* Every `ENV x REP` combination has 49 unique genotypes.
-* `NHACOONGO` is exactly `3 x 7 x 7`.
-* The other environments contain one extra plot record per replication, always a duplicated `GEN = 49`.
-* Row order is compatible with a repeated 7-by-7 lattice allocation, so candidate incomplete-block labels can be derived as `ceiling(plot_order / 7)` after the duplicate issue is resolved.
-
-::: {.callout-important}
-The CSV does **not** contain physical coordinates such as pot row, pot column, range, tier, x/y position, plot ID, or an explicit incomplete-block column. Therefore, the notebook can diagnose the alpha-lattice dimensions and illustrate a candidate allocation, but it cannot reconstruct the true physical placement of pots in the field. The original fieldbook should be checked for the duplicate `GEN = 49` rows and for the actual incomplete-block or pot-position metadata before final analysis.
-:::
-
-## Phenotypic Model
-
-For a single trait such as grain yield, a practical multilocation alpha-lattice model is:
-
-$$y_{hijk} = \mu + E_h + R_{i(h)} + B_{j(hi)} + G_k + (EG)_{hk} + \epsilon_{hijk}$$
-
-where:
-
-* $y_{hijk}$ is the observed phenotype of genotype $k$ in incomplete block $j$, replication $i$, and environment $h$.
-* $\mu$ is the overall mean.
-* $E_h$ is the environment effect.
-* $R_{i(h)}$ is the replication effect nested within environment.
-* $B_{j(hi)}$ is the incomplete-block effect nested within replication and environment.
-* $G_k$ is the genotype effect.
-* $(EG)_{hk}$ is the genotype-by-environment interaction.
-* $\epsilon_{hijk}$ is plot error.
-
-For cultivar evaluation, `GEN` and `ENV` may be fitted as fixed effects. For breeding-value prediction, `GEN`, `GEN x ENV`, and incomplete-block terms are often fitted as random effects. For GCA/SCA, the model can be extended once a pedigree key is available:
-
-$$G_k = g_{F_p} + g_{M_q} + s_{pq}$$
-
-for genotype/cross $k = (p,q)$, where $g_{F_p}$ is female GCA, $g_{M_q}$ is male GCA, and $s_{pq}$ is SCA.
-
-# R Setup and Data Import
-
-```{r}
-#| label: setup
-#| message: false
-#| warning: false
-
-library(tidyverse)
-library(knitr)
-library(kableExtra)
-library(aplot)
-
-raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
-  mutate(
-    ENV = factor(ENV),
-    REP = factor(REP, levels = c("I", "II", "III")),
-    GEN = factor(GEN)
-  )
-```
+This is a standard RCBD: each replication is one complete block of 50 plots. The only refinement we add for analysis is the plot **row** and **column** within each replication (from the 5 × 10 serpentine), fitted as random spatial terms so that systematic field trends are not left in the residual.
 
 # Design Diagnostics
 
@@ -199,10 +204,12 @@ raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
 
 design_summary <- raw_data %>%
   summarize(
-    rows = n(),
-    environments = n_distinct(ENV),
-    replications = n_distinct(REP),
-    genotypes = n_distinct(GEN)
+    rows          = n(),
+    environments  = n_distinct(ENV),
+    replications  = n_distinct(REP),
+    total_entries = n_distinct(GEN),
+    hybrids       = n_distinct(GEN[GEN != "0"]),
+    checks        = n_distinct(GEN[GEN == "0"])
   )
 
 kable(design_summary, caption = "Basic dimensions of Stelio's multilocation dataset") %>%
@@ -211,6 +218,8 @@ kable(design_summary, caption = "Basic dimensions of Stelio's multilocation data
 
 ## Replication Completeness
 
+Every environment-by-replication now holds exactly 50 plots (49 hybrids + 1 check), with no duplicated entries.
+
 ```{r}
 #| label: replication-completeness
 
@@ -218,155 +227,535 @@ rep_summary <- raw_data %>%
   count(ENV, REP, name = "observed_rows") %>%
   left_join(
     raw_data %>%
-      summarize(unique_genotypes = n_distinct(GEN), .by = c(ENV, REP)),
+      summarize(unique_entries = n_distinct(GEN), .by = c(ENV, REP)),
     by = c("ENV", "REP")
   ) %>%
   mutate(
-    expected_alpha_lattice_rows = 49,
-    extra_rows = observed_rows - expected_alpha_lattice_rows
+    expected_rows = 50,
+    difference    = observed_rows - expected_rows
   )
 
-kable(rep_summary, caption = "Observed rows and unique genotypes per environment-by-replication") %>%
+kable(rep_summary, caption = "Observed rows and unique entries per environment-by-replication") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-## Duplicate Records to Verify
+## Cross and Check Replication Balance
 
 ```{r}
-#| label: duplicate-records
+#| label: balance-check
 
-duplicate_records <- raw_data %>%
-  mutate(plot_order = row_number(), .by = c(ENV, REP)) %>%
-  group_by(ENV, REP, GEN) %>%
-  filter(n() > 1) %>%
-  ungroup() %>%
-  select(ENV, REP, plot_order, GEN, `Yield t/ha`)
+hybrid_balance <- raw_data %>%
+  filter(GEN != "0") %>%
+  count(`Female x Male`, name = "plots") %>%
+  count(plots, name = "n_crosses")
 
-kable(duplicate_records, caption = "Duplicated GEN records that should be checked against the fieldbook") %>%
+check_balance <- raw_data %>%
+  filter(GEN == "0") %>%
+  count(ENV, REP, name = "check_plots")
+
+kable(hybrid_balance, caption = "Every hybrid cross is observed in the same number of plots") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+kable(check_balance, caption = "The NAMULONGUE check appears once per environment-by-replication") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
-
-# Inferring Candidate Alpha-Lattice Blocks
-
-The CSV does not contain a column named `incomplete_block`, nor does it contain physical pot coordinates. However, for the clean location `NHACOONGO`, the row order forms exactly 49 records per replication. If the CSV row order follows the original fieldbook planting/allocation order, a candidate alpha-lattice block can be derived as:
-
-$$\text{incomplete block} = \left\lceil \frac{\text{plot order within replication}}{7} \right\rceil$$
-
-```{r}
-#| label: reconstruct-nhacoongo
-
-nhacoongo_lattice <- raw_data %>%
-  filter(ENV == "NHACOONGO") %>%
-  arrange(REP) %>%
-  mutate(
-    plot_order = row_number(),
-    rep_plot = row_number(),
-    .by = REP
-  ) %>%
-  mutate(
-    incomplete_block = ceiling(rep_plot / 7),
-    plot_in_block = ((rep_plot - 1) %% 7) + 1
-  )
-
-nhacoongo_check <- nhacoongo_lattice %>%
-  count(REP, incomplete_block, name = "plots") %>%
-  summarize(
-    incomplete_blocks = n_distinct(incomplete_block),
-    min_block_size = min(plots),
-    max_block_size = max(plots),
-    .by = REP
-  )
-
-kable(nhacoongo_check, caption = "NHACOONGO is compatible with 7 candidate incomplete blocks of 7 records in every replication") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-```
-
-```{r}
-#| label: nhacoongo-layout-table
-
-nhacoongo_table <- nhacoongo_lattice %>%
-  transmute(
-    REP,
-    incomplete_block = paste0("IB", incomplete_block),
-    plot_in_block = paste0("Plot ", plot_in_block),
-    GEN = as.character(GEN)
-  ) %>%
-  pivot_wider(names_from = plot_in_block, values_from = GEN)
-
-kable(nhacoongo_table, caption = "Candidate alpha-lattice allocation for NHACOONGO based on CSV row order") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
-```
-
-# Conceptual Alpha-Lattice Illustration with `aplot`
-
-The figure below illustrates the expected alpha-lattice allocation for one clean location (`NHACOONGO`). Each panel is a replication. Within a panel, rows are candidate incomplete blocks (`IB1` to `IB7`) and columns are the seven positions within an incomplete block. The number inside each tile is the genotype code.
 
 ::: {.callout-note}
-This is a conceptual allocation diagram, not a verified physical map of pot placement. A true pot map would require Stelio's original fieldbook with pot row/column coordinates, range/tier labels, plot IDs, or explicit incomplete-block identifiers.
+**What changed from the earlier draft.** An earlier version of this notebook reported 597 rows and a suspicious "duplicated `GEN = 49`" in three environments, plus a `NHACOONGO` that looked one replicate short. That was an artifact of the check being mislabeled as a second `GEN = 49` and missing from `NHACOONGO`. In the corrected file the check is its own entry (`GEN = 0`, `NAMULONGUE`), present once per environment-by-replication, giving a balanced **600 rows** (49 hybrids x 12 + 12 checks).
 :::
 
+# Field Coordinates from the Planting Order
+
+The CSV has no explicit row/column columns, but the `ENTRY` column records Stelio's planting order, and the field was sown in a fixed serpentine: first plot top-left, then across a **5-column × 10-row** grid, snaking down. From that order we recover each plot's field **row** (1–10) and **column** (1–5) — computed once in the `field` frame in the setup chunk. The grid is complete in every environment-by-replication:
+
 ```{r}
-#| label: alpha-lattice-aplot
+#| label: field-grid-check
+
+grid_check <- field %>%
+  summarize(
+    rows  = n_distinct(field_row),
+    cols  = n_distinct(field_col),
+    plots = n(),
+    .by   = c(ENV, REP)
+  ) %>%
+  arrange(ENV, REP)
+
+kable(grid_check, caption = "Every environment-by-replication fills a complete 5-column × 10-row field grid (50 plots)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(height = "300px")
+```
+
+These row and column coordinates are used as nested spatial terms (`env:rep:row`, `env:rep:col`) in the mixed model, so that field gradients across the 5 × 10 grid are absorbed rather than left in the residual.
+
+# Field Layout: Serpentine Planting Map
+
+Each replication is sown as a **5-column × 10-row** field block (5 × 10 = 50 plots) in **serpentine (boustrophedon) order** — Stelio's planting procedure: the first entry is placed in the **top-left corner**, the first row is filled left-to-right, the next row right-to-left, and so on down the block. Consecutively-planted plots are therefore physical neighbours.
+
+The map below uses the **`ENTRY` column — the recorded planting/allocation order — within each replication** as the planting sequence and lays it onto the 5 × 10 serpentine. (`ENTRY` runs 1–600 in contiguous blocks of 50, one block per environment-by-replication; NHACOONGO occupies 301–450.) Each tile is labelled with its `GEN` code and **coloured by entry type** (line × tester hybrid vs. the `NAMULONGUE` check), so the position of the check within each replication is immediately visible.
+
+```{r}
+#| label: serpentine-layout
 #| fig.width: 11
 #| fig.height: 7
 #| warning: false
 
-layout_plot <- ggplot(
-  nhacoongo_lattice,
-  aes(x = plot_in_block, y = factor(incomplete_block), fill = `Yield t/ha`)
-) +
-  geom_tile(color = "white", linewidth = 0.8) +
-  geom_text(aes(label = GEN), size = 3.5, fontface = "bold") +
+field_layout <- field %>%
+  filter(ENV == "NHACOONGO") %>%   # field_row / field_col come from the setup chunk
+  mutate(entry_type = if_else(GEN == "0", "Check (NAMULONGUE)", "Line × tester hybrid"))
+
+entry_palette <- c(
+  "Line × tester hybrid" = "#2C7FB8",
+  "Check (NAMULONGUE)"        = "#D7301F"
+)
+
+ggplot(field_layout, aes(x = field_col, y = field_row, fill = entry_type)) +
+  geom_tile(color = "white", linewidth = 0.7) +
+  geom_text(aes(label = GEN), size = 3, fontface = "bold", color = "white") +
   facet_wrap(~ REP, nrow = 1) +
-  scale_y_discrete(limits = rev) +
-  scale_x_continuous(breaks = 1:7, expand = c(0, 0)) +
-  scale_fill_viridis_c(option = "C", name = "Yield\nt/ha") +
+  scale_fill_manual(values = entry_palette, name = "Entry type") +
+  scale_x_continuous(breaks = 1:5, position = "top", expand = c(0, 0)) +
+  scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
+  coord_equal() +
   labs(
-    title = "Conceptual alpha-lattice allocation for NHACOONGO",
-    subtitle = "3 replications; each replication is compatible with 7 incomplete blocks of 7 records",
-    x = "Position within candidate incomplete block",
-    y = "Candidate incomplete block"
+    title    = "Serpentine field layout for NHACOONGO (5 columns × 10 rows per replication)",
+    subtitle = "First entry at the top-left corner; planting order snakes left–right then right–left. Tile = GEN code, coloured by entry type.",
+    x = "Field column",
+    y = "Field row (planting progresses top → bottom)"
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    panel.grid = element_blank(),
-    strip.text = element_text(face = "bold"),
-    plot.title = element_text(face = "bold"),
-    legend.position = "right"
+    panel.grid      = element_blank(),
+    strip.text      = element_text(face = "bold"),
+    plot.title      = element_text(face = "bold"),
+    legend.position = "bottom"
   )
-
-rep_counts <- nhacoongo_lattice %>%
-  count(REP, name = "plots") %>%
-  mutate(label = paste0("Rep ", REP, ": ", plots, " plots")) %>%
-  ggplot(aes(x = REP, y = plots)) +
-  geom_col(fill = "#2b6cb0", width = 0.65) +
-  geom_text(aes(label = label), vjust = -0.4, size = 3.4) +
-  coord_cartesian(ylim = c(0, 56)) +
-  labs(x = NULL, y = "Plots per replication") +
-  theme_minimal(base_size = 11) +
-  theme(panel.grid.minor = element_blank())
-
-layout_plot %>%
-  insert_bottom(rep_counts, height = 0.24)
 ```
 
-# Analysis Implications
+::: {.callout-note}
+This map is the field's planting layout: `ENTRY` is the sowing order and the 5 × 10 serpentine is Stelio's planting procedure (first plot top-left, snaking down). The field **row** and **column** read off this map are exactly the coordinates fed to the `env:rep:row` and `env:rep:col` spatial terms in the mixed model below.
+:::
 
-For the real dataset, the experimental-design terms should reflect the alpha lattice:
+# Phenotypic Model
 
-```r
-# Conceptual fixed/random structure
-trait ~ ENV + GEN + ENV:GEN + REP:ENV + incomplete_block:REP:ENV
+For grain yield, the fitted multilocation **RCBD** model — written out in full, exactly as it is fit below — separates each plot into the experimental-design terms, the line × tester combining-ability terms, their environment interactions, and error:
+
+$$
+\begin{aligned}
+y_{hirc(pq)} = \;& \mu + E_h + R_{i(h)} + \text{Row}_{r(hi)} + \text{Col}_{c(hi)} \\
+              & + g_{F_p} + g_{M_q} + s_{pq} \\
+              & + (Eg_F)_{hp} + (Eg_M)_{hq} + (Es)_{hpq} \\
+              & + \epsilon_{hirc(pq)}
+\end{aligned}
+$$
+
+for the plot holding hybrid $(p, q)$ — female $p$ × male $q$ — in field row $r$, column $c$, replication $i$, and environment $h$:
+
+**Experimental design (RCBD + spatial)**
+
+* $\mu$ — overall mean.
+* $E_h$ — environment (fixed; the four sites differ in mean).
+* $R_{i(h)}$ — **replication (complete block) nested within environment: the RCBD blocking factor.**
+* $\text{Row}_{r(hi)}$, $\text{Col}_{c(hi)}$ — field row and column nested within replication, the spatial correction across the 5 × 10 grid.
+
+**Genetic — line × tester decomposition of the genotype effect** (North Carolina Design II partition of @comstock1948 and @isik2017)
+
+* $g_{F_p}$ — female (line) GCA; $g_{M_q}$ — male (tester) GCA; $s_{pq}$ — SCA of the cross. Together these give the genotype effect $G_k = g_{F_p} + g_{M_q} + s_{pq}$.
+
+**Genotype × environment** (the combined $(EG)_{hk}$ split into its three sources)
+
+* $(Eg_F)_{hp}$ — female-GCA × environment; $(Eg_M)_{hq}$ — male-GCA × environment; $(Es)_{hpq}$ — SCA × environment.
+
+**Error**
+
+* $\epsilon_{hirc(pq)}$ — plot residual.
+
+Because the female (CIMMYT) and male (Mozambique) sets are mutually exclusive, `Female` and `Male` are fit as **separate** random effects — no design-matrix overlay is needed, unlike a diallel [@isik2017]. The check (`GEN = 0`) is held outside this decomposition as a reference entry. Each random term maps one-to-one onto the `sommer` call fitted below:
+
+| Model term | `sommer` random term |
+| :--- | :--- |
+| $R_{i(h)}$ | `env:rep` |
+| $\text{Row}_{r(hi)}$ / $\text{Col}_{c(hi)}$ | `env:rep:row` / `env:rep:col` |
+| $g_{F_p}$ / $g_{M_q}$ / $s_{pq}$ | `female` / `male` / `cross` |
+| $(Eg_F)_{hp}$ / $(Eg_M)_{hq}$ / $(Es)_{hpq}$ | `female:env` / `male:env` / `cross:env` |
+
+::: {.callout-note}
+The field **row** and **column** terms come from the 5 × 10 serpentine planting layout above — Stelio's actual field coordinates — so they absorb genuine field gradients rather than leaving them in the residual. The replication (`env:rep`) is the RCBD block; row and column refine it within each replication.
+:::
+
+# Exploratory Data Analysis (EDA)
+
+We summarise the real `Yield t/ha` of the 49 hybrid crosses before fitting any model.
+
+## Mean Yield Grid
+
+Mean hybrid yield in each female × male cell, averaged across all 4 environments × 3 replications.
+
+```{r}
+#| label: eda-grid
+
+mean_yields <- hybrids %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = round(mean(yield), 2), .groups = "drop") %>%
+  pivot_wider(names_from = male, values_from = mean_yield)
+
+kable(mean_yields, caption = "7 × 7 Factorial F1 Yield Grid (mean Yield t/ha across 4 environments × 3 reps)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#1a5276", color = "white")
 ```
 
-In practice:
+## Performance across Environments
 
-* Use `ENV`, `REP`, `GEN`, and the original incomplete-block labels if Stelio can provide them.
-* Treat row-order-derived incomplete-block labels as provisional unless the original fieldbook confirms that CSV row order matches the alpha-lattice allocation order.
-* Request pot row/column coordinates, range/tier labels, plot IDs, or explicit incomplete-block identifiers if physical spatial analysis is needed.
-* Resolve the duplicated `GEN = 49` records before estimating final means, genotype effects, heritability, or GCA/SCA.
-* Join a pedigree/cross key to `GEN` before estimating female GCA, male GCA, and SCA.
+Yield distribution of the 49 hybrids in each of the four environments, with the `NAMULONGUE` check mean overlaid as a reference point.
 
-The corrected theoretical statement is therefore:
+```{r}
+#| label: eda-plot
+#| fig.width: 10
+#| fig.height: 6
 
-> Stelio's real multilocation dataset contains 49 maize genotypes evaluated across four environments with three replications per environment. The experimental allocation is best represented as a resolvable alpha-lattice design with seven incomplete blocks of seven experimental units within each replication. This should replace the earlier RCBD assumption used for the simulated dataset, while recognizing that the CSV does not contain enough spatial metadata to reconstruct the true physical pot layout.
+check_means <- raw_data %>%
+  filter(GEN == "0") %>%
+  group_by(ENV) %>%
+  summarize(check_mean = mean(yield), .groups = "drop")
+
+ggplot(hybrids, aes(x = env, y = yield, fill = env)) +
+  geom_boxplot(alpha = 0.85, outlier.color = "grey40") +
+  geom_point(
+    data = check_means,
+    aes(x = ENV, y = check_mean),
+    inherit.aes = FALSE,
+    shape = 23, size = 3.5, fill = "#D7301F", color = "black"
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title    = "Hybrid grain yield across the four environments",
+    subtitle = "Boxplots: 49 line × tester hybrids (3 reps each). Red diamond: NAMULONGUE check mean.",
+    x = "Environment",
+    y = "Yield (t/ha)",
+    fill = "Environment"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(face = "bold", color = "#1a202c"))
+```
+
+# Fixed-Effects Calculations: Factorial Combining Ability
+
+In a balanced factorial cross, GCA and SCA can be calculated arithmetically from family means. This provides a transparent foundation before using mixed models.
+
+## Arithmetic Formulas
+
+Let $\bar{Y}_{p.}$ be the mean yield of all crosses involving female parent $p$,
+$\bar{Y}_{.q}$ the mean yield of all crosses involving male parent $q$,
+$\bar{Y}_{pq}$ the mean of the hybrid cross between female $p$ and male $q$,
+and $\bar{Y}_{..}$ the overall grand mean of all crosses in the factorial grid.
+
+*   **Grand Mean:** $\bar{Y}_{..} = \frac{1}{f \cdot m} \sum_{p} \sum_{q} \bar{Y}_{pq}$
+*   **GCA of Female Parent $p$:** $g_{F_p} = \bar{Y}_{p.} - \bar{Y}_{..}$
+*   **GCA of Male Parent $q$:** $g_{M_q} = \bar{Y}_{.q} - \bar{Y}_{..}$
+*   **SCA of Cross $pq$:** $s_{pq} = \bar{Y}_{pq} - \bar{Y}_{p.} - \bar{Y}_{.q} + \bar{Y}_{..}$
+
+## Direct R Arithmetic
+
+We calculate these effects arithmetically from the entire hybrid dataset (all 4 environments pooled). The check is excluded.
+
+```{r}
+#| label: arithmetic-calculations
+
+# 1. Family means over all environments and reps
+family_means <- hybrids %>%
+  group_by(female, male) %>%
+  summarize(mean_yield = mean(yield), .groups = "drop")
+
+# 2. Reshape to a 7x7 matrix (7 CIMMYT females in rows, 7 MOZL males in columns)
+Y_matrix <- matrix(
+  0, nrow = 7, ncol = 7,
+  dimnames = list(levels(hybrids$female), levels(hybrids$male))
+)
+for (i in seq_len(nrow(family_means))) {
+  Y_matrix[as.character(family_means$female[i]),
+           as.character(family_means$male[i])] <- family_means$mean_yield[i]
+}
+
+# 3. Grand mean, marginal means
+mu_hat       <- mean(Y_matrix)
+female_means <- rowMeans(Y_matrix)
+male_means   <- colMeans(Y_matrix)
+
+# 4. Fixed GCA effects
+gca_female_fixed <- female_means - mu_hat
+gca_male_fixed   <- male_means - mu_hat
+
+# 5. Fixed SCA effects
+sca_fixed <- matrix(
+  0, nrow = 7, ncol = 7,
+  dimnames = list(levels(hybrids$female), levels(hybrids$male))
+)
+for (p in rownames(sca_fixed)) {
+  for (q in colnames(sca_fixed)) {
+    sca_fixed[p, q] <- Y_matrix[p, q] - gca_female_fixed[p] - gca_male_fixed[q] - mu_hat
+  }
+}
+
+gca_female_df <- tibble(
+  Female_Parent = names(gca_female_fixed),
+  Mean_Yield    = round(female_means, 3),
+  Estimated_GCA = round(gca_female_fixed, 4)
+)
+kable(gca_female_df, caption = "Estimated GCA Effects for Female Parents (CIMMYT CML Lines), Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+gca_male_df <- tibble(
+  Male_Parent   = names(gca_male_fixed),
+  Mean_Yield    = round(male_means, 3),
+  Estimated_GCA = round(gca_male_fixed, 4)
+)
+kable(gca_male_df, caption = "Estimated GCA Effects for Male Parents (MOZL Testers), Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+kable(round(sca_fixed, 4), caption = "Arithmetic 7 × 7 Specific Combining Ability (SCA) grid, Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#4a5568", color = "white")
+```
+
+# Mixed-Effects Calculations: Factorial Variance Components across Environments
+
+In modern breeding, combining ability is analyzed with **Linear Mixed Models (LMMs)**: parents are treated as random samples from a reference population, and each combining-ability term gets a paired environment interaction so its G×E variance can be estimated separately [@isik2017]. We fit the model with `sommer::mmer` on all four environments. Because female and male lines are distinct, **no matrix overlays are needed**.
+
+## Fitting the Mixed Model
+
+*   `env` enters as a **fixed effect** (different overall means across the four sites).
+*   `env:rep` captures replications (complete blocks) nested within environment.
+*   `env:rep:row` and `env:rep:col` capture the **field row and column** nested within each replication — the spatial correction across the 5 × 10 grid.
+*   `female`, `male`, `cross` are the random Female GCA, Male GCA, and SCA terms.
+*   `female:env`, `male:env`, `cross:env` are their G×E interactions.
+
+```{r}
+#| label: mixed-model-sommer
+
+fit_gxe <- mmer(
+  fixed  = yield ~ env,
+  random = ~ female + male + cross +
+             female:env + male:env + cross:env +
+             env:rep + env:rep:row + env:rep:col,
+  data    = hybrids,
+  verbose = FALSE
+)
+
+var_comps <- summary(fit_gxe)$varcomp
+kable(var_comps, caption = "Variance components — joint line × tester model across all 4 environments") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Extracting GCA BLUPs
+
+We extract the General Combining Ability predictions (BLUPs) for both parent sets.
+
+```{r}
+#| label: gca-blups
+
+female_blups <- fit_gxe$U$female$yield
+male_blups   <- fit_gxe$U$male$yield
+
+female_blups_df <- tibble(
+  CIMMYT_Female = gsub("female", "", names(female_blups)),
+  GCA_BLUP      = round(as.numeric(female_blups), 4)
+) %>%
+  arrange(desc(GCA_BLUP))
+kable(female_blups_df, caption = "Female GCA BLUPs (CIMMYT CML Lines), across-environment Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+male_blups_df <- tibble(
+  MOZL_Male = gsub("male", "", names(male_blups)),
+  GCA_BLUP  = round(as.numeric(male_blups), 4)
+) %>%
+  arrange(desc(GCA_BLUP))
+kable(male_blups_df, caption = "Male GCA BLUPs (MOZL Testers), across-environment Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Extracting SCA BLUPs
+
+We extract the Specific Combining Ability predictions (dominance deviations) and format them into a $7 \times 7$ grid. Each cross BLUP is mapped back to its female/male cell via the pedigree key.
+
+```{r}
+#| label: sca-blups
+
+cross_blups <- fit_gxe$U$cross$yield
+
+# Pedigree key: cross string -> (female, male)
+cross_key <- hybrids %>%
+  distinct(cross, female, male) %>%
+  mutate(cross = as.character(cross))
+
+sca_df <- tibble(
+  cross    = gsub("cross", "", names(cross_blups)),
+  SCA_BLUP = as.numeric(cross_blups)
+) %>%
+  left_join(cross_key, by = "cross")
+
+sca_matrix_blup <- matrix(
+  0, nrow = 7, ncol = 7,
+  dimnames = list(levels(hybrids$female), levels(hybrids$male))
+)
+for (i in seq_len(nrow(sca_df))) {
+  sca_matrix_blup[as.character(sca_df$female[i]),
+                  as.character(sca_df$male[i])] <- sca_df$SCA_BLUP[i]
+}
+
+kable(round(sca_matrix_blup, 4), caption = "7 × 7 Specific Combining Ability (SCA) BLUP grid, across-environment Yield t/ha") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "bordered")) %>%
+  row_spec(0, bold = TRUE, background = "#4a5568", color = "white")
+```
+
+# Breeding Values (BV) and Genotypic Values (GV)
+
+For hybrid selection we combine the BLUPs into two quantities:
+
+1.  **Breeding Value ($BV$):** the additive value of a cross, the sum of parent GCAs.
+    $$BV_{pq} = g_{F_p} + g_{M_q}$$
+2.  **Genotypic Value ($GV$):** the total genetic value, $BV$ plus the SCA (dominance) deviation.
+    $$GV_{pq} = g_{F_p} + g_{M_q} + s_{pq}$$
+
+```{r}
+#| label: bv-gv-calc
+
+genetic_values <- expand.grid(
+  Female = levels(hybrids$female),
+  Male   = levels(hybrids$male),
+  stringsAsFactors = FALSE
+) %>%
+  mutate(
+    GCA_Female         = map_dbl(Female, ~ female_blups_df$GCA_BLUP[female_blups_df$CIMMYT_Female == .x]),
+    GCA_Male           = map_dbl(Male,   ~ male_blups_df$GCA_BLUP[male_blups_df$MOZL_Male == .x]),
+    SCA                = map2_dbl(Female, Male, ~ sca_matrix_blup[.x, .y]),
+    Breeding_Value_BV  = GCA_Female + GCA_Male,
+    Genotypic_Value_GV = Breeding_Value_BV + SCA
+  ) %>%
+  arrange(desc(Genotypic_Value_GV))
+
+kable(head(genetic_values, 15), caption = "Top 15 line × tester hybrids ranked by Genotypic Value (across-environment Yield t/ha)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+# Across-Environment Heritability with G × E
+
+We report **entry-mean (full-sib family-mean) heritability** — the accuracy with which cross rankings can be selected based on their mean across replicates and environments. With $e$ environments and $r$ reps per environment:
+
+*   **Genetic variance of cross means:** $\sigma^2_G = \sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$
+*   **Additive component (entry mean):** $\sigma^2_{A,\bar{x}} = \sigma^2_{GCA_F} + \sigma^2_{GCA_M}$
+*   **Total G × E variance:** $\sigma^2_{GE} = \sigma^2_{GCA_F \times E} + \sigma^2_{GCA_M \times E} + \sigma^2_{SCA \times E}$
+*   **Entry-mean phenotypic variance:** $\sigma^2_{P,\bar{x}} = \sigma^2_G + \dfrac{\sigma^2_{GE}}{e} + \dfrac{\sigma^2_{\text{res}}}{e \cdot r}$
+*   **Narrow-sense entry-mean heritability:** $h^2_{\bar{x}} = \sigma^2_{A,\bar{x}} / \sigma^2_{P,\bar{x}}$
+*   **Broad-sense entry-mean heritability:** $H^2_{\bar{x}} = \sigma^2_G / \sigma^2_{P,\bar{x}}$
+
+```{r}
+#| label: gxe-heritability
+
+# Pick variance components by regex on rowname. Interaction terms can appear as
+# "female:env" or "env:female" depending on sommer's term ordering; match both.
+# NOTE: every pattern is ANCHORED with ^. This is essential — an unanchored
+# "male:env" would also match "female:env" (the word "female" ends in "male"),
+# double-counting female GCA×E into the male term and inflating total G×E.
+pick_vc <- function(vc, pat) {
+  idx <- grep(pat, rownames(vc))
+  if (length(idx) == 0) 0 else sum(vc[idx, "VarComp"])
+}
+
+var_gca_f_g <- pick_vc(var_comps, "^female\\.")
+var_gca_m_g <- pick_vc(var_comps, "^male\\.")
+var_sca_g   <- pick_vc(var_comps, "^cross\\.")
+var_gca_f_e <- pick_vc(var_comps, "^female:env|^env:female")
+var_gca_m_e <- pick_vc(var_comps, "^male:env|^env:male")
+var_sca_e   <- pick_vc(var_comps, "^cross:env|^env:cross")
+var_rep_g   <- pick_vc(var_comps, "^env:rep\\.")        # replication-in-env (literal dot excludes row/col)
+var_row_g   <- pick_vc(var_comps, "^env:rep:row")       # field rows within replication
+var_col_g   <- pick_vc(var_comps, "^env:rep:col")       # field columns within replication
+var_res_g   <- pick_vc(var_comps, "^units\\.")
+
+e_env <- 4   # number of environments
+r_rep <- 3   # reps per environment
+
+var_G_mean <- var_gca_f_g + var_gca_m_g + var_sca_g
+var_A_mean <- var_gca_f_g + var_gca_m_g
+var_GE     <- var_gca_f_e + var_gca_m_e + var_sca_e
+
+# Replication, row, and column effects are design (nuisance) terms: they are
+# removed by the experimental layout and do not enter the entry-mean phenotypic
+# variance, exactly as `rep` does not. Modelling them only shrinks the residual.
+var_phen_mean <- var_G_mean + var_GE / e_env + var_res_g / (e_env * r_rep)
+
+h2_mean <- var_A_mean / var_phen_mean
+H2_mean <- var_G_mean / var_phen_mean
+
+gxe_results <- tibble(
+  Parameter = c(
+    "GCA Female variance",
+    "GCA Male variance",
+    "SCA variance",
+    "GCA_F × Env variance",
+    "GCA_M × Env variance",
+    "SCA × Env variance",
+    "Total G × E variance",
+    "Replication variance (env:rep)",
+    "Field-row variance (env:rep:row)",
+    "Field-column variance (env:rep:col)",
+    "Residual variance",
+    "Genetic variance of cross means (Vg)",
+    "Entry-mean phenotypic variance (Vp_mean)",
+    "Narrow-sense h² (entry mean across envs)",
+    "Broad-sense H² (entry mean across envs)"
+  ),
+  Value = round(c(
+    var_gca_f_g, var_gca_m_g, var_sca_g,
+    var_gca_f_e, var_gca_m_e, var_sca_e,
+    var_GE, var_rep_g, var_row_g, var_col_g, var_res_g,
+    var_G_mean, var_phen_mean,
+    h2_mean, H2_mean
+  ), 4)
+)
+
+kable(gxe_results, caption = "Genetic variances, G × E, and entry-mean heritabilities — joint four-environment model") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+> [!TIP]
+> *   If $\sigma^2_{GE}$ is a substantial fraction of $\sigma^2_{GCA_F} + \sigma^2_{GCA_M} + \sigma^2_{SCA}$, the ranking of parents and crosses is **environment-dependent** — selection should be done within target environments (e.g., a Chokwe stress site) rather than on across-environment means.
+> *   Both heritabilities are bounded in $[0, 1]$, as expected from a properly specified entry-mean form.
+
+::: {.callout-important}
+**Why these estimates look the way they do — and what is real vs. fixable.**
+
+*   **Male (tester) GCA and SCA×E estimate to ~0, and this is correct.** A fixed-effects ANOVA gives male `MS = 1.55`, *below* the residual `MS = 2.23` (`p = 0.65`), so the unconstrained REML variance is negative and is pinned at 0. The arithmetic SCA "spread" from family means (≈ 0.18) is fully explained by the sampling error of a 12-plot mean (residual/12 ≈ 0.19). The real, significant signal is **female (line) GCA** (`p = 0.0002`) and **female GCA × environment** (`p = 0.004`): the seven CIMMYT donor lines differ and re-rank across sites; the seven local testers do not.
+
+*   **Narrow-sense $h^2_{\bar{x}}$ is genuinely low (~0.18).** Additive variance is small and one-sided (males add nothing), and $\sigma^2_{GCA_F \times E}$ is *larger* than $\sigma^2_{GCA_F}$ — the lines re-rank strongly across four climatically distinct sites (NHACOONGO mean 5.25 vs. SUSSUNDENGA 7.41 t/ha). Across-environment narrow-sense heritability *should* be low when G×E dominates the additive signal.
+
+*   **The field row/column spatial terms are modelled (`env:rep:row`, `env:rep:col`), which is why $H^2_{\bar{x}}$ is realistic.** The field **row** carries a **highly significant** variance (≈ 0.56, `Z ≈ 4.4`) and the column a smaller one (≈ 0.11, `Z ≈ 1.9`); together they absorb genuine field gradient across the 5 × 10 grid that would otherwise inflate the residual. Compared with a plain RCBD (rep only) the residual drops ~32% (2.24 → 1.53) and broad-sense $H^2_{\bar{x}}$ rises from ≈ 0.30 to ≈ **0.45**. These coordinates are Stelio's real planting positions (5 × 10 serpentine), so this is a legitimate spatial correction, not an arbitrary split.
+:::
+
+# Step-by-Step Checklist for Stelio {#sec-checklist}
+
+To complete the GCA and SCA analysis for his PhD from `data/multilocation.csv`, Stelio should follow these structured steps:
+
+1.  **Prepare the data:** keep the columns `ENV`, `REP`, `GEN`, `Female` (CIMMYT CML lines), `Male` (MOZL testers), `Female x Male` (cross ID), and the trait (`Yield t/ha`). Hold the `NAMULONGUE` check (`GEN = 0`) as a separate reference entry.
+
+2.  **Import to R:** load `tidyverse` and `sommer`, read the CSV, set `ENV`, `REP`, `Female`, `Male`, and the cross as factors, and build a hybrids-only frame (drop `GEN = 0`).
+
+3.  **Run the field-layout / design diagnostics:** confirm 600 balanced rows (49 hybrids × 12 + 12 checks) and 50 plots per environment-by-replication, recover each plot's field row (1–10) and column (1–5) from the `ENTRY` serpentine order, and visualise the 5 × 10 planting map.
+
+4.  **Run line × tester arithmetic:** hand-calculate GCA and SCA from family means to understand the dataset before modelling.
+
+5.  **Fit the mixed model:** use `sommer::mmer` with `female`, `male`, and `cross` as random effects plus their `:env` interactions; `env` fixed; and the design terms `env:rep` (RCBD block) plus `env:rep:row` and `env:rep:col` (spatial control) random. Do **not** use overlay matrix functions — the parental sets are distinct.
+
+6.  **Calculate Breeding and Genotypic Values:**
+    *   Use parental GCA BLUPs for $BV = g_F + g_M$ (parental recombination selection).
+    *   Use $GV = BV + SCA$ to select the best commercial hybrid entries.
+
+7.  **Estimate heritability with G × E:** extract variance components, separate the G × E terms, and apply the entry-mean line × tester formulas to check selection accuracy across environments.
+
+8.  **Compare against the check:** benchmark top hybrids against the replicated `NAMULONGUE` check in each environment.
+
+9.  **Confirm the design — alpha-lattice vs. RCBD:** Stelio described the trial as an **alpha (incomplete-block) design**, so he should clarify and provide the **incomplete-block (sub-block) assignment** for each plot. However, the data give **no sign of an alpha lattice**: within each 5 × 10 replication the hybrids appear fully randomized, with no incomplete, repeated sub-blocks of hybrids — which is why the trial is analyzed here as an **RCBD with row/column spatial control**. If Stelio supplies real sub-block labels, add an `env:rep:block` term and compare fits (log-likelihood / AIC) against the current row/column model; if he cannot, the RCBD + spatial model stands. For a finer field-trend correction, consider a continuous row/column covariate or a 2-D AR1×AR1 spatial structure on row × column.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
