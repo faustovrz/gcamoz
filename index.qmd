@@ -1,0 +1,22 @@
+---
+pagetitle: "Maize Combining Ability — gcamoz"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+    code-tools: false
+---
+
+::: {.callout-tip appearance="simple"}
+**Rendered reports:**
+[Multilocation RCBD GCA/SCA](multilocation_alpha_lattice.html) ·
+[GCA/SCA teaching notebook](gca_calculation.html) ·
+[Full diallel](diallel_gca_sca_analysis.html) ·
+[Simulation](gca_simulation.html) ·
+[Genesys CML retrieval](retrieve_CML_genesys.html) ·
+[Iris ANOVA + CLD](iris_anova_cld.html)
+:::
+
+{{< include README.md >}}
