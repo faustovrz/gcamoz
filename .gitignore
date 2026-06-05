@@ -2,6 +2,7 @@ stelio_mail.txt
 stelio_slack_metadata_request.md
 isik2017_chapter*.txt
 
+agent/
 /.quarto/
 **/*.quarto_ipynb
 /.claude/
