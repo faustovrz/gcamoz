@@ -6,5 +6,6 @@ project:
     - gca_simulation.qmd
     - gca_calculation.qmd
     - multilocation_alpha_lattice.qmd
+    - rcbd_vs_alpha_lattice.qmd
     - diallel_gca_sca_analysis.qmd
     - iris_anova_cld.qmd

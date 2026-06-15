@@ -1,0 +1,403 @@
+---
+title: "RCBD vs. Alpha Lattice for a 7 × 7 North Carolina II Trial"
+subtitle: "Two independent design axes — the line × tester *mating* design and the *field layout* — illustrated with FielDHub and Stelio's `data/multilocation.csv`"
+author: "Fausto Rodriguez Zapata"
+date: "2026-06-15"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
+---
+
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
+::: {.callout-note}
+This is a **companion / didactic** notebook to `multilocation_alpha_lattice.qmd`. Its only job is to answer one question cleanly: **how does a "RCBD with a 7 × 7 NC II design" differ from an "alpha lattice design"?** — and **is an alpha-lattice field distribution compatible with `data/multilocation.csv`?**
+
+It does **not** redo the GCA/SCA analysis (that lives in `multilocation_alpha_lattice.qmd`). It fits a plain RCBD on the real yields to anchor the discussion, generates an alpha lattice with **FielDHub** to make the alternative concrete, and lays the two side by side.
+:::
+
+# The Single Most Important Idea {#sec-two-axes}
+
+The phrase *"RCBD with a 7 × 7 NC II design"* and the phrase *"alpha lattice design"* are **not two options on the same menu.** They live on two **independent axes**, and you choose one value on *each* axis:
+
+| Axis | What it decides | Your trial | Alternatives |
+| :--- | :--- | :--- | :--- |
+| **1. Mating design** | *How the genotypes were created* — which parents were crossed. Drives the **genetic analysis** (GCA / SCA). | **7 × 7 line × tester = North Carolina Design II**: 7 CIMMYT females × 7 MOZL males → 49 F1 hybrids. | Diallel, NC I, NC III, topcross, single-cross panel … |
+| **2. Field layout (blocking)** | *How the plots are arranged in the soil* to soak up field heterogeneity. Drives the **error-control / blocking term** in the model. | **?** — this is exactly what is unresolved: **RCBD** or **alpha lattice**. | RCBD, alpha lattice, square/rectangular lattice, augmented, row–column, p-rep … |
+
+::: {.callout-important}
+**The mating design and the field layout are orthogonal.** The 7 × 7 NC II does **not** commit you to any particular field layout. The *same* 49 hybrids (+ check) can be fielded as an **RCBD** *or* as an **alpha lattice** — only the **blocking term** in the model changes. So the real comparison in this notebook is:
+
+> **RCBD vs. alpha lattice — two ways to lay the *same* NC II material in the field.**
+
+"7 × 7 NC II" is a constant on both sides of that comparison; it is *not* the thing being compared.
+:::
+
+This is why the question "is it RCBD or alpha?" is a **field-layout** question, answered by the *plot arrangement* (is each rep one complete block, or split into incomplete sub-blocks?), and is completely separate from the line × tester genetics.
+
+# R Setup
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(FielDHub)   # alpha-lattice generation; install.packages("FielDHub") if missing
+library(lme4)       # lightweight mixed model to anchor the RCBD fit
+library(knitr)
+library(kableExtra)
+
+raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  mutate(
+    ENV    = factor(ENV),
+    REP    = factor(REP, levels = c("I", "II", "III")),
+    GEN    = factor(GEN, levels = as.character(0:49)),
+    Female = factor(Female),
+    Male   = factor(Male),
+    cross  = factor(`Female x Male`),
+    yield  = `Yield t/ha`
+  )
+
+# Hybrids-only frame (check held out), mirroring the companion notebook.
+hybrids <- raw_data %>%
+  filter(GEN != "0") %>%
+  transmute(env = droplevels(ENV), rep = REP,
+            female = droplevels(Female), male = droplevels(Male),
+            cross = droplevels(cross), yield = yield)
+```
+
+# The Mating Design: 7 × 7 North Carolina II (held constant)
+
+The genetic material is a **factorial / line × tester** cross — Comstock & Robinson's **North Carolina Design II** [@comstock1948; @isik2017]. Two disjoint parent sets are crossed in every combination:
+
+* **Females / lines:** 7 CIMMYT CML donors.
+* **Males / testers:** 7 Mozambique `MOZL` testers.
+* **Hybrids:** all 7 × 7 = **49 F1 combinations**, plus a repeated `NAMULONGUE` **check** → **50 entries** evaluated per replication.
+
+```{r}
+#| label: mating-grid
+
+mating_grid <- raw_data %>%
+  filter(GEN != "0") %>%
+  distinct(Female, Male, GEN) %>%
+  droplevels() %>%
+  arrange(Female, Male) %>%
+  pivot_wider(names_from = Male, values_from = GEN)
+
+kable(mating_grid,
+      caption = "The 7 × 7 NC II mating grid (cell = GEN code). This is FIXED — it is the same whether the field is RCBD or alpha lattice.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+::: {.callout-note}
+Everything below changes the **field layout** around these 50 entries. The grid above never changes. Keep this picture in mind: the NC II decides *what is in the plots*; RCBD vs. alpha decides *which plots sit next to which, inside which block*.
+:::
+
+# Field Layout Option A — RCBD (Complete Blocks)
+
+In a **Randomized Complete Block Design**, each replication is **one complete block** containing **all 50 entries exactly once**, arranged in random order within the block.
+
+* **Block = replication.** Here that is the 5 × 10 = 50-plot grid per rep.
+* **Assumption:** the soil is reasonably **uniform *within* a whole replication**, so a single block-mean adjustment per rep removes the between-rep field effect.
+* **Blocking term:** one factor — `rep` (nested in `env` for the multilocation trial: `env:rep`).
+
+```{r}
+#| label: rcbd-schematic
+
+rcbd_schematic <- tibble(
+  Property               = c("Block unit", "Plots per block", "Entries per block",
+                             "Blocks per rep", "Incomplete sub-blocks?", "Blocking term(s)"),
+  RCBD                   = c("Replication (whole rep)", "50", "All 50 (complete)",
+                             "1", "No", "rep  (→ env:rep)")
+)
+kable(rcbd_schematic, caption = "RCBD blocking structure for the 50 entries") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+**RCBD model for grain yield** (NC II genetics layered on the RCBD blocking):
+
+$$
+y_{hi(pq)} = \mu + E_h + R_{i(h)} + g_{F_p} + g_{M_q} + s_{pq} + (\text{G}\times\text{E})_{h(pq)} + \epsilon_{hi(pq)}
+$$
+
+where $R_{i(h)}$ — replication-within-environment — is the **only** field-control term: one adjustment for the *entire* rep.
+
+```{r}
+#| label: rcbd-fit
+#| message: false
+#| warning: false
+
+# Anchor RCBD fit on the REAL yields (check excluded). env fixed; rep the
+# complete-block term; female/male/cross the NC II genetics — all random.
+rcbd_fit <- lmer(
+  yield ~ env + (1 | env:rep) +
+    (1 | female) + (1 | male) + (1 | cross),
+  data = hybrids
+)
+
+rcbd_vc <- as.data.frame(VarCorr(rcbd_fit)) %>%
+  transmute(Term = grp, Variance = round(vcov, 4))
+
+kable(rcbd_vc,
+      caption = "RCBD variance components on the real Yield t/ha (env:rep = the single complete-block term).") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+::: {.callout-note}
+The companion notebook refines this RCBD with row/column spatial terms recovered from the planting order. That row/column trick is a *spatial* correction **on top of** the RCBD — it is **not** an alpha lattice. An alpha lattice instead controls field trend through **explicitly randomized incomplete blocks**, which is the next section.
+:::
+
+# Field Layout Option B — Alpha Lattice (Incomplete Blocks)
+
+A complete block of 50 plots can be large enough that the soil is **not** uniform across it — there is gradient *within* the rep that one rep-mean cannot remove. The **alpha lattice** (an α-design, @patterson1976) fixes this by **subdividing each replication into smaller incomplete blocks** and randomizing entries into them.
+
+Key vocabulary, for $t$ treatments:
+
+* **$k$ — block size:** plots per incomplete block (here we choose **$k = 5$**).
+* **$s = t/k$ — blocks per replication:** here $50/5 =$ **10 incomplete blocks per rep**.
+* **$r$ — replications:** here **3**.
+* **Resolvable:** every replication still contains a *complete* set of all $t$ entries — the incomplete blocks **partition** each rep. This is why an alpha lattice can always *fall back* to being analyzed as an RCBD.
+
+```{r}
+#| label: alpha-schematic
+
+alpha_schematic <- tibble(
+  Property               = c("Block unit", "Plots per block", "Entries per block",
+                             "Blocks per rep", "Incomplete sub-blocks?", "Blocking term(s)"),
+  `Alpha lattice (k = 5)` = c("Incomplete block (within rep)", "5", "5 of 50 (incomplete)",
+                              "10", "Yes — 10 per rep", "rep + rep:block")
+)
+kable(alpha_schematic, caption = "Alpha-lattice blocking structure for the 50 entries (k = 5)") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+**Alpha-lattice model for grain yield** — identical NC II genetics, but the blocking gains a nested **incomplete-block** term:
+
+$$
+y_{hib(pq)} = \mu + E_h + R_{i(h)} + \underbrace{B_{b(hi)}}_{\textbf{new}} + g_{F_p} + g_{M_q} + s_{pq} + (\text{G}\times\text{E})_{h(pq)} + \epsilon_{hib(pq)}
+$$
+
+The **only** structural difference from the RCBD model is the added term $B_{b(hi)}$ — the **incomplete block nested within replication** (`env:rep:block`). That single term is what makes it an alpha lattice rather than an RCBD.
+
+| | RCBD | Alpha lattice |
+| :--- | :--- | :--- |
+| Field-control terms | `env:rep` | `env:rep` **+ `env:rep:block`** |
+| Uniformity assumed over | the whole rep (50 plots) | only a 5-plot block |
+| Recovers within-rep gradient? | No | **Yes** |
+| Needs sub-block label per plot? | No | **Yes** |
+| Can be analyzed as RCBD? | — | Yes (drop the block term) |
+
+# Generating an Alpha Lattice with FielDHub
+
+Now we make Option B concrete. **FielDHub** [@fieldhub] generates a *resolvable* alpha lattice and gives every plot an explicit **incomplete-block label** — the column that the CSV currently lacks.
+
+We request **$t = 50$** entries, block size **$k = 5$** (→ $s = 10$ blocks/rep), **$r = 3$** replications, one location.
+
+```{r}
+#| label: alpha-generate
+
+alpha_design <- alpha_lattice(
+  t            = 50,     # entries: 49 hybrids + 1 check
+  k            = 5,      # incomplete-block size
+  r            = 3,      # replications
+  l            = 1,      # one location (repeat per environment in the real trial)
+  plotNumber   = 101,
+  locationNames = "ALPHA-DEMO",
+  seed         = 1234
+)
+
+field_book <- alpha_design$fieldBook %>% as_tibble()
+
+# Show the structure FielDHub produces — the key column is the incomplete block.
+kable(head(field_book, 12),
+      caption = "First 12 plots of the FielDHub alpha lattice. Each plot carries a REP and an incomplete-block (IBLOCK) label — the block label is what an alpha analysis needs.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(height = "360px")
+```
+
+```{r}
+#| label: alpha-structure-check
+
+structure_summary <- field_book %>%
+  summarize(
+    total_plots        = n(),
+    replications       = n_distinct(REP),
+    entries            = n_distinct(ENTRY),
+    iblocks_per_rep    = n_distinct(IBLOCK),
+    plots_per_iblock   = n() / (n_distinct(REP) * n_distinct(IBLOCK))
+  )
+
+kable(structure_summary,
+      caption = "The generated design: 3 reps × 10 incomplete blocks × 5 plots = 150 plots; 50 entries each appearing once per rep.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+## Field Map on the 5 × 10 Serpentine
+
+To place the generated design on the actual field, we reuse the **5-column × 10-row serpentine** from `multilocation_alpha_lattice.qmd` — but derive the row/column from FielDHub's **planting order** rather than any built-in coordinate column. We start the serpentine at the **top-right** corner (first plot at row 1, column 5) and snake down.
+
+Because consecutive plots in a resolvable alpha lattice belong to the same incomplete block, and here **block size k = 5 equals the field width (5 columns)**, **each incomplete block falls on exactly one serpentine row.** The colour bands (blocks) therefore line up with field rows — the visual signature of an alpha lattice. An RCBD map of the same rep would carry **no internal block boundaries** — just 50 plots in one undifferentiated block.
+
+```{r}
+#| label: alpha-map
+#| fig.width: 11
+#| fig.height: 7
+#| warning: false
+
+# Same serpentine convention as multilocation_alpha_lattice.qmd: 5 columns × 10
+# rows per rep, derived from the planting order (PLOT). First plot top-right,
+# odd rows run right→left, even rows left→right, snaking down the block.
+alpha_layout <- field_book %>%
+  arrange(REP, PLOT) %>%
+  group_by(REP) %>%
+  mutate(
+    plot_order = row_number(),                    # 1 .. 50 within each rep
+    field_row  = ceiling(plot_order / 5),         # 1 (top) .. 10 (bottom)
+    pos_in_row = ((plot_order - 1) %% 5) + 1,
+    field_col  = if_else(field_row %% 2 == 1,     # serpentine from TOP-RIGHT:
+                         6L - pos_in_row,          #   odd rows  right → left
+                         pos_in_row)               #   even rows left  → right
+  ) %>%
+  ungroup() %>%
+  mutate(IBLOCK = factor(IBLOCK))
+
+ggplot(alpha_layout, aes(x = field_col, y = field_row, fill = IBLOCK)) +
+  geom_tile(color = "white", linewidth = 0.7) +
+  geom_text(aes(label = ENTRY), size = 2.6, fontface = "bold") +
+  facet_wrap(~ REP, nrow = 1) +
+  scale_fill_viridis_d(option = "turbo", name = "Incomplete\nblock") +
+  scale_x_continuous(breaks = 1:5, position = "top", expand = c(0, 0)) +
+  scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
+  coord_equal() +
+  labs(
+    title    = "Alpha lattice on a 5 × 10 serpentine (first plot top-right, snaking down)",
+    subtitle = "Tile = entry (1–50); colour = incomplete block. With k = 5 over 5 columns, each block fills one field row.",
+    x = "Field column", y = "Field row (planting top → bottom)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid      = element_blank(),
+        strip.text      = element_text(face = "bold"),
+        plot.title      = element_text(face = "bold"),
+        legend.position = "bottom")
+```
+
+::: {.callout-warning}
+This FielDHub design is a **fresh randomization / layout** — a *template* for how Stelio's 50 entries *could* be sown as an alpha lattice. It is **not** a re-reading of the plots already in `data/multilocation.csv`. The entry numbers here are FielDHub's 1–50; mapping them onto Stelio's `GEN` codes (and onto each of the 4 real environments) would be a deployment step, not an analysis of the existing data.
+:::
+
+# Compatibility with `data/multilocation.csv`
+
+**Is a North Carolina (NC II) breeding design distributed in the field as an alpha lattice compatible with this data?** Two layers to the answer.
+
+**1. Genetically — yes, trivially.** The NC II / 7 × 7 line × tester analysis is *independent* of the field layout (see @sec-two-axes). The same `female` / `male` / `cross` GCA-SCA model runs whether the blocking term is `env:rep` (RCBD) or `env:rep` + `env:rep:block` (alpha). Switching to an alpha lattice changes **nothing** in the genetic decomposition.
+
+**2. As a field layout — dimensionally yes, but not analyzable from the current file.**
+
+```{r}
+#| label: compat-dims
+
+compat <- tibble(
+  Requirement = c(
+    "Entries (t)",
+    "Factors cleanly into incomplete blocks?",
+    "Replications (r ≥ 2)",
+    "Sub-block (IBLOCK) label per plot present in CSV?"
+  ),
+  `Stelio's data` = c(
+    paste0(n_distinct(raw_data$GEN), " (49 hybrids + 1 check)"),
+    "Yes — 50 = 10 × 5 (k = 5) or 5 × 10 (k = 10)",
+    paste0(n_distinct(raw_data$REP), " (I, II, III)"),
+    "NO — the CSV has ENV, REP, GEN, pedigree, traits, but no block column"
+  ),
+  Verdict = c("✅ fits an alpha lattice", "✅", "✅", "❌ blocks her")
+)
+
+kable(compat, caption = "Alpha-lattice compatibility audit of data/multilocation.csv") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+So the trial **could** have been (and may well have been) sown as an alpha lattice — 50 entries split cleanly into 10 blocks of 5, with 3 reps. But the file as delivered carries **no incomplete-block column**, and the companion notebook found **no repeated sub-block structure** of hybrids within a rep. Therefore:
+
+* The data can be **analyzed as an RCBD today** (the `env:rep` complete block is fully determined by the file).
+* The data **cannot be analyzed as an alpha lattice today** — there is no `block` label to put in `env:rep:block`.
+
+## What Stelio needs to supply to go alpha
+
+To analyze the *existing* trial as an alpha lattice, exactly one thing is missing: **the incomplete-block (sub-block) assignment that each plot actually had in the field** — Stelio's fieldbook block column. With it:
+
+```r
+# Once a real `block` column exists (1–10 within each env × rep):
+alpha_fit <- lmer(
+  yield ~ env + (1 | env:rep) + (1 | env:rep:block) +   # <- the alpha term
+    (1 | female) + (1 | male) + (1 | cross),
+  data = hybrids_with_blocks
+)
+# Then compare to the RCBD fit on the SAME data:
+anova(rcbd_fit, alpha_fit)   # logLik / AIC: does the block term earn its keep?
+```
+
+If `alpha_fit` has materially lower AIC (and a non-trivial `env:rep:block` variance), the incomplete blocks captured real within-rep gradient and the alpha analysis is justified. If not, the RCBD is the parsimonious, correct model.
+
+# Summary
+
+```{r}
+#| label: summary-table
+
+summary_tbl <- tibble(
+  Aspect = c(
+    "What it controls",
+    "Mating design (this trial)",
+    "Block unit",
+    "Within-rep gradient captured",
+    "Extra model term vs. RCBD",
+    "Needs a sub-block label?",
+    "Status for data/multilocation.csv"
+  ),
+  RCBD = c(
+    "Field layout / error control",
+    "7 × 7 NC II (unchanged)",
+    "Whole replication (50 plots)",
+    "No",
+    "—",
+    "No",
+    "Analyzable now (env:rep)"
+  ),
+  `Alpha lattice` = c(
+    "Field layout / error control",
+    "7 × 7 NC II (unchanged)",
+    "Incomplete block (5 plots)",
+    "Yes",
+    "env:rep:block",
+    "Yes",
+    "Needs Stelio's block column first"
+  )
+)
+
+kable(summary_tbl,
+      caption = "RCBD vs. alpha lattice — same NC II genetics, different field-blocking. The mating design is constant; only the blocking term differs.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  column_spec(1, bold = TRUE)
+```
+
+**Bottom line:**
+
+1. *"RCBD with 7 × 7 NC II"* and *"alpha lattice"* are not rivals — the **7 × 7 NC II is the mating design** (constant), while **RCBD vs. alpha lattice is the field layout** choice. They sit on independent axes.
+2. The **only** modelling difference is one term: the alpha lattice adds **`env:rep:block`** (incomplete blocks nested in rep) on top of the RCBD's `env:rep`.
+3. An alpha lattice is **dimensionally compatible** with the 50 entries (10 blocks × 5), and FielDHub can generate one — but the **current CSV cannot be analyzed as an alpha lattice** because it has no sub-block column. RCBD (+ optional spatial row/column) is the defensible model **until Stelio provides the real incomplete-block labels**.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
