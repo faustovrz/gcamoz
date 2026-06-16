@@ -429,6 +429,66 @@ ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
 
 **The observed panels match the random-RCBD reference, not the α-lattice one.** Every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with a triple in NHACOONGO) — which the green α(0,1) reference forbids outright. So even treating the rows as the most generous possible incomplete blocks, there is **no α-lattice signal**: the row groupings are indistinguishable from a random RCBD allocation. (Three environments even share an identical distribution, hinting the same randomization was reused.)
 
+### Positive control — the same test on a real alpha lattice
+
+A fair skeptic should ask whether this census simply flags *everything* as RCBD. It does not. Running the **identical** count on the FielDHub design generated above — whose true incomplete-block labels (`IBLOCK` within `REP`) are known — recovers the ideal α(0,1) distribution exactly.
+
+```{r}
+#| label: cooccurrence-positive-control
+#| fig.width: 11
+#| fig.height: 4.5
+#| warning: false
+
+# Census on FielDHub's constructed alpha lattice: block = (REP, IBLOCK), the
+# real incomplete blocks. A genuine resolvable alpha(0,1) must show only 0/1.
+fh_blk  <- field_book %>% transmute(REP, IBLOCK, gen = ENTRY)
+fh_gens <- sort(unique(fh_blk$gen))                 # FielDHub entries 1..50
+fh_keys <- combn(fh_gens, 2, FUN = function(p) paste(p[1], p[2], sep = "_"))
+
+fh_counts <- fh_blk %>%
+  group_by(REP, IBLOCK) %>%
+  summarise(pk = list(combn(sort(gen), 2,
+                            FUN = function(p) paste(p[1], p[2], sep = "_"))),
+            .groups = "drop") %>%
+  tidyr::unnest(pk) %>%
+  count(pk, name = "cooc") %>%
+  right_join(tibble(pk = fh_keys), by = "pk") %>%
+  mutate(cooc = tidyr::replace_na(cooc, 0L)) %>%
+  pull(cooc)
+
+# Three panels: constructed alpha | theoretical alpha(0,1) ideal | Stelio (env 1)
+ideal_pairs <- numeric(maxc + 1); ideal_pairs[1] <- 925; ideal_pairs[2] <- 300
+control_df <- bind_rows(
+  dist_row(fh_counts, "FielDHub alpha lattice (constructed)", "Alpha"),
+  tibble(count = 0:maxc, pairs = ideal_pairs, panel = "Alpha(0,1) ideal", type = "Alpha"),
+  dist_row(cooc_counts(filter(blk, ENV == envs[1]), c("REP", "field_row")),
+           paste0("Stelio ", envs[1], " (observed)"), "Observed")
+) %>%
+  mutate(
+    panel = factor(panel, levels = c("FielDHub alpha lattice (constructed)",
+                                     "Alpha(0,1) ideal",
+                                     paste0("Stelio ", envs[1], " (observed)"))),
+    type  = factor(type, levels = c("Observed", "Alpha"))
+  )
+
+ggplot(control_df, aes(factor(count), pairs, fill = type)) +
+  geom_col() +
+  geom_text(aes(label = round(pairs)), vjust = -0.3, size = 2.6) +
+  facet_wrap(~ panel, nrow = 1) +
+  scale_fill_manual(values = c(Observed = "#2c7fb8", Alpha = "#31a354")) +
+  labs(
+    title = "Positive control: the co-occurrence test on a TRUE alpha lattice vs. Stelio's data",
+    subtitle = "FielDHub's design reproduces the ideal alpha(0,1) (925/300, no 2s); Stelio's rows carry 34 doubled pairs",
+    x = "Co-occurrence count (# blocks a pair shares)",
+    y = "Number of genotype pairs (of 1225)",
+    fill = NULL
+  ) +
+  theme_bw(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+The constructed alpha lattice shows **only counts 0 and 1** (925 / 300, the theoretical optimum — not a single pair concurs twice), whereas the same test on Stelio's `CHOKWE STS` rows returns 34 doubled pairs. The census therefore has a working positive control: it recognizes a genuine incomplete-block design as α(0,1), so the doubled pairs in Stelio's data are a real RCBD signature, not an artifact of the method. (Note this is FielDHub's own randomization of entries 1–50, not a re-mapping onto Stelio's `GEN` codes — the same template caveat as the field map above.)
+
 So the trial **could** have been sown as an alpha lattice — 50 entries split cleanly into 10 blocks of 5, with 3 reps — but the file as delivered carries **no incomplete-block column**, and the co-occurrence census above finds **no repeated sub-block structure** of hybrids within a rep. Therefore:
 
 * The data can be **analyzed as an RCBD today** (the `env:rep` complete block is fully determined by the file).
