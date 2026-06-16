@@ -328,7 +328,108 @@ kable(compat, caption = "Alpha-lattice compatibility audit of data/multilocation
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-So the trial **could** have been (and may well have been) sown as an alpha lattice — 50 entries split cleanly into 10 blocks of 5, with 3 reps. But the file as delivered carries **no incomplete-block column**, and the companion notebook found **no repeated sub-block structure** of hybrids within a rep. Therefore:
+## Empirical test — is there any incomplete-block signal? {#sec-cooccurrence}
+
+Dimensional compatibility is necessary but not sufficient: 50 = 10 × 5 simply means an alpha lattice *would fit*, not that one was *used*. We can test the latter directly, because an α-design is fundamentally **just a restriction on co-occurrence** [@patterson1976]: within the replications of one environment, a resolvable **α(0,1)-lattice** lets **every genotype pair share an incomplete block at most once**. So if the field rows (the only contiguous $k = 5$ grouping in a 5 × 10 layout, giving $s = 10$ blocks/rep) were real incomplete blocks, a census of how often each of the $\binom{50}{2} = 1225$ pairs lands in the same row must show **only counts 0 and 1** — never 2.
+
+Two references bracket the result: the **ideal α(0,1) lattice** (deterministic — $r \cdot s \cdot \binom{k}{2} = 3 \cdot 10 \cdot 10 = 300$ pairs concur once, 925 concur zero, nothing at 2+) and a **random RCBD** (50 entries thrown at random into the 10 rows, 1000 sims — what "no block structure" looks like).
+
+```{r}
+#| label: cooccurrence-test
+#| fig.width: 10
+#| fig.height: 6
+#| warning: false
+
+set.seed(20260616)
+maxc <- 9   # display range for co-occurrence counts
+
+# Recover the field row (putative k = 5 incomplete block) from the serpentine
+# planting order, exactly as multilocation_alpha_lattice.qmd does. (Serpentine
+# direction sets the column only; row membership is just groups of 5 along ENTRY.)
+blk <- raw_data %>%
+  arrange(ENTRY) %>%
+  group_by(ENV, REP) %>%
+  mutate(plot_order = row_number(ENTRY),
+         field_row  = ceiling(plot_order / 5)) %>%
+  ungroup() %>%
+  mutate(gen = as.integer(as.character(GEN)))
+
+gens <- sort(unique(blk$gen))                       # 0..49 -> 50 genotypes
+all_keys <- combn(gens, 2, FUN = function(p) paste(p[1], p[2], sep = "_"))
+
+# co-occurrence count for every pair, given the columns that define a block
+cooc_counts <- function(data, block_cols) {
+  cnt <- data %>%
+    group_by(across(all_of(block_cols))) %>%
+    summarise(pk = list(combn(sort(gen), 2,
+                              FUN = function(p) paste(p[1], p[2], sep = "_"))),
+              .groups = "drop") %>%
+    tidyr::unnest(pk) %>%
+    count(pk, name = "cooc")
+  tibble(pk = all_keys) %>%
+    left_join(cnt, by = "pk") %>%
+    mutate(cooc = tidyr::replace_na(cooc, 0L)) %>%
+    pull(cooc)
+}
+
+dist_row <- function(counts, panel, type)
+  tibble(count = 0:maxc,
+         pairs = as.integer(table(factor(counts, levels = 0:maxc))),
+         panel = panel, type = type)
+
+envs <- levels(droplevels(raw_data$ENV))
+
+# Observed: per environment, across its 3 reps, block = field row
+obs_df <- bind_rows(lapply(envs, function(e)
+  dist_row(cooc_counts(filter(blk, ENV == e), c("REP", "field_row")),
+           panel = e, type = "Observed")))
+
+# Reference 1 — random-RCBD expectation: permute 50 genotypes into 10 rows, 1000 sims
+n_sim <- 1000
+sim_block <- expand.grid(REP = 1:3, field_row = 1:10, slot = 1:5)
+sim_acc <- numeric(maxc + 1)
+for (s in seq_len(n_sim)) {
+  d <- sim_block
+  d$gen <- unlist(lapply(1:3, function(r) sample(gens, 50)))
+  cc <- cooc_counts(d, c("REP", "field_row"))
+  sim_acc <- sim_acc + as.integer(table(factor(cc, levels = 0:maxc)))
+}
+sim_df <- tibble(count = 0:maxc, pairs = sim_acc / n_sim,
+                 panel = "Random RCBD (sim mean)", type = "RCBD")
+
+# Reference 2 — ideal alpha(0,1) lattice (deterministic): 300 pairs at 1, 925 at 0
+alpha_pairs <- numeric(maxc + 1); alpha_pairs[1] <- 925; alpha_pairs[2] <- 300
+alpha_df <- tibble(count = 0:maxc, pairs = alpha_pairs,
+                   panel = "Alpha(0,1) lattice (ideal)", type = "Alpha")
+
+# 2 x 3 grid: envs fill cols 1-2; col 3 = ideal alpha (top), random RCBD (bottom)
+plot_all <- bind_rows(obs_df, sim_df, alpha_df) %>%
+  mutate(
+    panel = factor(panel, levels = c(envs[1], envs[2], "Alpha(0,1) lattice (ideal)",
+                                     envs[3], envs[4], "Random RCBD (sim mean)")),
+    type  = factor(type, levels = c("Observed", "Alpha", "RCBD"))
+  )
+
+ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
+  geom_col() +
+  geom_text(aes(label = round(pairs)), vjust = -0.3, size = 2.6) +
+  facet_wrap(~ panel, ncol = 3, scales = "free_y") +
+  scale_fill_manual(values = c(Observed = "#2c7fb8", Alpha = "#31a354",
+                               RCBD = "#d95f0e")) +
+  labs(
+    title = "Genotype pair co-occurrence within field rows (putative k = 5 incomplete blocks)",
+    subtitle = "Per-environment over 3 reps; col 3 = ideal alpha-lattice (top) and random-RCBD (bottom) references",
+    x = "Co-occurrence count (# blocks a pair shares)",
+    y = "Number of genotype pairs (of 1225)",
+    fill = NULL
+  ) +
+  theme_bw(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+**The observed panels match the random-RCBD reference, not the α-lattice one.** Every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with a triple in NHACOONGO) — which the green α(0,1) reference forbids outright. So even treating the rows as the most generous possible incomplete blocks, there is **no α-lattice signal**: the row groupings are indistinguishable from a random RCBD allocation. (Three environments even share an identical distribution, hinting the same randomization was reused.)
+
+So the trial **could** have been sown as an alpha lattice — 50 entries split cleanly into 10 blocks of 5, with 3 reps — but the file as delivered carries **no incomplete-block column**, and the co-occurrence census above finds **no repeated sub-block structure** of hybrids within a rep. Therefore:
 
 * The data can be **analyzed as an RCBD today** (the `env:rep` complete block is fully determined by the file).
 * The data **cannot be analyzed as an alpha lattice today** — there is no `block` label to put in `env:rep:block`.
