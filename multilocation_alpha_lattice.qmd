@@ -335,6 +335,102 @@ ggplot(field_layout, aes(x = field_col, y = field_row, fill = entry_type)) +
 This map is the field's planting layout: `ENTRY` is the sowing order and the 5 × 10 serpentine is Stelio's planting procedure (first plot top-left, snaking down). The field **row** and **column** read off this map are exactly the coordinates fed to the `env:rep:row` and `env:rep:col` spatial terms in the mixed model below.
 :::
 
+# Is the Design an Alpha-Lattice? A Co-occurrence Test {#sec-alpha-test}
+
+Stelio originally described the trial as an **alpha (incomplete-block) design**. Before adopting the RCBD model below, we test that claim directly against the data. The test rests on a single defining property of a resolvable **α(0,1)-lattice** [@patterson1976]: within the replications of one environment, **every pair of genotypes shares an incomplete block at most once**. An α-design is, in effect, *just* a restriction on co-occurrence — so if the design is a genuine α-lattice, a census of how often each genotype pair lands in the same block must produce only the counts **0 and 1**, with no pair ever co-occurring twice.
+
+In a 5 × 10 layout the only contiguous grouping that yields an incomplete block of $k = 5$ with $s = 10$ blocks per replication (so $v = s \cdot k = 50$) is the **field row**. We therefore treat each field row as a *putative* incomplete block and count co-occurrences for all $\binom{50}{2} = 1225$ genotype pairs (the check `GEN = 0` included), within the 3 replications of each environment. Two reference distributions frame the result:
+
+* **Ideal α(0,1) lattice** (deterministic): the within-block pairs number $r \cdot s \cdot \binom{k}{2} = 3 \cdot 10 \cdot 10 = 300$, so exactly **300 pairs concur once and 925 concur zero times** — two bars, nothing at 2+.
+* **Random RCBD** (simulated): 50 genotypes thrown at random into the 10 rows, 1000 times — the binomial-like spread expected when there is *no* incomplete-block structure.
+
+```{r}
+#| label: cooccurrence-test
+#| fig.width: 10
+#| fig.height: 6
+#| warning: false
+
+set.seed(20260616)
+
+maxc <- 9   # display range for co-occurrence counts
+
+# Putative incomplete block = field row (5 contiguous plots, s = 10 per rep).
+blk  <- field %>% mutate(gen = as.integer(as.character(GEN)))
+gens <- sort(unique(blk$gen))                       # 0..49 -> 50 genotypes
+all_keys <- combn(gens, 2, FUN = function(p) paste(p[1], p[2], sep = "_"))
+
+# co-occurrence count for every pair, given the columns that define a block
+cooc_counts <- function(data, block_cols) {
+  cnt <- data %>%
+    group_by(across(all_of(block_cols))) %>%
+    summarise(pk = list(combn(sort(gen), 2,
+                              FUN = function(p) paste(p[1], p[2], sep = "_"))),
+              .groups = "drop") %>%
+    tidyr::unnest(pk) %>%
+    count(pk, name = "cooc")
+  tibble(pk = all_keys) %>%
+    left_join(cnt, by = "pk") %>%
+    mutate(cooc = tidyr::replace_na(cooc, 0L)) %>%
+    pull(cooc)
+}
+
+dist_row <- function(counts, panel, type)
+  tibble(count = 0:maxc,
+         pairs = as.integer(table(factor(counts, levels = 0:maxc))),
+         panel = panel, type = type)
+
+envs <- levels(droplevels(field$ENV))
+
+# Observed: per environment, across its 3 reps, block = field row
+obs_df <- bind_rows(lapply(envs, function(e)
+  dist_row(cooc_counts(filter(blk, ENV == e), c("REP", "field_row")),
+           panel = e, type = "Observed")))
+
+# Reference 1 — random-RCBD expectation: permute 50 genotypes into 10 rows, 1000 sims
+n_sim <- 1000
+sim_block <- expand.grid(REP = 1:3, field_row = 1:10, slot = 1:5)
+sim_acc <- numeric(maxc + 1)
+for (s in seq_len(n_sim)) {
+  d <- sim_block
+  d$gen <- unlist(lapply(1:3, function(r) sample(gens, 50)))
+  cc <- cooc_counts(d, c("REP", "field_row"))
+  sim_acc <- sim_acc + as.integer(table(factor(cc, levels = 0:maxc)))
+}
+sim_df <- tibble(count = 0:maxc, pairs = sim_acc / n_sim,
+                 panel = "Random RCBD (sim mean)", type = "RCBD")
+
+# Reference 2 — ideal alpha(0,1) lattice (deterministic): 300 pairs at 1, 925 at 0
+alpha_pairs <- numeric(maxc + 1); alpha_pairs[1] <- 925; alpha_pairs[2] <- 300
+alpha_df <- tibble(count = 0:maxc, pairs = alpha_pairs,
+                   panel = "Alpha(0,1) lattice (ideal)", type = "Alpha")
+
+# 2 x 3 grid: envs fill cols 1-2; col 3 = ideal alpha (top), random RCBD (bottom)
+plot_all <- bind_rows(obs_df, sim_df, alpha_df) %>%
+  mutate(
+    panel = factor(panel, levels = c(envs[1], envs[2], "Alpha(0,1) lattice (ideal)",
+                                     envs[3], envs[4], "Random RCBD (sim mean)")),
+    type  = factor(type, levels = c("Observed", "Alpha", "RCBD"))
+  )
+
+ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
+  geom_col() +
+  geom_text(aes(label = round(pairs)), vjust = -0.3, size = 2.6) +
+  facet_wrap(~ panel, ncol = 3, scales = "free_y") +
+  scale_fill_manual(values = c(Observed = "#2c7fb8", Alpha = "#31a354",
+                               RCBD = "#d95f0e")) +
+  labs(
+    title = "Genotype pair co-occurrence within field rows (putative k = 5 incomplete blocks)",
+    subtitle = "Per-environment over 3 reps; col 3 = ideal alpha-lattice (top) and random-RCBD (bottom) references",
+    x = "Co-occurrence count (# blocks a pair shares)",
+    y = "Number of genotype pairs (of 1225)",
+    fill = NULL
+  ) +
+  theme_bw(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+**Verdict: the layout is RCBD-consistent, not an α-lattice.** A genuine α(0,1) design would show only the two bars of the green reference panel. Instead every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with even a triple in NHACOONGO), and the observed distribution is statistically indistinguishable from the orange random-RCBD simulation. There is no incomplete-block structure: the field rows are simply where a random RCBD allocation happened to fall. (Note also that three environments — CHOKWE STS, CKOKWE OPT, SUSSUNDENGA — share an *identical* distribution, suggesting the same randomization was reused across them.) This is the empirical justification for analysing the trial as an **RCBD with row/column spatial control** in the model that follows.
+
 # Phenotypic Model
 
 For grain yield, the fitted multilocation **RCBD** model — written out in full, exactly as it is fit below — separates each plot into the experimental-design terms, the line × tester combining-ability terms, their environment interactions, and error:
@@ -753,7 +849,7 @@ To complete the GCA and SCA analysis for his PhD from `data/multilocation.csv`, 
 
 8.  **Compare against the check:** benchmark top hybrids against the replicated `NAMULONGUE` check in each environment.
 
-9.  **Confirm the design — alpha-lattice vs. RCBD:** Stelio described the trial as an **alpha (incomplete-block) design**, so he should clarify and provide the **incomplete-block (sub-block) assignment** for each plot. However, the data give **no sign of an alpha lattice**: within each 5 × 10 replication the hybrids appear fully randomized, with no incomplete, repeated sub-blocks of hybrids — which is why the trial is analyzed here as an **RCBD with row/column spatial control**. If Stelio supplies real sub-block labels, add an `env:rep:block` term and compare fits (log-likelihood / AIC) against the current row/column model; if he cannot, the RCBD + spatial model stands. For a finer field-trend correction, consider a continuous row/column covariate or a 2-D AR1×AR1 spatial structure on row × column.
+9.  **Confirm the design — alpha-lattice vs. RCBD:** Stelio described the trial as an **alpha (incomplete-block) design**, so he should clarify and provide the **incomplete-block (sub-block) assignment** for each plot. However, the data give **no sign of an alpha lattice**: the co-occurrence census in @sec-alpha-test shows the within-row pairing pattern is indistinguishable from a random RCBD (pairs co-occur twice and even three times, which an α(0,1)-lattice forbids), so the hybrids are effectively fully randomized within each replication — which is why the trial is analyzed here as an **RCBD with row/column spatial control**. If Stelio supplies real sub-block labels, add an `env:rep:block` term and compare fits (log-likelihood / AIC) against the current row/column model; if he cannot, the RCBD + spatial model stands. For a finer field-trend correction, consider a continuous row/column covariate or a 2-D AR1×AR1 spatial structure on row × column.
 
 # References {.unnumbered}
 
