@@ -7,5 +7,6 @@ project:
     - gca_calculation.qmd
     - multilocation_alpha_lattice.qmd
     - rcbd_vs_alpha_lattice.qmd
+    - block_assignment_diagnostics.qmd
     - diallel_gca_sca_analysis.qmd
     - iris_anova_cld.qmd

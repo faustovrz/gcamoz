@@ -1,0 +1,557 @@
+---
+title: "Constraint or Accident? Diagnosing the Block-Assignment Function"
+subtitle: "Testing whether the row partition of `data/multilocation.csv` behaves like an alpha-lattice constraint or an incidental geometric cut after RCBD randomization"
+author: "Fausto Rodriguez Zapata"
+date: "2026-06-16"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    toc-float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
+---
+
+::: {.callout-tip appearance="simple"}
+**Source code & data:** <https://github.com/faustovrz/gcamoz>
+:::
+
+::: {.callout-note}
+Third notebook in the design series, after `multilocation_alpha_lattice.qmd` (the analysis) and `rcbd_vs_alpha_lattice.qmd` (the concept + co-occurrence test). Here we run a **battery of graph-theoretic and permutation diagnostics** on the *assignment function* itself, and validate each against a **FielDHub-constructed alpha lattice** as a positive control.
+:::
+
+# What object are we testing? {#sec-object}
+
+We are testing the **assignment function** that maps each genotype to a position in the blocking hierarchy:
+
+$$A:\ \text{genotype} \longrightarrow (\text{rep},\ \text{block}).$$
+
+From `data/multilocation.csv` we reconstruct, within each environment:
+
+* **Rep** = `REP`,
+* **Block** = the 5-plot serpentine **row** (`field_row`), the only contiguous $k=5$ partition of the 50-plot rep.
+
+The two hypotheses are about the *nature* of that map:
+
+| | Hypothesis | Statement about $A$ |
+| :-- | :-- | :-- |
+| **H₀** | **RCBD** | assignment is **random within REP**; the row partition is **incidental** geometry imposed *after* randomization |
+| **H₁** | **alpha lattice** | assignment is **constrained within (REP × block)**; the block structure is **meaningful and repeated systematically** [@patterson1976] |
+
+::: {.callout-important}
+**The single property.** Every diagnostic below reduces to one question: *does the row partition act as a constraint in the randomization space, or is it just a geometric partition imposed after randomization?* We answer it by comparing each statistic on the real data against a **permutation null** that shuffles genotypes **within REP** (which is exactly H₀), and against a **real alpha lattice** (H₁) built with FielDHub.
+:::
+
+# Setup: data, FielDHub control, and helper functions
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(igraph)
+library(lme4)
+library(FielDHub)
+library(patchwork)
+
+set.seed(20260616)
+
+raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  mutate(
+    ENV = factor(ENV),
+    REP = factor(REP, levels = c("I", "II", "III")),
+    GEN = factor(GEN, levels = as.character(0:49)),
+    yield = `Yield t/ha`
+  )
+
+# Reconstruct the field row (= putative incomplete block) from the serpentine
+# planting order. We KEEP the check (GEN = 0): it occupies a real plot, so
+# dropping it would leave a ragged 4-plot block and corrupt every co-occurrence
+# count. With it, each block is a clean 5-plot unit (50 = 10 x 5), matching the
+# FielDHub control below.
+stelio <- raw_data %>%
+  arrange(ENTRY) %>%
+  group_by(ENV, REP) %>%
+  mutate(
+    plot_order = row_number(ENTRY),
+    field_row  = ceiling(plot_order / 5),
+    pos_in_row = ((plot_order - 1) %% 5) + 1,
+    field_col  = if_else(field_row %% 2 == 1, pos_in_row, 6L - pos_in_row),
+    gen        = as.integer(as.character(GEN))
+  ) %>%
+  ungroup()
+```
+
+To keep the structural diagnostics directly comparable to the FielDHub control (one location, 3 reps, 50 entries, 10 blocks of 5), we run them on a **single environment** as the primary unit — `CHOKWE STS` — and confirm at the end that all four environments behave identically.
+
+```{r}
+#| label: primary-and-control
+
+# Primary working frame: one environment, 3 reps, blocks = rows, 50 entries.
+primary <- stelio %>%
+  filter(ENV == "CHOKWE STS") %>%
+  transmute(rep = REP, block = paste(REP, field_row, sep = "_"),
+            gen, field_row, field_col)
+
+gset_stelio <- 0:49   # 50 entries (49 hybrids + check 0)
+
+# FielDHub positive control: a genuine resolvable alpha(0,1) lattice with the
+# same parameters used in rcbd_vs_alpha_lattice.qmd.
+alpha_design <- alpha_lattice(t = 50, k = 5, r = 3, l = 1,
+                              plotNumber = 101, locationNames = "ALPHA-DEMO",
+                              seed = 1234)
+fh <- as_tibble(alpha_design$fieldBook) %>%
+  transmute(rep = factor(REP), block = paste(REP, IBLOCK, sep = "_"),
+            gen = ENTRY)
+
+gset_fh <- 1:50       # FielDHub entries 1..50
+```
+
+```{r}
+#| label: helpers
+
+# Shannon entropy (nats) of a vector's value distribution.
+shannon_entropy <- function(x) {
+  p <- prop.table(table(x)); -sum(p * log(p))
+}
+
+# All unordered pair keys "i_j" for a genotype set.
+pair_keys <- function(gset)
+  combn(sort(gset), 2, FUN = function(p) paste(p[1], p[2], sep = "_"))
+
+# Co-occurrence count C_ij for EVERY pair (padded with 0), named by "i_j".
+# Cij = number of blocks in which genotypes i and j co-occur.
+cooc_vector <- function(d, gset) {
+  keys <- pair_keys(gset)
+  cc <- d %>%
+    group_by(block) %>%
+    summarise(pk = list(combn(sort(gen), 2,
+                              FUN = function(p) paste(p[1], p[2], sep = "_"))),
+              .groups = "drop") %>%
+    tidyr::unnest(pk) %>%
+    count(pk, name = "Cij")
+  out <- tibble(pk = keys) %>%
+    left_join(cc, by = "pk") %>%
+    mutate(Cij = replace_na(Cij, 0L))
+  setNames(out$Cij, out$pk)
+}
+
+# Square co-occurrence matrix from a cooc_vector.
+cooc_matrix <- function(cv, gset) {
+  g <- as.character(sort(gset))
+  M <- matrix(0, length(g), length(g), dimnames = list(g, g))
+  ij <- do.call(rbind, strsplit(names(cv), "_"))
+  ri <- match(ij[, 1], g); ci <- match(ij[, 2], g)
+  M[cbind(ri, ci)] <- cv; M[cbind(ci, ri)] <- cv
+  M
+}
+
+# Graph statistics on the co-occurrence graph (edge iff Cij > 0).
+# mean_overlap uses common-neighbour counts (A^2) averaged over each node's
+# neighbours — a vectorised form of "mean |N(i) ∩ N(j)| over j in N(i)".
+graph_stats <- function(cv, gset) {
+  nz <- names(cv)[cv > 0]
+  ij <- do.call(rbind, strsplit(nz, "_"))
+  g <- graph_from_data_frame(
+    data.frame(i = ij[, 1], j = ij[, 2]), directed = FALSE,
+    vertices = data.frame(name = as.character(sort(gset))))
+  A <- as.matrix(as_adjacency_matrix(g)); diag(A) <- 0
+  A2 <- A %*% A
+  deg <- rowSums(A)
+  overlap <- ifelse(deg > 0, rowSums(A * A2) / deg, NA_real_)
+  list(transitivity = transitivity(g, type = "global"),
+       mean_overlap = mean(overlap, na.rm = TRUE),
+       n_edges = sum(cv > 0), graph = g, degree = deg)
+}
+
+# Correlation of genotype block-membership vectors.
+assign_corr <- function(d, gset, return_mat = FALSE) {
+  inc <- d %>%
+    distinct(gen, block) %>%
+    mutate(present = 1) %>%
+    tidyr::complete(gen = gset, block = unique(d$block),
+                    fill = list(present = 0)) %>%
+    arrange(gen) %>%
+    pivot_wider(names_from = block, values_from = present, values_fill = 0)
+  mat <- as.matrix(inc[, -1]); rownames(mat) <- inc$gen
+  cm <- suppressWarnings(cor(t(mat)))
+  if (return_mat) return(cm)
+  mean(cm[upper.tri(cm)], na.rm = TRUE)
+}
+
+# The MEAN off-diagonal correlation is pinned at -1/(t-1) by the fixed margins
+# (each genotype in 3 blocks, each block holds 5) for ANY resolvable design, so
+# it cannot discriminate. The discriminating quantity is the SPREAD (sd) of the
+# pairwise correlations, which reflects the actual co-occurrence structure.
+assign_corr_stats <- function(d, gset) {
+  cm <- assign_corr(d, gset, return_mat = TRUE)
+  ut <- cm[upper.tri(cm)]
+  c(meanCorr = mean(ut, na.rm = TRUE), sdCorr = sd(ut, na.rm = TRUE))
+}
+
+# Tidy a square matrix to long form with explicit i/j columns (robust to
+# unnamed dimnames, which as_tibble.table now rejects).
+mat_to_long <- function(M, value = "value") {
+  dimnames(M) <- list(i = rownames(M), j = colnames(M))
+  out <- as_tibble(as.table(M))
+  names(out) <- c("i", "j", value)
+  out
+}
+```
+
+```{r}
+#| label: observed-stats
+
+# Observed statistics for Stelio (CHOKWE STS) and the FielDHub control.
+cv_st <- cooc_vector(primary, gset_stelio)
+cv_fh <- cooc_vector(fh,      gset_fh)
+
+gs_st <- graph_stats(cv_st, gset_stelio)
+gs_fh <- graph_stats(cv_fh, gset_fh)
+ac_st <- assign_corr_stats(primary, gset_stelio)
+ac_fh <- assign_corr_stats(fh,      gset_fh)
+
+obs <- tibble(
+  source       = c("Stelio CHOKWE STS", "FielDHub alpha"),
+  varCij       = c(var(cv_st),          var(cv_fh)),
+  entCij       = c(shannon_entropy(cv_st), shannon_entropy(cv_fh)),
+  transitivity = c(gs_st$transitivity,  gs_fh$transitivity),
+  mean_overlap = c(gs_st$mean_overlap,  gs_fh$mean_overlap),
+  n_edges      = c(gs_st$n_edges,       gs_fh$n_edges),
+  meanCorr     = c(ac_st[["meanCorr"]], ac_fh[["meanCorr"]]),
+  sdCorr       = c(ac_st[["sdCorr"]],   ac_fh[["sdCorr"]])
+)
+knitr::kable(obs, digits = 4,
+             caption = "Observed diagnostic statistics: Stelio's data vs. a true alpha lattice.")
+```
+
+# 1 — Block adjacency graph: distribution of $C_{ij}$ {#sec-adjacency}
+
+The edge weight $C_{ij}$ = number of blocks where genotypes $i$ and $j$ co-occur. We summarise its full distribution over all $\binom{50}{2}=1225$ pairs by **variance** (spread) and **entropy** (how many distinct co-occurrence levels are used).
+
+> **Expectation** — RCBD: a wider $C_{ij}$ distribution (some 2s and 3s), higher variance and entropy. Alpha: concentrated on 0/1, **lower** variance and entropy.
+
+```{r}
+#| label: adjacency-matrix-heatmap
+#| fig.width: 11
+#| fig.height: 5.2
+#| warning: false
+
+M_st <- cooc_matrix(cv_st, gset_stelio)
+M_fh <- cooc_matrix(cv_fh, gset_fh)
+
+heat_df <- bind_rows(
+  mat_to_long(M_st, "Cij") %>% mutate(source = "Stelio CHOKWE STS"),
+  mat_to_long(M_fh, "Cij") %>% mutate(source = "FielDHub alpha")
+) %>%
+  mutate(i = factor(i, levels = as.character(sort(unique(as.integer(i))))),
+         j = factor(j, levels = as.character(sort(unique(as.integer(j))))),
+         source = factor(source, levels = c("Stelio CHOKWE STS", "FielDHub alpha")))
+
+ggplot(heat_df, aes(i, j, fill = factor(Cij))) +
+  geom_tile() +
+  facet_wrap(~ source) +
+  scale_fill_manual(values = c("0" = "grey92", "1" = "#2c7fb8",
+                               "2" = "#fe9929", "3" = "#d7301f"),
+                    name = expression(C[ij])) +
+  coord_equal() +
+  labs(title = "Block co-occurrence matrix (50 × 50 genotypes)",
+       subtitle = "Orange/red cells = pairs sharing a block 2+ times. A true alpha lattice has none.",
+       x = "genotype i", y = "genotype j") +
+  theme_minimal(base_size = 10) +
+  theme(axis.text = element_blank(), panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+```
+
+```{r}
+#| label: cij-histogram
+#| fig.width: 9
+#| fig.height: 4
+#| warning: false
+
+cij_df <- bind_rows(
+  tibble(Cij = cv_st, source = "Stelio CHOKWE STS"),
+  tibble(Cij = cv_fh, source = "FielDHub alpha")
+) %>%
+  count(source, Cij) %>%
+  mutate(source = factor(source, levels = c("Stelio CHOKWE STS", "FielDHub alpha")))
+
+ggplot(cij_df, aes(factor(Cij), n, fill = source)) +
+  geom_col(position = position_dodge(0.7), width = 0.6) +
+  geom_text(aes(label = n), position = position_dodge(0.7), vjust = -0.3, size = 3) +
+  scale_fill_manual(values = c("Stelio CHOKWE STS" = "#2c7fb8",
+                               "FielDHub alpha" = "#31a354")) +
+  labs(title = "Distribution of co-occurrence counts",
+       x = expression(C[ij]~"(blocks a pair shares)"),
+       y = "number of pairs (of 1225)", fill = NULL) +
+  theme_bw(base_size = 12) + theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: adjacency-diagnostics
+cat(sprintf("Stelio  : var(Cij) = %.4f   entropy(Cij) = %.4f\n",
+            var(cv_st), shannon_entropy(cv_st)))
+cat(sprintf("FielDHub: var(Cij) = %.4f   entropy(Cij) = %.4f\n",
+            var(cv_fh), shannon_entropy(cv_fh)))
+```
+
+Stelio's matrix shows orange cells (pairs co-occurring twice); the FielDHub matrix is pure 0/1. Stelio's variance and entropy are **higher** — the RCBD signature. (These statistics get their formal null in @sec-permutation.)
+
+# 2 — Neighborhood overlap (graph-theoretic) {#sec-overlap}
+
+Build the co-occurrence graph $g$ (a node per genotype, an edge where $C_{ij}>0$) and measure **local clustering**: global transitivity and the mean common-neighbour overlap.
+
+> **Expectation** — RCBD: large, highly overlapping neighborhoods (a denser, more "smeared" graph). Alpha: neighborhoods fragmented into consistent clusters; the key signal is *stable local clustering*, not just raw co-occurrence.
+
+```{r}
+#| label: degree-overlap
+#| fig.width: 9
+#| fig.height: 4
+#| warning: false
+
+deg_df <- bind_rows(
+  tibble(degree = gs_st$degree, source = "Stelio CHOKWE STS"),
+  tibble(degree = gs_fh$degree, source = "FielDHub alpha")
+) %>% mutate(source = factor(source, levels = c("Stelio CHOKWE STS", "FielDHub alpha")))
+
+ggplot(deg_df, aes(degree, fill = source)) +
+  geom_histogram(position = "identity", alpha = 0.55, binwidth = 1) +
+  scale_fill_manual(values = c("Stelio CHOKWE STS" = "#2c7fb8",
+                               "FielDHub alpha" = "#31a354")) +
+  labs(title = "Co-occurrence graph: degree distribution",
+       subtitle = sprintf("Edges — Stelio: %d, FielDHub: %d. Alpha packs more DISTINCT pairings (fewer wasted on repeats).",
+                           gs_st$n_edges, gs_fh$n_edges),
+       x = "degree (distinct block-mates)", y = "genotypes", fill = NULL) +
+  theme_bw(base_size = 12) + theme(legend.position = "bottom")
+
+cat(sprintf("Transitivity   — Stelio: %.4f   FielDHub: %.4f\n",
+            gs_st$transitivity, gs_fh$transitivity))
+cat(sprintf("Mean overlap   — Stelio: %.4f   FielDHub: %.4f\n",
+            gs_st$mean_overlap, gs_fh$mean_overlap))
+```
+
+A real alpha lattice spends its block-mates on **distinct** pairs (more edges, here `r gs_fh$n_edges` vs `r gs_st$n_edges`), so it covers more of the pair space with less local redundancy. Both transitivity and overlap are read against the null in @sec-permutation.
+
+# 3 — Assignment-vector correlation structure {#sec-assignment}
+
+For each genotype $i$ build its **block-membership vector** $v_i$ (indicator over all blocks), and correlate genotypes pairwise. Block-induced clustering raises structured correlation.
+
+> **Expectation** — RCBD: low, near-exchangeable correlation. Alpha: block constraints induce **higher structured correlation**.
+
+::: {.callout-note}
+The *mean* off-diagonal correlation is **pinned at $-1/(t-1) = -1/49$** by the fixed margins (each genotype occupies 3 blocks, each block holds 5) — it is identical for RCBD, alpha, and every permutation, so the mean alone cannot discriminate. The discriminating quantity is the **spread (SD)** of the pairwise correlations, which does respond to the co-occurrence structure. We report both and carry `sdCorr` into the permutation test.
+:::
+
+```{r}
+#| label: corr-heatmap
+#| fig.width: 11
+#| fig.height: 5.2
+#| warning: false
+
+cm_st <- assign_corr(primary, gset_stelio, return_mat = TRUE)
+cm_fh <- assign_corr(fh,      gset_fh,      return_mat = TRUE)
+
+corr_df <- bind_rows(
+  mat_to_long(cm_st, "r") %>% mutate(source = "Stelio CHOKWE STS"),
+  mat_to_long(cm_fh, "r") %>% mutate(source = "FielDHub alpha")
+) %>%
+  mutate(source = factor(source, levels = c("Stelio CHOKWE STS", "FielDHub alpha")))
+
+ggplot(corr_df, aes(i, j, fill = r)) +
+  geom_tile() +
+  facet_wrap(~ source) +
+  scale_fill_gradient2(low = "#2166ac", mid = "white", high = "#b2182b",
+                       midpoint = 0, name = "cor") +
+  coord_equal() +
+  labs(title = "Genotype block-membership correlation (50 × 50)",
+       x = "genotype i", y = "genotype j") +
+  theme_minimal(base_size = 10) +
+  theme(axis.text = element_blank(), panel.grid = element_blank(),
+        strip.text = element_text(face = "bold"))
+
+cat(sprintf("Mean corr (margin-pinned ~ -1/49 = %.5f) — Stelio: %.5f   FielDHub: %.5f\n",
+            -1/49, ac_st[["meanCorr"]], ac_fh[["meanCorr"]]))
+cat(sprintf("SD of pairwise corr (discriminating)      — Stelio: %.5f   FielDHub: %.5f\n",
+            ac_st[["sdCorr"]], ac_fh[["sdCorr"]]))
+```
+
+# 4 — Block variance decomposition {#sec-variance}
+
+::: {.callout-warning}
+**This diagnostic does *not* discriminate RCBD from alpha.** It measures whether a **spatial gradient** exists across the field — a question *orthogonal* to whether the assignment was constrained. A plain RCBD on gradient-bearing soil produces a large, significant row variance too. Indeed `multilocation_alpha_lattice.qmd` already found `env:rep:row` variance **highly significant** (Z ≈ 4.4) on data we have *proven* is RCBD. So a non-zero block variance tells you *blocking would help*, **not** that an alpha lattice was used. We fit it here for completeness and to make that orthogonality explicit.
+:::
+
+```{r}
+#| label: variance-decomp
+#| fig.width: 8
+#| fig.height: 3.6
+#| message: false
+#| warning: false
+
+m <- lmer(yield ~ ENV + (1 | ENV:REP) + (1 | ENV:REP:field_row),
+          data = stelio)
+vc <- as.data.frame(VarCorr(m)) %>%
+  transmute(term = grp, variance = vcov)
+
+sig_row <- vc$variance[vc$term == "ENV:REP:field_row"]
+sig_res <- vc$variance[vc$term == "Residual"]
+cat(sprintf("sigma^2_block (row) = %.4f   sigma^2_residual = %.4f   ratio block/resid = %.3f\n",
+            sig_row, sig_res, sig_row / sig_res))
+
+ggplot(vc, aes(reorder(term, variance), variance, fill = term)) +
+  geom_col(width = 0.6, show.legend = FALSE) +
+  geom_text(aes(label = round(variance, 3)), hjust = -0.1, size = 3.4) +
+  coord_flip(clip = "off") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "Variance components (yield)",
+       subtitle = "A real row gradient — but it is SPATIAL, not evidence of an alpha constraint.",
+       x = NULL, y = "variance") +
+  theme_bw(base_size = 12) + theme(plot.margin = margin(5, 30, 5, 5))
+```
+
+# 5 — Spatial embedding (within-block distance) {#sec-spatial}
+
+::: {.callout-warning}
+**Also non-discriminating here.** Because we *defined* a block as a contiguous serpentine row, within-block physical distance is fixed by **geometry** — it is identical whether the assignment was alpha or RCBD on the same row partition. This tests the reconstruction, not the design. We show it so the (lack of) signal is explicit.
+:::
+
+```{r}
+#| label: spatial-distance
+within_block_dist <- primary %>%
+  group_by(block) %>%
+  summarise(mean_d = mean(dist(cbind(field_row, field_col))), .groups = "drop")
+cat(sprintf("Mean within-block plot distance = %.3f (sd %.3f) — constant by row geometry.\n",
+            mean(within_block_dist$mean_d), sd(within_block_dist$mean_d)))
+```
+
+# 6 — Mixing entropy per plot {#sec-mixing}
+
+::: {.callout-warning}
+**Degenerate as specified.** Every block holds 5 **distinct** genotypes (each entry appears once per block), so the per-block genotype-count entropy is identically $\log 5$ for *every* block, under any design. There is no signal to extract at the plot level. The *meaningful* mixing question lives at the pair level and is exactly the $C_{ij}$ entropy of @sec-adjacency.
+:::
+
+```{r}
+#| label: mixing-entropy
+mix <- primary %>%
+  group_by(block) %>% summarise(ent = shannon_entropy(gen), .groups = "drop")
+cat(sprintf("Per-block genotype-mix entropy: all equal to log(5) = %.4f ?  range = [%.4f, %.4f]\n",
+            log(5), min(mix$ent), max(mix$ent)))
+```
+
+# 7 — The decisive permutation test {#sec-permutation}
+
+This is the clean version of everything above. Generate the **H₀ null** by shuffling genotypes **within REP** (the row partition kept fixed), recompute each statistic, and ask where the **observed** Stelio value and the **FielDHub alpha** value fall.
+
+> **Decision rule** — if Stelio's statistics sit *inside* the null and FielDHub's sit *outside* (in the alpha direction), the row partition is an **incidental cut after RCBD randomization**, not a constraint.
+
+```{r}
+#| label: permutation-null
+#| fig.width: 11
+#| fig.height: 6.5
+#| warning: false
+
+n_perm <- 499
+
+perm_stats <- function(d, gset) {
+  dp <- d %>% group_by(rep) %>% mutate(gen = sample(gen)) %>% ungroup()
+  cv <- cooc_vector(dp, gset)
+  gs <- graph_stats(cv, gset)
+  c(varCij = var(cv), entCij = shannon_entropy(cv),
+    transitivity = gs$transitivity, mean_overlap = gs$mean_overlap,
+    sdCorr = assign_corr_stats(dp, gset)[["sdCorr"]])
+}
+
+null_mat <- replicate(n_perm, perm_stats(primary, gset_stelio))
+null_df  <- as_tibble(t(null_mat)) %>%
+  pivot_longer(everything(), names_to = "stat", values_to = "value")
+
+stat_levels <- c(varCij = "var(Cij)", entCij = "entropy(Cij)",
+                 transitivity = "transitivity", mean_overlap = "mean overlap",
+                 sdCorr = "sd assign. corr")
+
+obs_lines <- obs %>%
+  select(source, varCij, entCij, transitivity, mean_overlap, sdCorr) %>%
+  pivot_longer(-source, names_to = "stat", values_to = "value")
+
+null_df  <- null_df  %>% mutate(stat = recode(stat, !!!stat_levels))
+obs_lines <- obs_lines %>% mutate(stat = recode(stat, !!!stat_levels))
+
+ggplot(null_df, aes(value)) +
+  geom_histogram(bins = 30, fill = "grey75", colour = "white") +
+  geom_vline(data = obs_lines,
+             aes(xintercept = value, colour = source, linetype = source),
+             linewidth = 1) +
+  facet_wrap(~ stat, scales = "free", ncol = 3) +
+  scale_colour_manual(values = c("Stelio CHOKWE STS" = "#2c7fb8",
+                                 "FielDHub alpha" = "#31a354")) +
+  labs(title = "Permutation null (shuffle genotypes within REP) vs. observed",
+       subtitle = "Grey = RCBD null. FielDHub alpha (green) lands far in the low-spread/low-clustering tail; Stelio (blue) stays on the RCBD side.",
+       x = "statistic value", y = "null draws", colour = NULL, linetype = NULL) +
+  theme_bw(base_size = 12) + theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: permutation-pvalues
+# Empirical position of each observed value within the RCBD null.
+null_wide <- as_tibble(t(null_mat))
+stat_cols <- c("varCij", "entCij", "transitivity", "mean_overlap", "sdCorr")
+
+st_obs <- unlist(obs[obs$source == "Stelio CHOKWE STS", stat_cols])
+fh_obs <- unlist(obs[obs$source == "FielDHub alpha",    stat_cols])
+pctile <- function(col, x) mean(null_wide[[col]] <= x)  # fraction of null at or below x
+
+summ <- tibble(
+  statistic        = c("var(Cij)", "entropy(Cij)", "transitivity", "mean overlap", "sd corr"),
+  null_mean        = as.numeric(colMeans(null_wide)[stat_cols]),
+  stelio           = as.numeric(st_obs),
+  fieldhub         = as.numeric(fh_obs),
+  stelio_pctile    = mapply(pctile, stat_cols, st_obs),
+  fieldhub_pctile  = mapply(pctile, stat_cols, fh_obs)
+)
+knitr::kable(summ, digits = 4,
+             caption = "Where each observed statistic falls within the RCBD permutation null (percentile = fraction of null at or below).")
+```
+
+# 8 — Interpretation rule {#sec-rule}
+
+| If, jointly… | …then |
+| :-- | :-- |
+| $C_{ij}$ structure ≈ permutation null; block variance is *spatial only*; assignment correlations ≈ null | **RCBD** (row-stratified only) |
+| strong 0/1 $C_{ij}$ constraint (low var/entropy vs null); stable block clustering; assignment correlation departs from null in the alpha direction | **alpha lattice** |
+
+The FielDHub control anchors the "alpha" row: its statistics sit clearly outside the RCBD null, in the low-variance / low-clustering direction. Stelio's data lands on the "RCBD" row — its statistics are *not* displaced toward the alpha tail; if anything they sit at or slightly above the null mean (marginally *more* dispersed than a random shuffle — the opposite of an alpha constraint, which would pull them down toward the FielDHub values).
+
+# 9 — Conceptual resolution {#sec-resolution}
+
+What we tested is **not** "alpha vs. RCBD by eye." It is the single property:
+
+> *Does the row partition behave like a **constraint in the randomization space**, or just a **geometric partition after randomization**?*
+
+Every diagnostic — adjacency spread, neighborhood overlap, assignment correlation, the permutation null — is a different lens on that one question. For `data/multilocation.csv` they agree: the row partition is an **incidental cut after an RCBD randomization**. The FielDHub positive control shows the same lenses *do* detect a real constraint when one exists — confirming the negative result on Stelio's data is a true negative, not a blind test.
+
+```{r}
+#| label: all-environments
+#| warning: false
+
+# Robustness: the same var/entropy of Cij across all four environments.
+all_env <- map_dfr(levels(stelio$ENV), function(e) {
+  d <- stelio %>% filter(ENV == e) %>%
+    transmute(rep = REP, block = paste(REP, field_row, sep = "_"), gen)
+  cv <- cooc_vector(d, gset_stelio)
+  tibble(ENV = e, varCij = var(cv), entCij = shannon_entropy(cv),
+         pairs_twice = sum(cv == 2), pairs_thrice = sum(cv >= 3))
+})
+knitr::kable(all_env, digits = 4,
+             caption = "All four environments show the same RCBD-like co-occurrence spread (pairs concurring 2+ times, which an alpha lattice forbids).")
+```
+
+# References {.unnumbered}
+
+::: {#refs}
+:::
