@@ -2741,7 +2741,7 @@ Important
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">j =</span> <span class="fu">factor</span>(j, <span class="at">levels =</span> <span class="fu">as.character</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">as.integer</span>(j))))),</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(heat_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> <span class="fu">factor</span>(Cij))) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>p_cij_heatmap <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(heat_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> <span class="fu">factor</span>(Cij))) <span class="sc">+</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> source) <span class="sc">+</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="st">&quot;grey92&quot;</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
@@ -2753,7 +2753,13 @@ Important
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;genotype i&quot;</span>, <span class="at">y =</span> <span class="st">&quot;genotype j&quot;</span>) <span class="sc">+</span></span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Export the panel so rcbd_vs_alpha_lattice.qmd can embed it without rerunning</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># the full diagnostic battery. (Render this notebook first; see @sec-adjacency.)</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(p_cij_heatmap, <span class="st">&quot;output/cij_adjacency_heatmap.rds&quot;</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>p_cij_heatmap</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3996,7 +4002,7 @@ Patterson, H. D., &amp; Williams, E. R. (1976). A new class of resolvable incomp
 <span id="cb31-264"><a href="#cb31-264" aria-hidden="true" tabindex="-1"></a>         <span class="at">j =</span> <span class="fu">factor</span>(j, <span class="at">levels =</span> <span class="fu">as.character</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">as.integer</span>(j))))),</span>
 <span id="cb31-265"><a href="#cb31-265" aria-hidden="true" tabindex="-1"></a>         <span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
 <span id="cb31-266"><a href="#cb31-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-267"><a href="#cb31-267" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(heat_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> <span class="fu">factor</span>(Cij))) <span class="sc">+</span></span>
+<span id="cb31-267"><a href="#cb31-267" aria-hidden="true" tabindex="-1"></a>p_cij_heatmap <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(heat_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> <span class="fu">factor</span>(Cij))) <span class="sc">+</span></span>
 <span id="cb31-268"><a href="#cb31-268" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
 <span id="cb31-269"><a href="#cb31-269" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> source) <span class="sc">+</span></span>
 <span id="cb31-270"><a href="#cb31-270" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="st">&quot;grey92&quot;</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
@@ -4009,294 +4015,300 @@ Patterson, H. D., &amp; Williams, E. R. (1976). A new class of resolvable incomp
 <span id="cb31-277"><a href="#cb31-277" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
 <span id="cb31-278"><a href="#cb31-278" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb31-279"><a href="#cb31-279" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
-<span id="cb31-280"><a href="#cb31-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-281"><a href="#cb31-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-284"><a href="#cb31-284" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-285"><a href="#cb31-285" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cij-histogram</span></span>
-<span id="cb31-286"><a href="#cb31-286" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 9</span></span>
-<span id="cb31-287"><a href="#cb31-287" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4</span></span>
-<span id="cb31-288"><a href="#cb31-288" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb31-289"><a href="#cb31-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-290"><a href="#cb31-290" aria-hidden="true" tabindex="-1"></a>cij_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb31-291"><a href="#cb31-291" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Cij =</span> cv_st, <span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
-<span id="cb31-292"><a href="#cb31-292" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Cij =</span> cv_fh, <span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
-<span id="cb31-293"><a href="#cb31-293" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb31-294"><a href="#cb31-294" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, Cij) <span class="sc">%&gt;%</span></span>
-<span id="cb31-295"><a href="#cb31-295" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
-<span id="cb31-296"><a href="#cb31-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-297"><a href="#cb31-297" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cij_df, <span class="fu">aes</span>(<span class="fu">factor</span>(Cij), n, <span class="at">fill =</span> source)) <span class="sc">+</span></span>
-<span id="cb31-298"><a href="#cb31-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb31-299"><a href="#cb31-299" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> n), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb31-300"><a href="#cb31-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
-<span id="cb31-301"><a href="#cb31-301" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb31-302"><a href="#cb31-302" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Distribution of co-occurrence counts&quot;</span>,</span>
-<span id="cb31-303"><a href="#cb31-303" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">expression</span>(C[ij]<span class="sc">~</span><span class="st">&quot;(blocks a pair shares)&quot;</span>),</span>
-<span id="cb31-304"><a href="#cb31-304" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;number of pairs (of 1225)&quot;</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb31-305"><a href="#cb31-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
-<span id="cb31-306"><a href="#cb31-306" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-307"><a href="#cb31-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-310"><a href="#cb31-310" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-311"><a href="#cb31-311" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adjacency-diagnostics</span></span>
-<span id="cb31-312"><a href="#cb31-312" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Stelio  : var(Cij) = %.4f   entropy(Cij) = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-313"><a href="#cb31-313" aria-hidden="true" tabindex="-1"></a>            <span class="fu">var</span>(cv_st), <span class="fu">shannon_entropy</span>(cv_st)))</span>
-<span id="cb31-314"><a href="#cb31-314" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;FielDHub: var(Cij) = %.4f   entropy(Cij) = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-315"><a href="#cb31-315" aria-hidden="true" tabindex="-1"></a>            <span class="fu">var</span>(cv_fh), <span class="fu">shannon_entropy</span>(cv_fh)))</span>
-<span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a>Stelio&#39;s matrix shows orange cells (pairs co-occurring twice); the FielDHub matrix is pure 0/1. Stelio&#39;s variance and entropy are **higher** — the RCBD signature. (These statistics get their formal null in @sec-permutation.)</span>
-<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-320"><a href="#cb31-320" aria-hidden="true" tabindex="-1"></a><span class="fu"># 2 — Neighborhood overlap (graph-theoretic) {#sec-overlap}</span></span>
-<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a>Build the co-occurrence graph $g$ (a node per genotype, an edge where $C_{ij}&gt;0$) and measure **local clustering**: global transitivity and the mean common-neighbour overlap.</span>
+<span id="cb31-280"><a href="#cb31-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-281"><a href="#cb31-281" aria-hidden="true" tabindex="-1"></a><span class="co"># Export the panel so rcbd_vs_alpha_lattice.qmd can embed it without rerunning</span></span>
+<span id="cb31-282"><a href="#cb31-282" aria-hidden="true" tabindex="-1"></a><span class="co"># the full diagnostic battery. (Render this notebook first; see @sec-adjacency.)</span></span>
+<span id="cb31-283"><a href="#cb31-283" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(p_cij_heatmap, <span class="st">&quot;output/cij_adjacency_heatmap.rds&quot;</span>)</span>
+<span id="cb31-284"><a href="#cb31-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-285"><a href="#cb31-285" aria-hidden="true" tabindex="-1"></a>p_cij_heatmap</span>
+<span id="cb31-286"><a href="#cb31-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-287"><a href="#cb31-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-290"><a href="#cb31-290" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-291"><a href="#cb31-291" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: cij-histogram</span></span>
+<span id="cb31-292"><a href="#cb31-292" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 9</span></span>
+<span id="cb31-293"><a href="#cb31-293" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4</span></span>
+<span id="cb31-294"><a href="#cb31-294" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-295"><a href="#cb31-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-296"><a href="#cb31-296" aria-hidden="true" tabindex="-1"></a>cij_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb31-297"><a href="#cb31-297" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Cij =</span> cv_st, <span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
+<span id="cb31-298"><a href="#cb31-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">Cij =</span> cv_fh, <span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
+<span id="cb31-299"><a href="#cb31-299" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-300"><a href="#cb31-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source, Cij) <span class="sc">%&gt;%</span></span>
+<span id="cb31-301"><a href="#cb31-301" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
+<span id="cb31-302"><a href="#cb31-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-303"><a href="#cb31-303" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(cij_df, <span class="fu">aes</span>(<span class="fu">factor</span>(Cij), n, <span class="at">fill =</span> source)) <span class="sc">+</span></span>
+<span id="cb31-304"><a href="#cb31-304" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb31-305"><a href="#cb31-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> n), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb31-306"><a href="#cb31-306" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
+<span id="cb31-307"><a href="#cb31-307" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb31-308"><a href="#cb31-308" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Distribution of co-occurrence counts&quot;</span>,</span>
+<span id="cb31-309"><a href="#cb31-309" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="fu">expression</span>(C[ij]<span class="sc">~</span><span class="st">&quot;(blocks a pair shares)&quot;</span>),</span>
+<span id="cb31-310"><a href="#cb31-310" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;number of pairs (of 1225)&quot;</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb31-311"><a href="#cb31-311" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb31-312"><a href="#cb31-312" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-313"><a href="#cb31-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-316"><a href="#cb31-316" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-317"><a href="#cb31-317" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adjacency-diagnostics</span></span>
+<span id="cb31-318"><a href="#cb31-318" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Stelio  : var(Cij) = %.4f   entropy(Cij) = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-319"><a href="#cb31-319" aria-hidden="true" tabindex="-1"></a>            <span class="fu">var</span>(cv_st), <span class="fu">shannon_entropy</span>(cv_st)))</span>
+<span id="cb31-320"><a href="#cb31-320" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;FielDHub: var(Cij) = %.4f   entropy(Cij) = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-321"><a href="#cb31-321" aria-hidden="true" tabindex="-1"></a>            <span class="fu">var</span>(cv_fh), <span class="fu">shannon_entropy</span>(cv_fh)))</span>
+<span id="cb31-322"><a href="#cb31-322" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-323"><a href="#cb31-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Expectation** — RCBD: large, highly overlapping neighborhoods (a denser, more &quot;smeared&quot; graph). Alpha: neighborhoods fragmented into consistent clusters; the key signal is *stable local clustering*, not just raw co-occurrence.</span></span>
+<span id="cb31-324"><a href="#cb31-324" aria-hidden="true" tabindex="-1"></a>Stelio&#39;s matrix shows orange cells (pairs co-occurring twice); the FielDHub matrix is pure 0/1. Stelio&#39;s variance and entropy are **higher** — the RCBD signature. (These statistics get their formal null in @sec-permutation.)</span>
 <span id="cb31-325"><a href="#cb31-325" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: degree-overlap</span></span>
-<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 9</span></span>
-<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4</span></span>
-<span id="cb31-332"><a href="#cb31-332" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb31-333"><a href="#cb31-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a>deg_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb31-335"><a href="#cb31-335" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">degree =</span> gs_st<span class="sc">$</span>degree, <span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
-<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">degree =</span> gs_fh<span class="sc">$</span>degree, <span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
-<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
-<span id="cb31-338"><a href="#cb31-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(deg_df, <span class="fu">aes</span>(degree, <span class="at">fill =</span> source)) <span class="sc">+</span></span>
-<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.55</span>, <span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
-<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Co-occurrence graph: degree distribution&quot;</span>,</span>
-<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">&quot;Edges — Stelio: %d, FielDHub: %d. Alpha packs more DISTINCT pairings (fewer wasted on repeats).&quot;</span>,</span>
-<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a>                           gs_st<span class="sc">$</span>n_edges, gs_fh<span class="sc">$</span>n_edges),</span>
-<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;degree (distinct block-mates)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;genotypes&quot;</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
-<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-349"><a href="#cb31-349" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Transitivity   — Stelio: %.4f   FielDHub: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-350"><a href="#cb31-350" aria-hidden="true" tabindex="-1"></a>            gs_st<span class="sc">$</span>transitivity, gs_fh<span class="sc">$</span>transitivity))</span>
-<span id="cb31-351"><a href="#cb31-351" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean overlap   — Stelio: %.4f   FielDHub: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-352"><a href="#cb31-352" aria-hidden="true" tabindex="-1"></a>            gs_st<span class="sc">$</span>mean_overlap, gs_fh<span class="sc">$</span>mean_overlap))</span>
-<span id="cb31-353"><a href="#cb31-353" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-326"><a href="#cb31-326" aria-hidden="true" tabindex="-1"></a><span class="fu"># 2 — Neighborhood overlap (graph-theoretic) {#sec-overlap}</span></span>
+<span id="cb31-327"><a href="#cb31-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-328"><a href="#cb31-328" aria-hidden="true" tabindex="-1"></a>Build the co-occurrence graph $g$ (a node per genotype, an edge where $C_{ij}&gt;0$) and measure **local clustering**: global transitivity and the mean common-neighbour overlap.</span>
+<span id="cb31-329"><a href="#cb31-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-330"><a href="#cb31-330" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Expectation** — RCBD: large, highly overlapping neighborhoods (a denser, more &quot;smeared&quot; graph). Alpha: neighborhoods fragmented into consistent clusters; the key signal is *stable local clustering*, not just raw co-occurrence.</span></span>
+<span id="cb31-331"><a href="#cb31-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-334"><a href="#cb31-334" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-335"><a href="#cb31-335" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: degree-overlap</span></span>
+<span id="cb31-336"><a href="#cb31-336" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 9</span></span>
+<span id="cb31-337"><a href="#cb31-337" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 4</span></span>
+<span id="cb31-338"><a href="#cb31-338" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-339"><a href="#cb31-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-340"><a href="#cb31-340" aria-hidden="true" tabindex="-1"></a>deg_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb31-341"><a href="#cb31-341" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">degree =</span> gs_st<span class="sc">$</span>degree, <span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
+<span id="cb31-342"><a href="#cb31-342" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">degree =</span> gs_fh<span class="sc">$</span>degree, <span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
+<span id="cb31-343"><a href="#cb31-343" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
+<span id="cb31-344"><a href="#cb31-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-345"><a href="#cb31-345" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(deg_df, <span class="fu">aes</span>(degree, <span class="at">fill =</span> source)) <span class="sc">+</span></span>
+<span id="cb31-346"><a href="#cb31-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">position =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.55</span>, <span class="at">binwidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-347"><a href="#cb31-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
+<span id="cb31-348"><a href="#cb31-348" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb31-349"><a href="#cb31-349" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Co-occurrence graph: degree distribution&quot;</span>,</span>
+<span id="cb31-350"><a href="#cb31-350" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">&quot;Edges — Stelio: %d, FielDHub: %d. Alpha packs more DISTINCT pairings (fewer wasted on repeats).&quot;</span>,</span>
+<span id="cb31-351"><a href="#cb31-351" aria-hidden="true" tabindex="-1"></a>                           gs_st<span class="sc">$</span>n_edges, gs_fh<span class="sc">$</span>n_edges),</span>
+<span id="cb31-352"><a href="#cb31-352" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;degree (distinct block-mates)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;genotypes&quot;</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb31-353"><a href="#cb31-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
 <span id="cb31-354"><a href="#cb31-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-355"><a href="#cb31-355" aria-hidden="true" tabindex="-1"></a>A real alpha lattice spends its block-mates on **distinct** pairs (more edges, here <span class="in">`r gs_fh$n_edges`</span> vs <span class="in">`r gs_st$n_edges`</span>), so it covers more of the pair space with less local redundancy. Both transitivity and overlap are read against the null in @sec-permutation.</span>
-<span id="cb31-356"><a href="#cb31-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-357"><a href="#cb31-357" aria-hidden="true" tabindex="-1"></a><span class="fu"># 3 — Assignment-vector correlation structure {#sec-assignment}</span></span>
-<span id="cb31-358"><a href="#cb31-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-359"><a href="#cb31-359" aria-hidden="true" tabindex="-1"></a>For each genotype $i$ build its **block-membership vector** $v_i$ (indicator over all blocks), and correlate genotypes pairwise. Block-induced clustering raises structured correlation.</span>
+<span id="cb31-355"><a href="#cb31-355" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Transitivity   — Stelio: %.4f   FielDHub: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-356"><a href="#cb31-356" aria-hidden="true" tabindex="-1"></a>            gs_st<span class="sc">$</span>transitivity, gs_fh<span class="sc">$</span>transitivity))</span>
+<span id="cb31-357"><a href="#cb31-357" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean overlap   — Stelio: %.4f   FielDHub: %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-358"><a href="#cb31-358" aria-hidden="true" tabindex="-1"></a>            gs_st<span class="sc">$</span>mean_overlap, gs_fh<span class="sc">$</span>mean_overlap))</span>
+<span id="cb31-359"><a href="#cb31-359" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-360"><a href="#cb31-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-361"><a href="#cb31-361" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Expectation** — RCBD: low, near-exchangeable correlation. Alpha: block constraints induce **higher structured correlation**.</span></span>
+<span id="cb31-361"><a href="#cb31-361" aria-hidden="true" tabindex="-1"></a>A real alpha lattice spends its block-mates on **distinct** pairs (more edges, here <span class="in">`r gs_fh$n_edges`</span> vs <span class="in">`r gs_st$n_edges`</span>), so it covers more of the pair space with less local redundancy. Both transitivity and overlap are read against the null in @sec-permutation.</span>
 <span id="cb31-362"><a href="#cb31-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-363"><a href="#cb31-363" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
-<span id="cb31-364"><a href="#cb31-364" aria-hidden="true" tabindex="-1"></a>The *mean* off-diagonal correlation is **pinned at $-1/(t-1) = -1/49$** by the fixed margins (each genotype occupies 3 blocks, each block holds 5) — it is identical for RCBD, alpha, and every permutation, so the mean alone cannot discriminate. The discriminating quantity is the **spread (SD)** of the pairwise correlations, which does respond to the co-occurrence structure. We report both and carry <span class="in">`sdCorr`</span> into the permutation test.</span>
-<span id="cb31-365"><a href="#cb31-365" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-363"><a href="#cb31-363" aria-hidden="true" tabindex="-1"></a><span class="fu"># 3 — Assignment-vector correlation structure {#sec-assignment}</span></span>
+<span id="cb31-364"><a href="#cb31-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-365"><a href="#cb31-365" aria-hidden="true" tabindex="-1"></a>For each genotype $i$ build its **block-membership vector** $v_i$ (indicator over all blocks), and correlate genotypes pairwise. Block-induced clustering raises structured correlation.</span>
 <span id="cb31-366"><a href="#cb31-366" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-369"><a href="#cb31-369" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-370"><a href="#cb31-370" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: corr-heatmap</span></span>
-<span id="cb31-371"><a href="#cb31-371" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
-<span id="cb31-372"><a href="#cb31-372" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 5.2</span></span>
-<span id="cb31-373"><a href="#cb31-373" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb31-374"><a href="#cb31-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-375"><a href="#cb31-375" aria-hidden="true" tabindex="-1"></a>cm_st <span class="ot">&lt;-</span> <span class="fu">assign_corr</span>(primary, gset_stelio, <span class="at">return_mat =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb31-376"><a href="#cb31-376" aria-hidden="true" tabindex="-1"></a>cm_fh <span class="ot">&lt;-</span> <span class="fu">assign_corr</span>(fh,      gset_fh,      <span class="at">return_mat =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb31-377"><a href="#cb31-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-378"><a href="#cb31-378" aria-hidden="true" tabindex="-1"></a>corr_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb31-379"><a href="#cb31-379" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mat_to_long</span>(cm_st, <span class="st">&quot;r&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
-<span id="cb31-380"><a href="#cb31-380" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mat_to_long</span>(cm_fh, <span class="st">&quot;r&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
-<span id="cb31-381"><a href="#cb31-381" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb31-382"><a href="#cb31-382" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
+<span id="cb31-367"><a href="#cb31-367" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Expectation** — RCBD: low, near-exchangeable correlation. Alpha: block constraints induce **higher structured correlation**.</span></span>
+<span id="cb31-368"><a href="#cb31-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-369"><a href="#cb31-369" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb31-370"><a href="#cb31-370" aria-hidden="true" tabindex="-1"></a>The *mean* off-diagonal correlation is **pinned at $-1/(t-1) = -1/49$** by the fixed margins (each genotype occupies 3 blocks, each block holds 5) — it is identical for RCBD, alpha, and every permutation, so the mean alone cannot discriminate. The discriminating quantity is the **spread (SD)** of the pairwise correlations, which does respond to the co-occurrence structure. We report both and carry <span class="in">`sdCorr`</span> into the permutation test.</span>
+<span id="cb31-371"><a href="#cb31-371" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-372"><a href="#cb31-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-375"><a href="#cb31-375" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-376"><a href="#cb31-376" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: corr-heatmap</span></span>
+<span id="cb31-377"><a href="#cb31-377" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
+<span id="cb31-378"><a href="#cb31-378" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 5.2</span></span>
+<span id="cb31-379"><a href="#cb31-379" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-380"><a href="#cb31-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-381"><a href="#cb31-381" aria-hidden="true" tabindex="-1"></a>cm_st <span class="ot">&lt;-</span> <span class="fu">assign_corr</span>(primary, gset_stelio, <span class="at">return_mat =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb31-382"><a href="#cb31-382" aria-hidden="true" tabindex="-1"></a>cm_fh <span class="ot">&lt;-</span> <span class="fu">assign_corr</span>(fh,      gset_fh,      <span class="at">return_mat =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb31-383"><a href="#cb31-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-384"><a href="#cb31-384" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(corr_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> r)) <span class="sc">+</span></span>
-<span id="cb31-385"><a href="#cb31-385" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
-<span id="cb31-386"><a href="#cb31-386" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> source) <span class="sc">+</span></span>
-<span id="cb31-387"><a href="#cb31-387" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">low =</span> <span class="st">&quot;#2166ac&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;white&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#b2182b&quot;</span>,</span>
-<span id="cb31-388"><a href="#cb31-388" aria-hidden="true" tabindex="-1"></a>                       <span class="at">midpoint =</span> <span class="dv">0</span>, <span class="at">name =</span> <span class="st">&quot;cor&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-389"><a href="#cb31-389" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
-<span id="cb31-390"><a href="#cb31-390" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Genotype block-membership correlation (50 × 50)&quot;</span>,</span>
-<span id="cb31-391"><a href="#cb31-391" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;genotype i&quot;</span>, <span class="at">y =</span> <span class="st">&quot;genotype j&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-392"><a href="#cb31-392" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb31-393"><a href="#cb31-393" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb31-394"><a href="#cb31-394" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
-<span id="cb31-395"><a href="#cb31-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-396"><a href="#cb31-396" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean corr (margin-pinned ~ -1/49 = %.5f) — Stelio: %.5f   FielDHub: %.5f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-397"><a href="#cb31-397" aria-hidden="true" tabindex="-1"></a>            <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">49</span>, ac_st[[<span class="st">&quot;meanCorr&quot;</span>]], ac_fh[[<span class="st">&quot;meanCorr&quot;</span>]]))</span>
-<span id="cb31-398"><a href="#cb31-398" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;SD of pairwise corr (discriminating)      — Stelio: %.5f   FielDHub: %.5f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-399"><a href="#cb31-399" aria-hidden="true" tabindex="-1"></a>            ac_st[[<span class="st">&quot;sdCorr&quot;</span>]], ac_fh[[<span class="st">&quot;sdCorr&quot;</span>]]))</span>
-<span id="cb31-400"><a href="#cb31-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-384"><a href="#cb31-384" aria-hidden="true" tabindex="-1"></a>corr_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb31-385"><a href="#cb31-385" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mat_to_long</span>(cm_st, <span class="st">&quot;r&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>),</span>
+<span id="cb31-386"><a href="#cb31-386" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mat_to_long</span>(cm_fh, <span class="st">&quot;r&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">source =</span> <span class="st">&quot;FielDHub alpha&quot;</span>)</span>
+<span id="cb31-387"><a href="#cb31-387" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-388"><a href="#cb31-388" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source =</span> <span class="fu">factor</span>(source, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span>, <span class="st">&quot;FielDHub alpha&quot;</span>)))</span>
+<span id="cb31-389"><a href="#cb31-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-390"><a href="#cb31-390" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(corr_df, <span class="fu">aes</span>(i, j, <span class="at">fill =</span> r)) <span class="sc">+</span></span>
+<span id="cb31-391"><a href="#cb31-391" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb31-392"><a href="#cb31-392" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> source) <span class="sc">+</span></span>
+<span id="cb31-393"><a href="#cb31-393" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient2</span>(<span class="at">low =</span> <span class="st">&quot;#2166ac&quot;</span>, <span class="at">mid =</span> <span class="st">&quot;white&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#b2182b&quot;</span>,</span>
+<span id="cb31-394"><a href="#cb31-394" aria-hidden="true" tabindex="-1"></a>                       <span class="at">midpoint =</span> <span class="dv">0</span>, <span class="at">name =</span> <span class="st">&quot;cor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-395"><a href="#cb31-395" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb31-396"><a href="#cb31-396" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Genotype block-membership correlation (50 × 50)&quot;</span>,</span>
+<span id="cb31-397"><a href="#cb31-397" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;genotype i&quot;</span>, <span class="at">y =</span> <span class="st">&quot;genotype j&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-398"><a href="#cb31-398" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb31-399"><a href="#cb31-399" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb31-400"><a href="#cb31-400" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span>
 <span id="cb31-401"><a href="#cb31-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-402"><a href="#cb31-402" aria-hidden="true" tabindex="-1"></a><span class="fu"># 4 — Block variance decomposition {#sec-variance}</span></span>
-<span id="cb31-403"><a href="#cb31-403" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-404"><a href="#cb31-404" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
-<span id="cb31-405"><a href="#cb31-405" aria-hidden="true" tabindex="-1"></a>**This diagnostic does *not* discriminate RCBD from alpha.** It measures whether a **spatial gradient** exists across the field — a question *orthogonal* to whether the assignment was constrained. A plain RCBD on gradient-bearing soil produces a large, significant row variance too. Indeed `multilocation_alpha_lattice.qmd` already found `env:rep:row` variance **highly significant** (Z ≈ 4.4) on data we have *proven* is RCBD. So a non-zero block variance tells you *blocking would help*, **not** that an alpha lattice was used. We fit it here for completeness and to make that orthogonality explicit.</span>
-<span id="cb31-406"><a href="#cb31-406" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-402"><a href="#cb31-402" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean corr (margin-pinned ~ -1/49 = %.5f) — Stelio: %.5f   FielDHub: %.5f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-403"><a href="#cb31-403" aria-hidden="true" tabindex="-1"></a>            <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">49</span>, ac_st[[<span class="st">&quot;meanCorr&quot;</span>]], ac_fh[[<span class="st">&quot;meanCorr&quot;</span>]]))</span>
+<span id="cb31-404"><a href="#cb31-404" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;SD of pairwise corr (discriminating)      — Stelio: %.5f   FielDHub: %.5f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-405"><a href="#cb31-405" aria-hidden="true" tabindex="-1"></a>            ac_st[[<span class="st">&quot;sdCorr&quot;</span>]], ac_fh[[<span class="st">&quot;sdCorr&quot;</span>]]))</span>
+<span id="cb31-406"><a href="#cb31-406" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-407"><a href="#cb31-407" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-410"><a href="#cb31-410" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-411"><a href="#cb31-411" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: variance-decomp</span></span>
-<span id="cb31-412"><a href="#cb31-412" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 8</span></span>
-<span id="cb31-413"><a href="#cb31-413" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 3.6</span></span>
-<span id="cb31-414"><a href="#cb31-414" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
-<span id="cb31-415"><a href="#cb31-415" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb31-416"><a href="#cb31-416" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-417"><a href="#cb31-417" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lmer</span>(yield <span class="sc">~</span> ENV <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ENV<span class="sc">:</span>REP) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ENV<span class="sc">:</span>REP<span class="sc">:</span>field_row),</span>
-<span id="cb31-418"><a href="#cb31-418" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> stelio)</span>
-<span id="cb31-419"><a href="#cb31-419" aria-hidden="true" tabindex="-1"></a>vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">VarCorr</span>(m)) <span class="sc">%&gt;%</span></span>
-<span id="cb31-420"><a href="#cb31-420" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">term =</span> grp, <span class="at">variance =</span> vcov)</span>
-<span id="cb31-421"><a href="#cb31-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-422"><a href="#cb31-422" aria-hidden="true" tabindex="-1"></a>sig_row <span class="ot">&lt;-</span> vc<span class="sc">$</span>variance[vc<span class="sc">$</span>term <span class="sc">==</span> <span class="st">&quot;ENV:REP:field_row&quot;</span>]</span>
-<span id="cb31-423"><a href="#cb31-423" aria-hidden="true" tabindex="-1"></a>sig_res <span class="ot">&lt;-</span> vc<span class="sc">$</span>variance[vc<span class="sc">$</span>term <span class="sc">==</span> <span class="st">&quot;Residual&quot;</span>]</span>
-<span id="cb31-424"><a href="#cb31-424" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;sigma^2_block (row) = %.4f   sigma^2_residual = %.4f   ratio block/resid = %.3f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-425"><a href="#cb31-425" aria-hidden="true" tabindex="-1"></a>            sig_row, sig_res, sig_row <span class="sc">/</span> sig_res))</span>
-<span id="cb31-426"><a href="#cb31-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-427"><a href="#cb31-427" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(vc, <span class="fu">aes</span>(<span class="fu">reorder</span>(term, variance), variance, <span class="at">fill =</span> term)) <span class="sc">+</span></span>
-<span id="cb31-428"><a href="#cb31-428" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb31-429"><a href="#cb31-429" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(variance, <span class="dv">3</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
-<span id="cb31-430"><a href="#cb31-430" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>(<span class="at">clip =</span> <span class="st">&quot;off&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-431"><a href="#cb31-431" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Set2&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-432"><a href="#cb31-432" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Variance components (yield)&quot;</span>,</span>
-<span id="cb31-433"><a href="#cb31-433" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A real row gradient — but it is SPATIAL, not evidence of an alpha constraint.&quot;</span>,</span>
-<span id="cb31-434"><a href="#cb31-434" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;variance&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-435"><a href="#cb31-435" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dv">5</span>, <span class="dv">5</span>))</span>
-<span id="cb31-436"><a href="#cb31-436" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-437"><a href="#cb31-437" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-438"><a href="#cb31-438" aria-hidden="true" tabindex="-1"></a><span class="fu"># 5 — Spatial embedding (within-block distance) {#sec-spatial}</span></span>
-<span id="cb31-439"><a href="#cb31-439" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-440"><a href="#cb31-440" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
-<span id="cb31-441"><a href="#cb31-441" aria-hidden="true" tabindex="-1"></a>**Also non-discriminating here.** Because we *defined* a block as a contiguous serpentine row, within-block physical distance is fixed by **geometry** — it is identical whether the assignment was alpha or RCBD on the same row partition. This tests the reconstruction, not the design. We show it so the (lack of) signal is explicit.</span>
-<span id="cb31-442"><a href="#cb31-442" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-408"><a href="#cb31-408" aria-hidden="true" tabindex="-1"></a><span class="fu"># 4 — Block variance decomposition {#sec-variance}</span></span>
+<span id="cb31-409"><a href="#cb31-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-410"><a href="#cb31-410" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb31-411"><a href="#cb31-411" aria-hidden="true" tabindex="-1"></a>**This diagnostic does *not* discriminate RCBD from alpha.** It measures whether a **spatial gradient** exists across the field — a question *orthogonal* to whether the assignment was constrained. A plain RCBD on gradient-bearing soil produces a large, significant row variance too. Indeed `multilocation_alpha_lattice.qmd` already found `env:rep:row` variance **highly significant** (Z ≈ 4.4) on data we have *proven* is RCBD. So a non-zero block variance tells you *blocking would help*, **not** that an alpha lattice was used. We fit it here for completeness and to make that orthogonality explicit.</span>
+<span id="cb31-412"><a href="#cb31-412" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-413"><a href="#cb31-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-416"><a href="#cb31-416" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-417"><a href="#cb31-417" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: variance-decomp</span></span>
+<span id="cb31-418"><a href="#cb31-418" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 8</span></span>
+<span id="cb31-419"><a href="#cb31-419" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 3.6</span></span>
+<span id="cb31-420"><a href="#cb31-420" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb31-421"><a href="#cb31-421" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-422"><a href="#cb31-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-423"><a href="#cb31-423" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lmer</span>(yield <span class="sc">~</span> ENV <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ENV<span class="sc">:</span>REP) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ENV<span class="sc">:</span>REP<span class="sc">:</span>field_row),</span>
+<span id="cb31-424"><a href="#cb31-424" aria-hidden="true" tabindex="-1"></a>          <span class="at">data =</span> stelio)</span>
+<span id="cb31-425"><a href="#cb31-425" aria-hidden="true" tabindex="-1"></a>vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">VarCorr</span>(m)) <span class="sc">%&gt;%</span></span>
+<span id="cb31-426"><a href="#cb31-426" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">term =</span> grp, <span class="at">variance =</span> vcov)</span>
+<span id="cb31-427"><a href="#cb31-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-428"><a href="#cb31-428" aria-hidden="true" tabindex="-1"></a>sig_row <span class="ot">&lt;-</span> vc<span class="sc">$</span>variance[vc<span class="sc">$</span>term <span class="sc">==</span> <span class="st">&quot;ENV:REP:field_row&quot;</span>]</span>
+<span id="cb31-429"><a href="#cb31-429" aria-hidden="true" tabindex="-1"></a>sig_res <span class="ot">&lt;-</span> vc<span class="sc">$</span>variance[vc<span class="sc">$</span>term <span class="sc">==</span> <span class="st">&quot;Residual&quot;</span>]</span>
+<span id="cb31-430"><a href="#cb31-430" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;sigma^2_block (row) = %.4f   sigma^2_residual = %.4f   ratio block/resid = %.3f</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-431"><a href="#cb31-431" aria-hidden="true" tabindex="-1"></a>            sig_row, sig_res, sig_row <span class="sc">/</span> sig_res))</span>
+<span id="cb31-432"><a href="#cb31-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-433"><a href="#cb31-433" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(vc, <span class="fu">aes</span>(<span class="fu">reorder</span>(term, variance), variance, <span class="at">fill =</span> term)) <span class="sc">+</span></span>
+<span id="cb31-434"><a href="#cb31-434" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb31-435"><a href="#cb31-435" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(variance, <span class="dv">3</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
+<span id="cb31-436"><a href="#cb31-436" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>(<span class="at">clip =</span> <span class="st">&quot;off&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-437"><a href="#cb31-437" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Set2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-438"><a href="#cb31-438" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Variance components (yield)&quot;</span>,</span>
+<span id="cb31-439"><a href="#cb31-439" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;A real row gradient — but it is SPATIAL, not evidence of an alpha constraint.&quot;</span>,</span>
+<span id="cb31-440"><a href="#cb31-440" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;variance&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-441"><a href="#cb31-441" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">5</span>, <span class="dv">30</span>, <span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb31-442"><a href="#cb31-442" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-443"><a href="#cb31-443" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-446"><a href="#cb31-446" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-447"><a href="#cb31-447" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: spatial-distance</span></span>
-<span id="cb31-448"><a href="#cb31-448" aria-hidden="true" tabindex="-1"></a>within_block_dist <span class="ot">&lt;-</span> primary <span class="sc">%&gt;%</span></span>
-<span id="cb31-449"><a href="#cb31-449" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(block) <span class="sc">%&gt;%</span></span>
-<span id="cb31-450"><a href="#cb31-450" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_d =</span> <span class="fu">mean</span>(<span class="fu">dist</span>(<span class="fu">cbind</span>(field_row, field_col))), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
-<span id="cb31-451"><a href="#cb31-451" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean within-block plot distance = %.3f (sd %.3f) — constant by row geometry.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-452"><a href="#cb31-452" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mean</span>(within_block_dist<span class="sc">$</span>mean_d), <span class="fu">sd</span>(within_block_dist<span class="sc">$</span>mean_d)))</span>
-<span id="cb31-453"><a href="#cb31-453" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-454"><a href="#cb31-454" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-455"><a href="#cb31-455" aria-hidden="true" tabindex="-1"></a><span class="fu"># 6 — Mixing entropy per plot {#sec-mixing}</span></span>
-<span id="cb31-456"><a href="#cb31-456" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-457"><a href="#cb31-457" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
-<span id="cb31-458"><a href="#cb31-458" aria-hidden="true" tabindex="-1"></a>**Degenerate as specified.** Every block holds 5 **distinct** genotypes (each entry appears once per block), so the per-block genotype-count entropy is identically $\log 5$ for *every* block, under any design. There is no signal to extract at the plot level. The *meaningful* mixing question lives at the pair level and is exactly the $C_{ij}$ entropy of @sec-adjacency.</span>
-<span id="cb31-459"><a href="#cb31-459" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-444"><a href="#cb31-444" aria-hidden="true" tabindex="-1"></a><span class="fu"># 5 — Spatial embedding (within-block distance) {#sec-spatial}</span></span>
+<span id="cb31-445"><a href="#cb31-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-446"><a href="#cb31-446" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb31-447"><a href="#cb31-447" aria-hidden="true" tabindex="-1"></a>**Also non-discriminating here.** Because we *defined* a block as a contiguous serpentine row, within-block physical distance is fixed by **geometry** — it is identical whether the assignment was alpha or RCBD on the same row partition. This tests the reconstruction, not the design. We show it so the (lack of) signal is explicit.</span>
+<span id="cb31-448"><a href="#cb31-448" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-449"><a href="#cb31-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-452"><a href="#cb31-452" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-453"><a href="#cb31-453" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: spatial-distance</span></span>
+<span id="cb31-454"><a href="#cb31-454" aria-hidden="true" tabindex="-1"></a>within_block_dist <span class="ot">&lt;-</span> primary <span class="sc">%&gt;%</span></span>
+<span id="cb31-455"><a href="#cb31-455" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(block) <span class="sc">%&gt;%</span></span>
+<span id="cb31-456"><a href="#cb31-456" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_d =</span> <span class="fu">mean</span>(<span class="fu">dist</span>(<span class="fu">cbind</span>(field_row, field_col))), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb31-457"><a href="#cb31-457" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Mean within-block plot distance = %.3f (sd %.3f) — constant by row geometry.</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-458"><a href="#cb31-458" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mean</span>(within_block_dist<span class="sc">$</span>mean_d), <span class="fu">sd</span>(within_block_dist<span class="sc">$</span>mean_d)))</span>
+<span id="cb31-459"><a href="#cb31-459" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-460"><a href="#cb31-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-463"><a href="#cb31-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-464"><a href="#cb31-464" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixing-entropy</span></span>
-<span id="cb31-465"><a href="#cb31-465" aria-hidden="true" tabindex="-1"></a>mix <span class="ot">&lt;-</span> primary <span class="sc">%&gt;%</span></span>
-<span id="cb31-466"><a href="#cb31-466" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(block) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">ent =</span> <span class="fu">shannon_entropy</span>(gen), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
-<span id="cb31-467"><a href="#cb31-467" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Per-block genotype-mix entropy: all equal to log(5) = %.4f ?  range = [%.4f, %.4f]</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
-<span id="cb31-468"><a href="#cb31-468" aria-hidden="true" tabindex="-1"></a>            <span class="fu">log</span>(<span class="dv">5</span>), <span class="fu">min</span>(mix<span class="sc">$</span>ent), <span class="fu">max</span>(mix<span class="sc">$</span>ent)))</span>
-<span id="cb31-469"><a href="#cb31-469" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-470"><a href="#cb31-470" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-471"><a href="#cb31-471" aria-hidden="true" tabindex="-1"></a><span class="fu"># 7 — The decisive permutation test {#sec-permutation}</span></span>
-<span id="cb31-472"><a href="#cb31-472" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-473"><a href="#cb31-473" aria-hidden="true" tabindex="-1"></a>This is the clean version of everything above. Generate the **H₀ null** by shuffling genotypes **within REP** (the row partition kept fixed), recompute each statistic, and ask where the **observed** Stelio value and the **FielDHub alpha** value fall.</span>
-<span id="cb31-474"><a href="#cb31-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-475"><a href="#cb31-475" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Decision rule** — if Stelio&#39;s statistics sit *inside* the null and FielDHub&#39;s sit *outside* (in the alpha direction), the row partition is an **incidental cut after RCBD randomization**, not a constraint.</span></span>
+<span id="cb31-461"><a href="#cb31-461" aria-hidden="true" tabindex="-1"></a><span class="fu"># 6 — Mixing entropy per plot {#sec-mixing}</span></span>
+<span id="cb31-462"><a href="#cb31-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-463"><a href="#cb31-463" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb31-464"><a href="#cb31-464" aria-hidden="true" tabindex="-1"></a>**Degenerate as specified.** Every block holds 5 **distinct** genotypes (each entry appears once per block), so the per-block genotype-count entropy is identically $\log 5$ for *every* block, under any design. There is no signal to extract at the plot level. The *meaningful* mixing question lives at the pair level and is exactly the $C_{ij}$ entropy of @sec-adjacency.</span>
+<span id="cb31-465"><a href="#cb31-465" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-466"><a href="#cb31-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-469"><a href="#cb31-469" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-470"><a href="#cb31-470" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: mixing-entropy</span></span>
+<span id="cb31-471"><a href="#cb31-471" aria-hidden="true" tabindex="-1"></a>mix <span class="ot">&lt;-</span> primary <span class="sc">%&gt;%</span></span>
+<span id="cb31-472"><a href="#cb31-472" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(block) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>(<span class="at">ent =</span> <span class="fu">shannon_entropy</span>(gen), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb31-473"><a href="#cb31-473" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Per-block genotype-mix entropy: all equal to log(5) = %.4f ?  range = [%.4f, %.4f]</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb31-474"><a href="#cb31-474" aria-hidden="true" tabindex="-1"></a>            <span class="fu">log</span>(<span class="dv">5</span>), <span class="fu">min</span>(mix<span class="sc">$</span>ent), <span class="fu">max</span>(mix<span class="sc">$</span>ent)))</span>
+<span id="cb31-475"><a href="#cb31-475" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb31-476"><a href="#cb31-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-479"><a href="#cb31-479" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-480"><a href="#cb31-480" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: permutation-null</span></span>
-<span id="cb31-481"><a href="#cb31-481" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
-<span id="cb31-482"><a href="#cb31-482" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6.5</span></span>
-<span id="cb31-483"><a href="#cb31-483" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
-<span id="cb31-484"><a href="#cb31-484" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-485"><a href="#cb31-485" aria-hidden="true" tabindex="-1"></a>n_perm <span class="ot">&lt;-</span> <span class="dv">499</span></span>
-<span id="cb31-486"><a href="#cb31-486" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-487"><a href="#cb31-487" aria-hidden="true" tabindex="-1"></a>perm_stats <span class="ot">&lt;-</span> <span class="cf">function</span>(d, gset) {</span>
-<span id="cb31-488"><a href="#cb31-488" aria-hidden="true" tabindex="-1"></a>  dp <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(rep) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">gen =</span> <span class="fu">sample</span>(gen)) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>()</span>
-<span id="cb31-489"><a href="#cb31-489" aria-hidden="true" tabindex="-1"></a>  cv <span class="ot">&lt;-</span> <span class="fu">cooc_vector</span>(dp, gset)</span>
-<span id="cb31-490"><a href="#cb31-490" aria-hidden="true" tabindex="-1"></a>  gs <span class="ot">&lt;-</span> <span class="fu">graph_stats</span>(cv, gset)</span>
-<span id="cb31-491"><a href="#cb31-491" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">varCij =</span> <span class="fu">var</span>(cv), <span class="at">entCij =</span> <span class="fu">shannon_entropy</span>(cv),</span>
-<span id="cb31-492"><a href="#cb31-492" aria-hidden="true" tabindex="-1"></a>    <span class="at">transitivity =</span> gs<span class="sc">$</span>transitivity, <span class="at">mean_overlap =</span> gs<span class="sc">$</span>mean_overlap,</span>
-<span id="cb31-493"><a href="#cb31-493" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdCorr =</span> <span class="fu">assign_corr_stats</span>(dp, gset)[[<span class="st">&quot;sdCorr&quot;</span>]])</span>
-<span id="cb31-494"><a href="#cb31-494" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb31-495"><a href="#cb31-495" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-496"><a href="#cb31-496" aria-hidden="true" tabindex="-1"></a>null_mat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_perm, <span class="fu">perm_stats</span>(primary, gset_stelio))</span>
-<span id="cb31-497"><a href="#cb31-497" aria-hidden="true" tabindex="-1"></a>null_df  <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">t</span>(null_mat)) <span class="sc">%&gt;%</span></span>
-<span id="cb31-498"><a href="#cb31-498" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">&quot;stat&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>)</span>
-<span id="cb31-499"><a href="#cb31-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-500"><a href="#cb31-500" aria-hidden="true" tabindex="-1"></a>stat_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">varCij =</span> <span class="st">&quot;var(Cij)&quot;</span>, <span class="at">entCij =</span> <span class="st">&quot;entropy(Cij)&quot;</span>,</span>
-<span id="cb31-501"><a href="#cb31-501" aria-hidden="true" tabindex="-1"></a>                 <span class="at">transitivity =</span> <span class="st">&quot;transitivity&quot;</span>, <span class="at">mean_overlap =</span> <span class="st">&quot;mean overlap&quot;</span>,</span>
-<span id="cb31-502"><a href="#cb31-502" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sdCorr =</span> <span class="st">&quot;sd assign. corr&quot;</span>)</span>
-<span id="cb31-503"><a href="#cb31-503" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-504"><a href="#cb31-504" aria-hidden="true" tabindex="-1"></a>obs_lines <span class="ot">&lt;-</span> obs <span class="sc">%&gt;%</span></span>
-<span id="cb31-505"><a href="#cb31-505" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(source, varCij, entCij, transitivity, mean_overlap, sdCorr) <span class="sc">%&gt;%</span></span>
-<span id="cb31-506"><a href="#cb31-506" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>source, <span class="at">names_to =</span> <span class="st">&quot;stat&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>)</span>
-<span id="cb31-507"><a href="#cb31-507" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-508"><a href="#cb31-508" aria-hidden="true" tabindex="-1"></a>null_df  <span class="ot">&lt;-</span> null_df  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">stat =</span> <span class="fu">recode</span>(stat, <span class="sc">!!!</span>stat_levels))</span>
-<span id="cb31-509"><a href="#cb31-509" aria-hidden="true" tabindex="-1"></a>obs_lines <span class="ot">&lt;-</span> obs_lines <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">stat =</span> <span class="fu">recode</span>(stat, <span class="sc">!!!</span>stat_levels))</span>
-<span id="cb31-510"><a href="#cb31-510" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-511"><a href="#cb31-511" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(null_df, <span class="fu">aes</span>(value)) <span class="sc">+</span></span>
-<span id="cb31-512"><a href="#cb31-512" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">&quot;grey75&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
-<span id="cb31-513"><a href="#cb31-513" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> obs_lines,</span>
-<span id="cb31-514"><a href="#cb31-514" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">xintercept =</span> value, <span class="at">colour =</span> source, <span class="at">linetype =</span> source),</span>
-<span id="cb31-515"><a href="#cb31-515" aria-hidden="true" tabindex="-1"></a>             <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb31-516"><a href="#cb31-516" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> stat, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb31-517"><a href="#cb31-517" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
-<span id="cb31-518"><a href="#cb31-518" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb31-519"><a href="#cb31-519" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Permutation null (shuffle genotypes within REP) vs. observed&quot;</span>,</span>
-<span id="cb31-520"><a href="#cb31-520" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Grey = RCBD null. FielDHub alpha (green) lands far in the low-spread/low-clustering tail; Stelio (blue) stays on the RCBD side.&quot;</span>,</span>
-<span id="cb31-521"><a href="#cb31-521" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;statistic value&quot;</span>, <span class="at">y =</span> <span class="st">&quot;null draws&quot;</span>, <span class="at">colour =</span> <span class="cn">NULL</span>, <span class="at">linetype =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb31-522"><a href="#cb31-522" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
-<span id="cb31-523"><a href="#cb31-523" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-524"><a href="#cb31-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-527"><a href="#cb31-527" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-528"><a href="#cb31-528" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: permutation-pvalues</span></span>
-<span id="cb31-529"><a href="#cb31-529" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical position of each observed value within the RCBD null.</span></span>
-<span id="cb31-530"><a href="#cb31-530" aria-hidden="true" tabindex="-1"></a>null_wide <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">t</span>(null_mat))</span>
-<span id="cb31-531"><a href="#cb31-531" aria-hidden="true" tabindex="-1"></a>stat_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;varCij&quot;</span>, <span class="st">&quot;entCij&quot;</span>, <span class="st">&quot;transitivity&quot;</span>, <span class="st">&quot;mean_overlap&quot;</span>, <span class="st">&quot;sdCorr&quot;</span>)</span>
-<span id="cb31-532"><a href="#cb31-532" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-533"><a href="#cb31-533" aria-hidden="true" tabindex="-1"></a>st_obs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(obs[obs<span class="sc">$</span>source <span class="sc">==</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>, stat_cols])</span>
-<span id="cb31-534"><a href="#cb31-534" aria-hidden="true" tabindex="-1"></a>fh_obs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(obs[obs<span class="sc">$</span>source <span class="sc">==</span> <span class="st">&quot;FielDHub alpha&quot;</span>,    stat_cols])</span>
-<span id="cb31-535"><a href="#cb31-535" aria-hidden="true" tabindex="-1"></a>pctile <span class="ot">&lt;-</span> <span class="cf">function</span>(col, x) <span class="fu">mean</span>(null_wide[[col]] <span class="sc">&lt;=</span> x)  <span class="co"># fraction of null at or below x</span></span>
-<span id="cb31-536"><a href="#cb31-536" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-537"><a href="#cb31-537" aria-hidden="true" tabindex="-1"></a>summ <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb31-538"><a href="#cb31-538" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic        =</span> <span class="fu">c</span>(<span class="st">&quot;var(Cij)&quot;</span>, <span class="st">&quot;entropy(Cij)&quot;</span>, <span class="st">&quot;transitivity&quot;</span>, <span class="st">&quot;mean overlap&quot;</span>, <span class="st">&quot;sd corr&quot;</span>),</span>
-<span id="cb31-539"><a href="#cb31-539" aria-hidden="true" tabindex="-1"></a>  <span class="at">null_mean        =</span> <span class="fu">as.numeric</span>(<span class="fu">colMeans</span>(null_wide)[stat_cols]),</span>
-<span id="cb31-540"><a href="#cb31-540" aria-hidden="true" tabindex="-1"></a>  <span class="at">stelio           =</span> <span class="fu">as.numeric</span>(st_obs),</span>
-<span id="cb31-541"><a href="#cb31-541" aria-hidden="true" tabindex="-1"></a>  <span class="at">fieldhub         =</span> <span class="fu">as.numeric</span>(fh_obs),</span>
-<span id="cb31-542"><a href="#cb31-542" aria-hidden="true" tabindex="-1"></a>  <span class="at">stelio_pctile    =</span> <span class="fu">mapply</span>(pctile, stat_cols, st_obs),</span>
-<span id="cb31-543"><a href="#cb31-543" aria-hidden="true" tabindex="-1"></a>  <span class="at">fieldhub_pctile  =</span> <span class="fu">mapply</span>(pctile, stat_cols, fh_obs)</span>
-<span id="cb31-544"><a href="#cb31-544" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-545"><a href="#cb31-545" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(summ, <span class="at">digits =</span> <span class="dv">4</span>,</span>
-<span id="cb31-546"><a href="#cb31-546" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Where each observed statistic falls within the RCBD permutation null (percentile = fraction of null at or below).&quot;</span>)</span>
-<span id="cb31-547"><a href="#cb31-547" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-548"><a href="#cb31-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-549"><a href="#cb31-549" aria-hidden="true" tabindex="-1"></a><span class="fu"># 8 — Interpretation rule {#sec-rule}</span></span>
-<span id="cb31-550"><a href="#cb31-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-551"><a href="#cb31-551" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> If, jointly… <span class="pp">|</span> …then <span class="pp">|</span></span>
-<span id="cb31-552"><a href="#cb31-552" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> :-- <span class="pp">|</span> :-- <span class="pp">|</span></span>
-<span id="cb31-553"><a href="#cb31-553" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $C_{ij}$ structure ≈ permutation null; block variance is *spatial only*; assignment correlations ≈ null | **RCBD** (row-stratified only) <span class="pp">|</span></span>
-<span id="cb31-554"><a href="#cb31-554" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> strong 0/1 $C_{ij}$ constraint (low var/entropy vs null); stable block clustering; assignment correlation departs from null in the alpha direction <span class="pp">|</span> **alpha lattice** <span class="pp">|</span></span>
-<span id="cb31-555"><a href="#cb31-555" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-556"><a href="#cb31-556" aria-hidden="true" tabindex="-1"></a>The FielDHub control anchors the &quot;alpha&quot; row: its statistics sit clearly outside the RCBD null, in the low-variance / low-clustering direction. Stelio&#39;s data lands on the &quot;RCBD&quot; row — its statistics are *not* displaced toward the alpha tail; if anything they sit at or slightly above the null mean (marginally *more* dispersed than a random shuffle — the opposite of an alpha constraint, which would pull them down toward the FielDHub values).</span>
-<span id="cb31-557"><a href="#cb31-557" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-558"><a href="#cb31-558" aria-hidden="true" tabindex="-1"></a><span class="fu"># 9 — Conceptual resolution {#sec-resolution}</span></span>
-<span id="cb31-559"><a href="#cb31-559" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-560"><a href="#cb31-560" aria-hidden="true" tabindex="-1"></a>What we tested is **not** &quot;alpha vs. RCBD by eye.&quot; It is the single property:</span>
+<span id="cb31-477"><a href="#cb31-477" aria-hidden="true" tabindex="-1"></a><span class="fu"># 7 — The decisive permutation test {#sec-permutation}</span></span>
+<span id="cb31-478"><a href="#cb31-478" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-479"><a href="#cb31-479" aria-hidden="true" tabindex="-1"></a>This is the clean version of everything above. Generate the **H₀ null** by shuffling genotypes **within REP** (the row partition kept fixed), recompute each statistic, and ask where the **observed** Stelio value and the **FielDHub alpha** value fall.</span>
+<span id="cb31-480"><a href="#cb31-480" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-481"><a href="#cb31-481" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Decision rule** — if Stelio&#39;s statistics sit *inside* the null and FielDHub&#39;s sit *outside* (in the alpha direction), the row partition is an **incidental cut after RCBD randomization**, not a constraint.</span></span>
+<span id="cb31-482"><a href="#cb31-482" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-485"><a href="#cb31-485" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-486"><a href="#cb31-486" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: permutation-null</span></span>
+<span id="cb31-487"><a href="#cb31-487" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.width: 11</span></span>
+<span id="cb31-488"><a href="#cb31-488" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 6.5</span></span>
+<span id="cb31-489"><a href="#cb31-489" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-490"><a href="#cb31-490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-491"><a href="#cb31-491" aria-hidden="true" tabindex="-1"></a>n_perm <span class="ot">&lt;-</span> <span class="dv">499</span></span>
+<span id="cb31-492"><a href="#cb31-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-493"><a href="#cb31-493" aria-hidden="true" tabindex="-1"></a>perm_stats <span class="ot">&lt;-</span> <span class="cf">function</span>(d, gset) {</span>
+<span id="cb31-494"><a href="#cb31-494" aria-hidden="true" tabindex="-1"></a>  dp <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(rep) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">gen =</span> <span class="fu">sample</span>(gen)) <span class="sc">%&gt;%</span> <span class="fu">ungroup</span>()</span>
+<span id="cb31-495"><a href="#cb31-495" aria-hidden="true" tabindex="-1"></a>  cv <span class="ot">&lt;-</span> <span class="fu">cooc_vector</span>(dp, gset)</span>
+<span id="cb31-496"><a href="#cb31-496" aria-hidden="true" tabindex="-1"></a>  gs <span class="ot">&lt;-</span> <span class="fu">graph_stats</span>(cv, gset)</span>
+<span id="cb31-497"><a href="#cb31-497" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">varCij =</span> <span class="fu">var</span>(cv), <span class="at">entCij =</span> <span class="fu">shannon_entropy</span>(cv),</span>
+<span id="cb31-498"><a href="#cb31-498" aria-hidden="true" tabindex="-1"></a>    <span class="at">transitivity =</span> gs<span class="sc">$</span>transitivity, <span class="at">mean_overlap =</span> gs<span class="sc">$</span>mean_overlap,</span>
+<span id="cb31-499"><a href="#cb31-499" aria-hidden="true" tabindex="-1"></a>    <span class="at">sdCorr =</span> <span class="fu">assign_corr_stats</span>(dp, gset)[[<span class="st">&quot;sdCorr&quot;</span>]])</span>
+<span id="cb31-500"><a href="#cb31-500" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-501"><a href="#cb31-501" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-502"><a href="#cb31-502" aria-hidden="true" tabindex="-1"></a>null_mat <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_perm, <span class="fu">perm_stats</span>(primary, gset_stelio))</span>
+<span id="cb31-503"><a href="#cb31-503" aria-hidden="true" tabindex="-1"></a>null_df  <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">t</span>(null_mat)) <span class="sc">%&gt;%</span></span>
+<span id="cb31-504"><a href="#cb31-504" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">&quot;stat&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>)</span>
+<span id="cb31-505"><a href="#cb31-505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-506"><a href="#cb31-506" aria-hidden="true" tabindex="-1"></a>stat_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">varCij =</span> <span class="st">&quot;var(Cij)&quot;</span>, <span class="at">entCij =</span> <span class="st">&quot;entropy(Cij)&quot;</span>,</span>
+<span id="cb31-507"><a href="#cb31-507" aria-hidden="true" tabindex="-1"></a>                 <span class="at">transitivity =</span> <span class="st">&quot;transitivity&quot;</span>, <span class="at">mean_overlap =</span> <span class="st">&quot;mean overlap&quot;</span>,</span>
+<span id="cb31-508"><a href="#cb31-508" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sdCorr =</span> <span class="st">&quot;sd assign. corr&quot;</span>)</span>
+<span id="cb31-509"><a href="#cb31-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-510"><a href="#cb31-510" aria-hidden="true" tabindex="-1"></a>obs_lines <span class="ot">&lt;-</span> obs <span class="sc">%&gt;%</span></span>
+<span id="cb31-511"><a href="#cb31-511" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(source, varCij, entCij, transitivity, mean_overlap, sdCorr) <span class="sc">%&gt;%</span></span>
+<span id="cb31-512"><a href="#cb31-512" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>source, <span class="at">names_to =</span> <span class="st">&quot;stat&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;value&quot;</span>)</span>
+<span id="cb31-513"><a href="#cb31-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-514"><a href="#cb31-514" aria-hidden="true" tabindex="-1"></a>null_df  <span class="ot">&lt;-</span> null_df  <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">stat =</span> <span class="fu">recode</span>(stat, <span class="sc">!!!</span>stat_levels))</span>
+<span id="cb31-515"><a href="#cb31-515" aria-hidden="true" tabindex="-1"></a>obs_lines <span class="ot">&lt;-</span> obs_lines <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">stat =</span> <span class="fu">recode</span>(stat, <span class="sc">!!!</span>stat_levels))</span>
+<span id="cb31-516"><a href="#cb31-516" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-517"><a href="#cb31-517" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(null_df, <span class="fu">aes</span>(value)) <span class="sc">+</span></span>
+<span id="cb31-518"><a href="#cb31-518" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">&quot;grey75&quot;</span>, <span class="at">colour =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb31-519"><a href="#cb31-519" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> obs_lines,</span>
+<span id="cb31-520"><a href="#cb31-520" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">xintercept =</span> value, <span class="at">colour =</span> source, <span class="at">linetype =</span> source),</span>
+<span id="cb31-521"><a href="#cb31-521" aria-hidden="true" tabindex="-1"></a>             <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-522"><a href="#cb31-522" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> stat, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb31-523"><a href="#cb31-523" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Stelio CHOKWE STS&quot;</span> <span class="ot">=</span> <span class="st">&quot;#2c7fb8&quot;</span>,</span>
+<span id="cb31-524"><a href="#cb31-524" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">&quot;FielDHub alpha&quot;</span> <span class="ot">=</span> <span class="st">&quot;#31a354&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb31-525"><a href="#cb31-525" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Permutation null (shuffle genotypes within REP) vs. observed&quot;</span>,</span>
+<span id="cb31-526"><a href="#cb31-526" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Grey = RCBD null. FielDHub alpha (green) lands far in the low-spread/low-clustering tail; Stelio (blue) stays on the RCBD side.&quot;</span>,</span>
+<span id="cb31-527"><a href="#cb31-527" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;statistic value&quot;</span>, <span class="at">y =</span> <span class="st">&quot;null draws&quot;</span>, <span class="at">colour =</span> <span class="cn">NULL</span>, <span class="at">linetype =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb31-528"><a href="#cb31-528" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span>
+<span id="cb31-529"><a href="#cb31-529" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-530"><a href="#cb31-530" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-533"><a href="#cb31-533" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-534"><a href="#cb31-534" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: permutation-pvalues</span></span>
+<span id="cb31-535"><a href="#cb31-535" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical position of each observed value within the RCBD null.</span></span>
+<span id="cb31-536"><a href="#cb31-536" aria-hidden="true" tabindex="-1"></a>null_wide <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">t</span>(null_mat))</span>
+<span id="cb31-537"><a href="#cb31-537" aria-hidden="true" tabindex="-1"></a>stat_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;varCij&quot;</span>, <span class="st">&quot;entCij&quot;</span>, <span class="st">&quot;transitivity&quot;</span>, <span class="st">&quot;mean_overlap&quot;</span>, <span class="st">&quot;sdCorr&quot;</span>)</span>
+<span id="cb31-538"><a href="#cb31-538" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-539"><a href="#cb31-539" aria-hidden="true" tabindex="-1"></a>st_obs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(obs[obs<span class="sc">$</span>source <span class="sc">==</span> <span class="st">&quot;Stelio CHOKWE STS&quot;</span>, stat_cols])</span>
+<span id="cb31-540"><a href="#cb31-540" aria-hidden="true" tabindex="-1"></a>fh_obs <span class="ot">&lt;-</span> <span class="fu">unlist</span>(obs[obs<span class="sc">$</span>source <span class="sc">==</span> <span class="st">&quot;FielDHub alpha&quot;</span>,    stat_cols])</span>
+<span id="cb31-541"><a href="#cb31-541" aria-hidden="true" tabindex="-1"></a>pctile <span class="ot">&lt;-</span> <span class="cf">function</span>(col, x) <span class="fu">mean</span>(null_wide[[col]] <span class="sc">&lt;=</span> x)  <span class="co"># fraction of null at or below x</span></span>
+<span id="cb31-542"><a href="#cb31-542" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-543"><a href="#cb31-543" aria-hidden="true" tabindex="-1"></a>summ <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb31-544"><a href="#cb31-544" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic        =</span> <span class="fu">c</span>(<span class="st">&quot;var(Cij)&quot;</span>, <span class="st">&quot;entropy(Cij)&quot;</span>, <span class="st">&quot;transitivity&quot;</span>, <span class="st">&quot;mean overlap&quot;</span>, <span class="st">&quot;sd corr&quot;</span>),</span>
+<span id="cb31-545"><a href="#cb31-545" aria-hidden="true" tabindex="-1"></a>  <span class="at">null_mean        =</span> <span class="fu">as.numeric</span>(<span class="fu">colMeans</span>(null_wide)[stat_cols]),</span>
+<span id="cb31-546"><a href="#cb31-546" aria-hidden="true" tabindex="-1"></a>  <span class="at">stelio           =</span> <span class="fu">as.numeric</span>(st_obs),</span>
+<span id="cb31-547"><a href="#cb31-547" aria-hidden="true" tabindex="-1"></a>  <span class="at">fieldhub         =</span> <span class="fu">as.numeric</span>(fh_obs),</span>
+<span id="cb31-548"><a href="#cb31-548" aria-hidden="true" tabindex="-1"></a>  <span class="at">stelio_pctile    =</span> <span class="fu">mapply</span>(pctile, stat_cols, st_obs),</span>
+<span id="cb31-549"><a href="#cb31-549" aria-hidden="true" tabindex="-1"></a>  <span class="at">fieldhub_pctile  =</span> <span class="fu">mapply</span>(pctile, stat_cols, fh_obs)</span>
+<span id="cb31-550"><a href="#cb31-550" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-551"><a href="#cb31-551" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(summ, <span class="at">digits =</span> <span class="dv">4</span>,</span>
+<span id="cb31-552"><a href="#cb31-552" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Where each observed statistic falls within the RCBD permutation null (percentile = fraction of null at or below).&quot;</span>)</span>
+<span id="cb31-553"><a href="#cb31-553" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-554"><a href="#cb31-554" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-555"><a href="#cb31-555" aria-hidden="true" tabindex="-1"></a><span class="fu"># 8 — Interpretation rule {#sec-rule}</span></span>
+<span id="cb31-556"><a href="#cb31-556" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-557"><a href="#cb31-557" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> If, jointly… <span class="pp">|</span> …then <span class="pp">|</span></span>
+<span id="cb31-558"><a href="#cb31-558" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> :-- <span class="pp">|</span> :-- <span class="pp">|</span></span>
+<span id="cb31-559"><a href="#cb31-559" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $C_{ij}$ structure ≈ permutation null; block variance is *spatial only*; assignment correlations ≈ null | **RCBD** (row-stratified only) <span class="pp">|</span></span>
+<span id="cb31-560"><a href="#cb31-560" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> strong 0/1 $C_{ij}$ constraint (low var/entropy vs null); stable block clustering; assignment correlation departs from null in the alpha direction <span class="pp">|</span> **alpha lattice** <span class="pp">|</span></span>
 <span id="cb31-561"><a href="#cb31-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-562"><a href="#cb31-562" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *Does the row partition behave like a **constraint in the randomization space**, or just a **geometric partition after randomization**?*</span></span>
+<span id="cb31-562"><a href="#cb31-562" aria-hidden="true" tabindex="-1"></a>The FielDHub control anchors the &quot;alpha&quot; row: its statistics sit clearly outside the RCBD null, in the low-variance / low-clustering direction. Stelio&#39;s data lands on the &quot;RCBD&quot; row — its statistics are *not* displaced toward the alpha tail; if anything they sit at or slightly above the null mean (marginally *more* dispersed than a random shuffle — the opposite of an alpha constraint, which would pull them down toward the FielDHub values).</span>
 <span id="cb31-563"><a href="#cb31-563" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-564"><a href="#cb31-564" aria-hidden="true" tabindex="-1"></a>Every diagnostic — adjacency spread, neighborhood overlap, assignment correlation, the permutation null — is a different lens on that one question. For <span class="in">`data/multilocation.csv`</span> they agree: the row partition is an **incidental cut after an RCBD randomization**. The FielDHub positive control shows the same lenses *do* detect a real constraint when one exists — confirming the negative result on Stelio&#39;s data is a true negative, not a blind test.</span>
+<span id="cb31-564"><a href="#cb31-564" aria-hidden="true" tabindex="-1"></a><span class="fu"># 9 — Conceptual resolution {#sec-resolution}</span></span>
 <span id="cb31-565"><a href="#cb31-565" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-568"><a href="#cb31-568" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb31-569"><a href="#cb31-569" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: all-environments</span></span>
-<span id="cb31-570"><a href="#cb31-570" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-566"><a href="#cb31-566" aria-hidden="true" tabindex="-1"></a>What we tested is **not** &quot;alpha vs. RCBD by eye.&quot; It is the single property:</span>
+<span id="cb31-567"><a href="#cb31-567" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-568"><a href="#cb31-568" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; *Does the row partition behave like a **constraint in the randomization space**, or just a **geometric partition after randomization**?*</span></span>
+<span id="cb31-569"><a href="#cb31-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-570"><a href="#cb31-570" aria-hidden="true" tabindex="-1"></a>Every diagnostic — adjacency spread, neighborhood overlap, assignment correlation, the permutation null — is a different lens on that one question. For <span class="in">`data/multilocation.csv`</span> they agree: the row partition is an **incidental cut after an RCBD randomization**. The FielDHub positive control shows the same lenses *do* detect a real constraint when one exists — confirming the negative result on Stelio&#39;s data is a true negative, not a blind test.</span>
 <span id="cb31-571"><a href="#cb31-571" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-572"><a href="#cb31-572" aria-hidden="true" tabindex="-1"></a><span class="co"># Robustness: the same var/entropy of Cij across all four environments.</span></span>
-<span id="cb31-573"><a href="#cb31-573" aria-hidden="true" tabindex="-1"></a>all_env <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">levels</span>(stelio<span class="sc">$</span>ENV), <span class="cf">function</span>(e) {</span>
-<span id="cb31-574"><a href="#cb31-574" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> stelio <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ENV <span class="sc">==</span> e) <span class="sc">%&gt;%</span></span>
-<span id="cb31-575"><a href="#cb31-575" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(<span class="at">rep =</span> REP, <span class="at">block =</span> <span class="fu">paste</span>(REP, field_row, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>), gen)</span>
-<span id="cb31-576"><a href="#cb31-576" aria-hidden="true" tabindex="-1"></a>  cv <span class="ot">&lt;-</span> <span class="fu">cooc_vector</span>(d, gset_stelio)</span>
-<span id="cb31-577"><a href="#cb31-577" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">ENV =</span> e, <span class="at">varCij =</span> <span class="fu">var</span>(cv), <span class="at">entCij =</span> <span class="fu">shannon_entropy</span>(cv),</span>
-<span id="cb31-578"><a href="#cb31-578" aria-hidden="true" tabindex="-1"></a>         <span class="at">pairs_twice =</span> <span class="fu">sum</span>(cv <span class="sc">==</span> <span class="dv">2</span>), <span class="at">pairs_thrice =</span> <span class="fu">sum</span>(cv <span class="sc">&gt;=</span> <span class="dv">3</span>))</span>
-<span id="cb31-579"><a href="#cb31-579" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb31-580"><a href="#cb31-580" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_env, <span class="at">digits =</span> <span class="dv">4</span>,</span>
-<span id="cb31-581"><a href="#cb31-581" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;All four environments show the same RCBD-like co-occurrence spread (pairs concurring 2+ times, which an alpha lattice forbids).&quot;</span>)</span>
-<span id="cb31-582"><a href="#cb31-582" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb31-583"><a href="#cb31-583" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-584"><a href="#cb31-584" aria-hidden="true" tabindex="-1"></a><span class="fu"># References {.unnumbered}</span></span>
-<span id="cb31-585"><a href="#cb31-585" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-586"><a href="#cb31-586" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
-<span id="cb31-587"><a href="#cb31-587" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb31-574"><a href="#cb31-574" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb31-575"><a href="#cb31-575" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: all-environments</span></span>
+<span id="cb31-576"><a href="#cb31-576" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb31-577"><a href="#cb31-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-578"><a href="#cb31-578" aria-hidden="true" tabindex="-1"></a><span class="co"># Robustness: the same var/entropy of Cij across all four environments.</span></span>
+<span id="cb31-579"><a href="#cb31-579" aria-hidden="true" tabindex="-1"></a>all_env <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(<span class="fu">levels</span>(stelio<span class="sc">$</span>ENV), <span class="cf">function</span>(e) {</span>
+<span id="cb31-580"><a href="#cb31-580" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> stelio <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ENV <span class="sc">==</span> e) <span class="sc">%&gt;%</span></span>
+<span id="cb31-581"><a href="#cb31-581" aria-hidden="true" tabindex="-1"></a>    <span class="fu">transmute</span>(<span class="at">rep =</span> REP, <span class="at">block =</span> <span class="fu">paste</span>(REP, field_row, <span class="at">sep =</span> <span class="st">&quot;_&quot;</span>), gen)</span>
+<span id="cb31-582"><a href="#cb31-582" aria-hidden="true" tabindex="-1"></a>  cv <span class="ot">&lt;-</span> <span class="fu">cooc_vector</span>(d, gset_stelio)</span>
+<span id="cb31-583"><a href="#cb31-583" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">ENV =</span> e, <span class="at">varCij =</span> <span class="fu">var</span>(cv), <span class="at">entCij =</span> <span class="fu">shannon_entropy</span>(cv),</span>
+<span id="cb31-584"><a href="#cb31-584" aria-hidden="true" tabindex="-1"></a>         <span class="at">pairs_twice =</span> <span class="fu">sum</span>(cv <span class="sc">==</span> <span class="dv">2</span>), <span class="at">pairs_thrice =</span> <span class="fu">sum</span>(cv <span class="sc">&gt;=</span> <span class="dv">3</span>))</span>
+<span id="cb31-585"><a href="#cb31-585" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb31-586"><a href="#cb31-586" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_env, <span class="at">digits =</span> <span class="dv">4</span>,</span>
+<span id="cb31-587"><a href="#cb31-587" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;All four environments show the same RCBD-like co-occurrence spread (pairs concurring 2+ times, which an alpha lattice forbids).&quot;</span>)</span>
+<span id="cb31-588"><a href="#cb31-588" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb31-589"><a href="#cb31-589" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-590"><a href="#cb31-590" aria-hidden="true" tabindex="-1"></a><span class="fu"># References {.unnumbered}</span></span>
+<span id="cb31-591"><a href="#cb31-591" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-592"><a href="#cb31-592" aria-hidden="true" tabindex="-1"></a>::: {#refs}</span>
+<span id="cb31-593"><a href="#cb31-593" aria-hidden="true" tabindex="-1"></a>:::</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
