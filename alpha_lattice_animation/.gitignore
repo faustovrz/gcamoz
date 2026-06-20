@@ -1,0 +1,6 @@
+# Untracked: render outputs, manim cache, virtualenv
+output/
+media/
+.venv/
+__pycache__/
+*.pyc

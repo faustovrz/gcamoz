@@ -1,0 +1,4 @@
+# Python 3.12 recommended (system 3.14 lacks wheels for some deps)
+manim>=0.18
+manim-voiceover[gtts]>=0.3.7
+numpy
