@@ -254,7 +254,7 @@ heat_df <- bind_rows(
          j = factor(j, levels = as.character(sort(unique(as.integer(j))))),
          source = factor(source, levels = c("Stelio CHOKWE STS", "FielDHub alpha")))
 
-ggplot(heat_df, aes(i, j, fill = factor(Cij))) +
+p_cij_heatmap <- ggplot(heat_df, aes(i, j, fill = factor(Cij))) +
   geom_tile() +
   facet_wrap(~ source) +
   scale_fill_manual(values = c("0" = "grey92", "1" = "#2c7fb8",
@@ -267,6 +267,12 @@ ggplot(heat_df, aes(i, j, fill = factor(Cij))) +
   theme_minimal(base_size = 10) +
   theme(axis.text = element_blank(), panel.grid = element_blank(),
         strip.text = element_text(face = "bold"))
+
+# Export the panel so rcbd_vs_alpha_lattice.qmd can embed it without rerunning
+# the full diagnostic battery. (Render this notebook first; see @sec-adjacency.)
+saveRDS(p_cij_heatmap, "output/cij_adjacency_heatmap.rds")
+
+p_cij_heatmap
 ```
 
 ```{r}

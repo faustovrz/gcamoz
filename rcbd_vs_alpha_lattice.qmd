@@ -429,6 +429,20 @@ ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
 
 **The observed panels match the random-RCBD reference, not the α-lattice one.** Every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with a triple in NHACOONGO) — which the green α(0,1) reference forbids outright. So even treating the rows as the most generous possible incomplete blocks, there is **no α-lattice signal**: the row groupings are indistinguishable from a random RCBD allocation. (Three environments even share an identical distribution, hinting the same randomization was reused.)
 
+The same census can be read as a **block-adjacency graph**: a 50 × 50 matrix whose cell $C_{ij}$ counts the blocks genotypes $i$ and $j$ share. The panel below — exported from the companion [block-assignment diagnostics notebook](block_assignment_diagnostics.qmd) — shows Stelio's matrix carrying orange cells ($C_{ij} = 2$) while a true FielDHub α-lattice is pure 0/1. See @sec-adjacency of that notebook for the full battery (variance/entropy of $C_{ij}$, neighbourhood overlap, and the permutation null).
+
+```{r}
+#| label: cij-adjacency-heatmap
+#| fig.width: 11
+#| fig.height: 5.2
+#| warning: false
+#| echo: false
+
+# Panel produced by block_assignment_diagnostics.qmd (@sec-adjacency); render
+# that notebook first so output/cij_adjacency_heatmap.rds exists.
+readRDS("output/cij_adjacency_heatmap.rds")
+```
+
 ### Positive control — the same test on a real alpha lattice
 
 A fair skeptic should ask whether this census simply flags *everything* as RCBD. It does not. Running the **identical** count on the FielDHub design generated above — whose true incomplete-block labels (`IBLOCK` within `REP`) are known — recovers the ideal α(0,1) distribution exactly.
