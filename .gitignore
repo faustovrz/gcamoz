@@ -7,3 +7,4 @@ agent/
 **/*.quarto_ipynb
 /.claude/
 /.antigravitycli/
+.vscode/
