@@ -150,6 +150,27 @@ document this:
   germplasm is supplied by CIMMYT and IITA (Fato et al. 2025; Afonso 2013, §1.4). A small
   founder set means elite lines can be closely related — low *general* (additive)
   divergence among them.
+- **The upstream CIMMYT pool is independently measured as low-diversity — Masuka et al.
+  2017.** GBS-fingerprinting (258,038 SNPs) of the **55 parents** behind 52 of the 67 best
+  CIMMYT Eastern & Southern Africa hybrids released 2000–2010 gave a **mean pairwise genetic
+  distance of only 0.294** (range 0.004–0.4005; *every* pair < 0.45). Their verdict, opening
+  and closing the paper: ***"Diversity was low."*** Crucially, **just four lines — CML444,
+  CML395, CML312, CML442 — were each used in 15–30 of the 52 hybrids (29–58%)**, which
+  *"gave 29 to 58% of the hybrids a **narrow genetic base**."* And the stated cause is the
+  same mechanism as Stelio's selection: ***"selection pressure for defined traits can result
+  in the narrowing down of the genetic base"*** (all lines "improved for yield and adaptation
+  to the mid-altitude environment"). The MOZL testers are drawn from exactly this
+  yield-and-adaptation-selected, four-line-dominated pool — so near-zero additive divergence
+  for yield among seven of them is the expected outcome, not a surprise.
+- **Founder base, and the "Ecuador" recollection.** CIMMYT's tropical heterotic groups rest
+  on a few founder populations: **Group A** is largely **Tuxpeño**-derived (within it the
+  CMLs are "closely related," max genetic distance ≈ 0.34), while **Group B** is built on
+  **ETO, *Ecuador 573*, Lancaster, Mo17 and Southern Cross**; African drought-tolerant lines
+  also trace to Tuxpeño Sequía / La Posta Sequía. So the half-remembered "couple of CML lines
+  from Ecuador" is most likely **Ecuador 573, a heterotic-group-B founder population** — a
+  founder *source*, not specific CMLs. The four dominant ESA lines span different heterotic
+  groups (pairwise 0.266–0.282), which is why they serve as complementary testers even though
+  the *overall* released-hybrid base is narrow.
 
 **The narrowness is a property of the *elite* pool, not of Mozambican maize.** This is the
 important contrast that keeps the hypothesis honest. **Afonso (2013)** (SLU MSc thesis;
@@ -267,11 +288,10 @@ explains the null male cleanly; the open question, settled only by the trait-by-
 refit, is whether the testers are "the same male" *for yield specifically* (likely) or
 *genome-wide* (not supported by the genetic-gain record).
 
-> *Unverified detail:* the recollection that the southern-African CIMMYT base traces to a
-> couple of CML founders "from Ecuador" could not be confirmed from the two local sources
-> read here (Fato 2025; Afonso 2013), which document a South-African / Ghanaian / IITA /
-> CIMMYT-regional founder set rather than a specific Ecuadorian origin. Flagged as a claim
-> to check against a CIMMYT pedigree source before citing.
+> *On the "Ecuador" recollection (now resolved):* it most plausibly refers to **Ecuador
+> 573**, one of the **founder populations of CIMMYT heterotic group B** (alongside ETO,
+> Lancaster, Mo17 and Southern Cross); group A is largely Tuxpeño-derived. So the source is a
+> *founder population*, not a couple of Ecuadorian CMLs — see §3.1 and Masuka et al. (2017).
 
 ---
 
@@ -284,9 +304,12 @@ refit, is whether the testers are "the same male" *for yield specifically* (like
 3. The genetic architecture differs: that study is **dominance-led** (h² ≈ 0.01); this
    one is **female-additive-led** (h² ≈ 0.22) with a null male tester.
 4. The null male tester has a **germplasm cause**: the seven were double-ascertained
-   (an already-narrow elite pool, then truncation-selected on yield), and that elite pool
-   is independently documented as yield-plateaued with "no superior alleles" for yield
-   (Fato et al. 2025) — even though Mozambican *landraces* are diverse (Afonso 2013).
+   (an already-narrow elite pool, then truncation-selected on yield). That pool is
+   independently documented as low-diversity (CIMMYT ESA mean genetic distance 0.294, four
+   lines in 29–58% of hybrids — Masuka et al. 2017) and yield-plateaued with "no superior
+   alleles" for yield (Fato et al. 2025) — even though Mozambican *landraces* are diverse
+   (Afonso 2013). The "Ecuador" founder is **Ecuador 573**, a CIMMYT heterotic-group-B
+   founder population.
 5. "Essentially the same male" is well-supported **for yield**, but **not** as a
    genome-wide claim: the same elite pool responded to selection for height, ASI, ears
    per plant, etc., so male GCA may be non-zero for non-yield traits. The decisive test is
@@ -303,6 +326,14 @@ refit, is whether the testers are "the same male" *for yield specifically* (like
   the yield genetic-gain plateau (p = 0.96), the "no superior alleles for grain yield"
   statement, significant non-yield gains (height, ASI, EPP, husk cover), and the
   CIMMYT/IITA founder history.
+- **Masuka, B.P., van Biljon, A., Cairns, J.E., Das, B., Labuschagne, M., MacRobert, J.,
+  Makumbi, D., Magorokosho, C., Zaman-Allah, M., Ogugo, V., Olsen, M., Prasanna, B.M.,
+  Tarekegne, A. & Semagn, K. (2017).** *Genetic Diversity among Selected Elite CIMMYT Maize
+  Hybrids in East and Southern Africa.* **Crop Science** 57, 2395–2404.
+  https://doi.org/10.2135/cropsci2016.09.0754 (open access). *Used for:* low diversity of the
+  CIMMYT ESA elite parent pool (mean GD 0.294; "diversity was low"), the four lines
+  (CML444/CML395/CML312/CML442) dominating 29–58% of hybrids, and the heterotic-group founder
+  populations (Tuxpeño for A; ETO/Ecuador 573/Lancaster/Mo17/SC for B).
 - **Afonso, A.V. (2013).** *Genetic diversity of local maize (Zea mays L.) germplasm from
   eight agro-ecological zones in Mozambique.* MSc thesis, Swedish University of Agricultural
   Sciences (SLU), Dept. of Plant Breeding, Alnarp — local copy: `data/afonso_a_130426.pdf`.
