@@ -7,8 +7,10 @@
 This note documents three connected questions that came up while interpreting the
 combining-ability model: (1) what `isSingular()` means and why the male term triggers
 it, (2) how the yield variance components compare with a published sweet × waxy maize
-study, and (3) whether "all genetic variance loads onto the female and SCA channels" is
-the right prediction when the male testers carry little diversity.
+study, and (3) the **germplasm hypothesis** behind the zero male GCA — that the seven
+yield-selected MOZL testers carry so little additive diversity they behave as
+"essentially the same male" — including whether that extends to all phenotypes or only
+to yield.
 
 ---
 
@@ -105,70 +107,171 @@ variance components*: the paper's are σ²ₐ = 0.01 and σ²_d = 0.99.
 
 ---
 
-## 3. "All genetic variance loads onto female + SCA" — assessment
+## 3. Hypothesis: low genetic diversity in the male testers ("essentially the same male")
 
-**Premise:** the male testers have little genetic diversity, and their contribution
-depends on the female (cross) and the environment.
-**Prediction:** all genetic variance goes into the female and SCA channels.
+The zero male GCA in Section 1 is not just a statistical curiosity — it has a concrete
+**germplasm explanation**. The working hypothesis is:
 
-**Verdict: mostly right, with one refinement and one conceptual correction.**
+> The seven MOZL testers (males) carry very little additive genetic diversity for yield —
+> they behave, for combining-ability purposes, as if they were *essentially the same
+> male*. The breedable genetic variation comes from the introduced CIMMYT/CML donor lines
+> (females) and from how specific crosses behave across environments.
 
-### Routing rules and the data
+This section sets out (a) *why the breeding history predicts this*, (b) *what the data
+show*, (c) *whether the prediction extends to all phenotypes* — the key question — and
+(d) *a falsifiable test*.
+
+### 3.1 Rationale — why we expect near-zero male diversity
+
+**Double ascertainment of the testers.** Stelio screened **70+ elite lines** and kept the
+**top 7 for yield under phosphorus sufficiency**. Two filters stack here:
+
+1. The lines were already *elite* — i.e., drawn from a **narrow, advanced breeding pool**,
+   not from the broad landrace base.
+2. They were then **truncation-selected on yield itself**. Selecting the extreme upper
+   tail of a trait mechanically compresses the among-line variance *for that trait* in the
+   selected set: the survivors are, by construction, the ones that are most alike at the
+   top.
+
+**The elite Mozambican pool is itself narrow and yield-plateaued.** Two local sources
+document this:
+
+- **Fato et al. 2025** (*Agronomy* 15(2):449 — genetic trends in 7 years of IIAM maize
+  breeding) found **no significant genetic gain for grain yield** over 2014–2020
+  (p = 0.96; yield even declined within the AVT and VCU streams), against heavy
+  G×E (≈ 29% of variance) and error (≈ 66%). The authors state plainly: *"it is also
+  possible that the parental lines used in the program do not have superior alleles for
+  developing superior hybrids with grain yield beyond the current plateau."* That is a
+  direct, independent statement that the elite line pool has **little exploitable additive
+  variance for yield** — exactly the condition that drives male GCA to zero here.
+- The IIAM elite base traces to **a handful of founders**: the first hybrids came from one
+  South African inbred line plus two inbred lines from Ghana, and from IITA-sourced
+  populations, with later material from the CIMMYT regional network; the program's
+  germplasm is supplied by CIMMYT and IITA (Fato et al. 2025; Afonso 2013, §1.4). A small
+  founder set means elite lines can be closely related — low *general* (additive)
+  divergence among them.
+
+**The narrowness is a property of the *elite* pool, not of Mozambican maize.** This is the
+important contrast that keeps the hypothesis honest. **Afonso (2013)** (SLU MSc thesis;
+`data/afonso_a_130426.pdf`) genotyped 27 Mozambican **landrace** accessions at 11 SSRs and
+found them **highly diverse** — 84 alleles (7.6/locus), expected heterozygosity He ≈ 0.67,
+with **88.3% of variation residing *within* accessions** and no clean structure by
+agro-ecological zone. So the raw national germplasm is rich; the elite testers are a
+deliberately **narrow, selected slice** of it. That is precisely why the experiment brings
+in **CIMMYT/CML donor lines as the females** — to inject diversity the local testers lack.
+The design is essentially asking *"do the introduced donors add additive value that the
+local elite testers cannot?"* — and the answer (Section 2) is **yes**.
+
+### 3.2 What the data show — variance routing
+
+Treat the hypothesis as a set of predictions about where variance lands, then read off the
+fitted components:
 
 | Statement | Channel | This study (t/ha²) |
 |---|---|---|
-| Males have little genetic diversity | σ²_GCA(male) → 0 | **0.0000** ✓ |
-| Female lines differ | σ²_GCA(female) | 0.0715 |
+| Males carry little additive diversity | σ²_GCA(male) → 0 | **0.0000** ✓ |
+| Introduced female lines differ | σ²_GCA(female) | 0.0715 |
 | Contribution "depends on the female" (♀×♂) | σ²_SCA | 0.0716 |
-| "depends on environment" (♂×E) | σ²_GCA(male)×E | 0.0043 |
+| Male response "depends on environment" (♂×E) | σ²_GCA(male)×E | 0.0043 |
 | ♀ × environment | σ²_GCA(female)×E | 0.0728 |
 | ♀×♂ × environment | σ²_SCA×E | **0.1176** (largest) |
 
-**The main-effect prediction is exactly right.** Vg = GCA_F + GCA_M + SCA =
+**The main-effect prediction holds exactly.** Vg = GCA_F + GCA_M + SCA =
 0.0715 + 0 + 0.0716 = 0.143 — the male contributes nothing, so all genetic variance sits
-in **female + SCA**. The same pattern repeats in the ×E layer: male×E ≈ 0.004
-(negligible), while female×E + SCA×E carry the G×E.
+in **female + SCA**. The same pattern repeats in the ×E layer: male×E ≈ 0.004 (negligible)
+while female×E + SCA×E carry the G×E. Both male channels — additive *and* its
+environment interaction — are effectively dead.
 
-### Refinement — "depends on environment" is its own channel
+**Caveat (routing of "environment").** "Depends on the environment" does **not** fold into
+the female or SCA *main* effects; it routes into the **×E** terms. Those happen to be
+female-side (0.073) and SCA-side (0.118), so the hypothesis still holds — but only once the
+×E versions are counted. SCA×E being the *largest* genetic component is literally "the
+cross contribution depends on the environment."
 
-Environment-dependence does **not** fold into the female or SCA *main* effects; it routes
-into the **×E** terms. Here those happen to be female-side (0.073) and SCA-side (0.118),
-so the prediction holds — but only if the ×E versions are explicitly included. SCA×E
-being the *largest* genetic component is precisely "the cross contribution depends on the
-environment."
+### 3.3 Does "essentially the same male" extend to *all* phenotypes?
 
-### Conceptual correction — zero male GCA ≠ genetically uniform males
+This is the crux of your reasoning: *if the top seven are essentially the same line, the
+zero-male-variance result should hold not just for yield but for every trait.* **That
+conclusion does not follow automatically — it depends on which of two mechanisms produced
+the zero.**
 
-GCA(male) = 0 means only that the testers don't differ in their *average* (general,
-additive) effect. SCA measures something different — whether a *specific* ♀×♂ pairing
-beats the prediction from the two parents' averages.
+| Mechanism | What it compresses | Holds for all traits? |
+|---|---|---|
+| **A. Ascertainment / truncation on yield** | among-tester variance for **yield and traits genetically correlated with yield** | **No** — traits uncorrelated with yield can still vary |
+| **B. Narrow genetic base / near-identity-by-descent** | among-tester variance for **every trait** (the lines are genome-wide alike) | **Yes** |
 
-The trap: if the males were *truly* genetically uniform (interchangeable), the male
-identity wouldn't matter, so **SCA would also collapse to ≈ 0** and *everything* would
-pile onto female GCA *alone* — not female + SCA. The nonzero SCA (0.0716) and SCA×E
-(0.118) are positive evidence the males are **not** uniform: they carry *specific
-/interaction* diversity (they combine and respond to environments differently) even
-though they lack *additive/average* diversity. Sharpen the premise to:
+Your "all phenotypes" claim requires **Mechanism B**. The evidence says the truth is a
+*mix that leans toward A*, not pure B:
 
-> Males have little **general (additive)** diversity, but retain **specific
-> (interaction)** diversity.
+- **Against pure B:** Fato et al. (2025) show the *same* elite pool **did** respond to
+  selection for several non-yield traits over 7 years — significant genetic gains for
+  plant height (+0.67%/yr), ear height (+1.74%/yr), ears per plant (+1.31%/yr), ear
+  position (+1.22%/yr), husk cover, anthesis date and ASI (−4.9%/yr). If the elite lines
+  were genome-wide near-identical, *none* of those traits could have moved. So the pool
+  retains additive variation for non-yield traits — it is **not** monomorphic.
+- **For A:** the plateau and the "no superior alleles … for grain yield" statement are
+  **yield-specific**. The strongest compression is exactly on the trait the testers were
+  selected on.
 
-These are independent; the data show the first is zero and the second is not.
+So the defensible version of your hypothesis is **trait-specific, not universal**: the
+testers are "essentially the same male" *for yield* (and for whatever is tightly
+correlated with yield), but they are **not** guaranteed to be interchangeable for traits
+that selection never targeted — flowering time, height, disease scores, etc. For those,
+male GCA could well be non-zero.
 
-### Honest caveat — is SCA real?
+### 3.4 A conceptual guardrail — zero male GCA ≠ genetically identical testers
+
+Even for yield, read the zero carefully. GCA(male) = 0 means only that the testers don't
+differ in their *average* (general, additive) effect. SCA is a different thing — whether a
+*specific* ♀×♂ pairing beats the prediction from the two parents' averages. If the males
+were *literally* interchangeable, the male identity wouldn't matter, **SCA would also
+collapse to ≈ 0**, and everything would pile onto female GCA *alone* — not female + SCA.
+The non-zero SCA (0.0716) and SCA×E (0.118) say the males are **not** identical: they carry
+*specific/interaction* diversity (they combine and respond to environments differently)
+even though their *additive/average* diversity is nil.
+
+> Sharpened premise: the testers have little **general (additive)** diversity for yield,
+> but retain **specific (interaction)** diversity — and, per §3.3, likely retain additive
+> diversity for traits other than yield.
+
+### 3.5 A falsifiable test
+
+The hypothesis makes a clean, testable prediction: **refit the identical model
+trait-by-trait** (flowering, plant/ear height, ears per plant, husk cover, disease scores,
+…) and inspect σ²_GCA(male) and its `isSingular()` flag for each.
+
+- If male GCA is singular/zero **only for yield** (and yield-correlated traits) but
+  **non-zero** for, say, flowering or height → **Mechanism A** confirmed: the zero is an
+  *ascertainment artifact of selecting on yield*, and the result does **not** generalize.
+- If male GCA is singular/zero for **essentially every trait** → **Mechanism B** supported:
+  the seven really are near-identical-by-descent, and your "holds for all phenotypes"
+  extrapolation stands.
+
+Fato et al. (2025) makes the first outcome the more likely one a priori (non-yield traits
+respond to selection in this germplasm), but it is worth confirming directly in *these*
+seven testers.
+
+### Honest statistical caveat — is SCA real?
 
 The SCA and SCA×E point estimates are imprecise — Wald Z-ratios ≈ 1.1 (well under 2), and
-the arithmetic SCA spread (≈ 0.18) is about equal to the sampling error of a 12-plot
-family mean (≈ 0.19). So whether σ²_SCA is *real signal* or *sampling noise* is genuinely
-uncertain. (Wald Z on variance components near a boundary is itself unreliable; the firm
+the arithmetic SCA spread (≈ 0.18) is about equal to the sampling error of a 12-plot family
+mean (≈ 0.19). So whether σ²_SCA is *real signal* or *sampling noise* is genuinely
+uncertain. (Wald Z on variance components near a boundary is itself unreliable; firm
 support comes from LRT/ANOVA.) The only genetic terms with solid LRT support are **female
 GCA (p = 0.0002)** and **female GCA×E (p = 0.004)**.
 
-**Bullet-proof conclusion:** the genetic variance is **female-driven (GCA and GCA×E)**,
-the **male is null**, and SCA/SCA×E are where any male-by-cross-by-environment signal
-*would* land — but in these data that signal is too small to distinguish from noise. If
-the SCA is in fact noise, the situation reduces to the clean end-member of the original
-prediction: *males uniform → all variance in female GCA.*
+**Bottom line:** the genetic variance is **female-driven (GCA and GCA×E)**, the **male is
+null for yield**, and SCA/SCA×E are where any male-by-cross-by-environment signal *would*
+land — but that signal is too small here to distinguish from noise. The germplasm history
+explains the null male cleanly; the open question, settled only by the trait-by-trait
+refit, is whether the testers are "the same male" *for yield specifically* (likely) or
+*genome-wide* (not supported by the genetic-gain record).
+
+> *Unverified detail:* the recollection that the southern-African CIMMYT base traces to a
+> couple of CML founders "from Ecuador" could not be confirmed from the two local sources
+> read here (Fato 2025; Afonso 2013), which document a South-African / Ghanaian / IITA /
+> CIMMYT-regional founder set rather than a specific Ecuadorian origin. Flagged as a claim
+> to check against a CIMMYT pedigree source before citing.
 
 ---
 
@@ -180,6 +283,32 @@ prediction: *males uniform → all variance in female GCA.*
    *variance components*, never the paper's *mean squares*.
 3. The genetic architecture differs: that study is **dominance-led** (h² ≈ 0.01); this
    one is **female-additive-led** (h² ≈ 0.22) with a null male tester.
-4. "Variance loads onto female + SCA" is right for the main effects; remember the **×E**
-   channels for environment-dependence, and don't read zero male GCA as genetically
-   identical testers.
+4. The null male tester has a **germplasm cause**: the seven were double-ascertained
+   (an already-narrow elite pool, then truncation-selected on yield), and that elite pool
+   is independently documented as yield-plateaued with "no superior alleles" for yield
+   (Fato et al. 2025) — even though Mozambican *landraces* are diverse (Afonso 2013).
+5. "Essentially the same male" is well-supported **for yield**, but **not** as a
+   genome-wide claim: the same elite pool responded to selection for height, ASI, ears
+   per plant, etc., so male GCA may be non-zero for non-yield traits. The decisive test is
+   a **trait-by-trait refit** (§3.5).
+
+---
+
+## Sources
+
+- **Fato, P., Chaúque, P., Senete, C., Nhamucho, E., Sneller, C., Mutiga, S., Musundire, L.,
+  Wegary, D., Das, B. & Prasanna, B.M. (2025).** *Genetic Trends in Seven Years of Maize
+  Breeding at Mozambique's Institute of Agricultural Research.* **Agronomy** 15(2), 449.
+  https://doi.org/10.3390/agronomy15020449 — local copy: `data/FATO2025.txt`. *Used for:*
+  the yield genetic-gain plateau (p = 0.96), the "no superior alleles for grain yield"
+  statement, significant non-yield gains (height, ASI, EPP, husk cover), and the
+  CIMMYT/IITA founder history.
+- **Afonso, A.V. (2013).** *Genetic diversity of local maize (Zea mays L.) germplasm from
+  eight agro-ecological zones in Mozambique.* MSc thesis, Swedish University of Agricultural
+  Sciences (SLU), Dept. of Plant Breeding, Alnarp — local copy: `data/afonso_a_130426.pdf`.
+  *Used for:* SSR diversity of Mozambican landraces (84 alleles, He ≈ 0.67, 88.3% variation
+  within accessions) and the IIAM breeding-strategy / founder background (§1.4).
+- *The Combining Ability and Heterosis Analysis of Sweet–Waxy Corn Hybrids for
+  Yield-Related Traits and Carotenoids* (maize HEY, NC Design II), PMC10819934 —
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC10819934 (Section 2 comparison; authors/year not
+  captured here).
