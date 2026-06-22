@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>male_gca_singularity_and_variance_routing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="male_gca_singularity_and_variance_routing_files/libs/clipboard/clipboard.min.js"></script>
+<script src="male_gca_singularity_and_variance_routing_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="male_gca_singularity_and_variance_routing_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="male_gca_singularity_and_variance_routing_files/libs/quarto-html/popper.min.js"></script>
+<script src="male_gca_singularity_and_variance_routing_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="male_gca_singularity_and_variance_routing_files/libs/quarto-html/anchor.min.js"></script>
+<link href="male_gca_singularity_and_variance_routing_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="male_gca_singularity_and_variance_routing_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="male_gca_singularity_and_variance_routing_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="male_gca_singularity_and_variance_routing_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="male_gca_singularity_and_variance_routing_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="zero-male-gca-singular-fits-and-where-the-genetic-variance-goes" class="level1">
+<h1>Zero Male GCA, Singular Fits, and Where the Genetic Variance Goes</h1>
+<p><strong>Trait:</strong> Husked ear yield (HEY), <code>Yield t/ha</code> <strong>Design:</strong> Multilocation 7 × 7 line × tester (NC-II) — 7 CIMMYT/CML donor lines (females) × 7 MOZL testers (males), 4 environments × 3 replications, alpha-lattice / RCBD layout <strong>Source notebook:</strong> <a href="multilocation_alpha_lattice.html"><code>multilocation_alpha_lattice.html</code></a></p>
+<p>This note documents three connected questions that came up while interpreting the combining-ability model: (1) what <code>isSingular()</code> means and why the male term triggers it, (2) how the yield variance components compare with a published sweet × waxy maize study, and (3) whether “all genetic variance loads onto the female and SCA channels” is the right prediction when the male testers carry little diversity.</p>
+<hr>
+<section id="what-issingular-true-means" class="level2">
+<h2 class="anchored" data-anchor-id="what-issingular-true-means">1. What <code>isSingular() == TRUE</code> means</h2>
+<p>From <code>?lme4::isSingular</code>:</p>
+<blockquote class="blockquote">
+<p>Evaluates whether a fitted mixed model is (almost / near) <strong>singular</strong>, i.e., the parameters are on the <strong>boundary of the feasible parameter space</strong>: variances of one or more linear combinations of effects are (close to) zero.</p>
+</blockquote>
+<p>A variance <strong>cannot be negative</strong>. REML/ML searches for the variance that best fits the data but is constrained to be ≥ 0. When the <em>unconstrained</em> optimum would be negative, the optimizer pins the estimate to the boundary (0). That pinned-at-zero fit is exactly what <code>isSingular()</code> flags.</p>
+<p>This is the male (tester) term here:</p>
+<ul>
+<li>Fixed-effects ANOVA: male MS = 1.55 <strong>&lt; residual MS = 2.23</strong> (p = 0.65).</li>
+<li>Because the between-male mean square is <em>below</em> residual, the unconstrained REML variance is <strong>negative</strong> → clamped to 0 → singular.</li>
+<li>The apparent SCA “spread” from family means (≈ 0.18) is fully accounted for by the sampling error of a 12-plot mean (residual / 12 ≈ 0.19).</li>
+</ul>
+<section id="common-misconception" class="level3">
+<h3 class="anchored" data-anchor-id="common-misconception">Common misconception</h3>
+<p>“Singular” is often read as <em>“not enough samples to compute the variance,”</em> like a variance-0 case with a single observation. That conflates two different causes that both produce a zero variance:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cause</th>
+<th>What’s happening</th>
+<th>This study?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Genuine zero signal</strong></td>
+<td>Plenty of data; the variance is truly ≈ 0 (or below noise). The estimate is well-determined and it is 0.</td>
+<td><strong>✅ Yes.</strong> Full replication; the testers simply don’t differ.</td>
+</tr>
+<tr class="even">
+<td><strong>Unidentifiable / too few levels</strong></td>
+<td>Not enough levels or replication to <em>separate</em> the variance from others — it isn’t estimable.</td>
+<td>❌ No.</td>
+</tr>
+</tbody>
+</table>
+<p>It is <strong>not</strong> “we couldn’t compute it.” It <em>was</em> computed, with adequate data, and the answer is zero. REML’s boundary clamping also hides a slightly-negative unconstrained value, which is why the male term doesn’t just shrink — it disappears.</p>
+</section>
+<section id="practical-consequence" class="level3">
+<h3 class="anchored" data-anchor-id="practical-consequence">Practical consequence</h3>
+<p>While a fit is singular, Wald statistics, likelihood-ratio tests, and profile confidence intervals are unreliable (per the help page). The clean fix is to <strong>drop the term pinned to zero</strong> (the male random effect) and keep the female GCA and female GCA×E terms, which carry the real signal.</p>
+<hr>
+</section>
+</section>
+<section id="comparison-with-a-published-study-pmc10819934" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-with-a-published-study-pmc10819934">2. Comparison with a published study (PMC10819934)</h2>
+<p><strong>Reference:</strong> <em>The Combining Ability and Heterosis Analysis of Sweet–Waxy Corn Hybrids for Yield-Related Traits and Carotenoids</em> — maize, <strong>husked ear yield (HEY)</strong>, NC Design II (8 super-sweet females × 3 waxy males), 24 F₁ hybrids, 2 seasons. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10819934" class="uri">https://pmc.ncbi.nlm.nih.gov/articles/PMC10819934</a></p>
+<section id="same-units-with-a-trap" class="level3">
+<h3 class="anchored" data-anchor-id="same-units-with-a-trap">Same units — with a trap</h3>
+<p>Both studies measure HEY in <strong>t/ha (ton/ha)</strong>, so every variance component is in <strong>(t/ha)²</strong> and is directly comparable. <strong>But</strong> the large numbers in the paper’s table (GCA♂ 30.35, GCA♀ 21.23, SCA 29.38, …) are <strong>mean squares, not variances</strong> — they live on a different scale (a mean square ≈ error + replication-coefficient × variance component, inflated by how many plots were averaged). Compare <em>variance components to variance components</em>: the paper’s are σ²ₐ = 0.01 and σ²_d = 0.99.</p>
+</section>
+<section id="apples-to-apples-variance-components-tha²" class="level3">
+<h3 class="anchored" data-anchor-id="apples-to-apples-variance-components-tha²">Apples-to-apples (variance components, (t/ha)²)</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>This study</th>
+<th>PMC10819934</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>GCA female (additive, ♀)</td>
+<td>0.0715</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>GCA male (additive, ♂)</td>
+<td><strong>0.0000</strong> (singular)</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td><strong>Additive σ²ₐ total</strong></td>
+<td><strong>≈ 0.072</strong></td>
+<td><strong>0.01</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Non-additive / SCA (σ²_d)</strong></td>
+<td><strong>0.0716</strong></td>
+<td><strong>0.99</strong></td>
+</tr>
+<tr class="odd">
+<td>Total G×E</td>
+<td>0.195</td>
+<td>(significant; not split into VC)</td>
+</tr>
+<tr class="even">
+<td>Residual variance</td>
+<td>1.530</td>
+<td>error MS 0.39</td>
+</tr>
+<tr class="odd">
+<td>Narrow-sense h²</td>
+<td><strong>0.224</strong></td>
+<td><strong>0.01</strong></td>
+</tr>
+<tr class="even">
+<td>Broad-sense H²</td>
+<td>0.448</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>The paper’s mean-square columns (GCA♂ 30.35, etc.) are <em>not</em> on this scale — do not compare them to the variance components above.</p>
+</blockquote>
+</section>
+<section id="interpretation-different-genetic-architecture-not-too-small" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-different-genetic-architecture-not-too-small">Interpretation — different genetic architecture, not “too small”</h3>
+<ul>
+<li><strong>The published yield is almost pure non-additive:</strong> σ²_d = 0.99 dwarfs σ²ₐ = 0.01, so narrow-sense h² ≈ 0.01. Yield comes from specific ♀×♂ combinations (heterosis) — as expected for a sweet × waxy hybrid program built to exploit dominance.</li>
+<li><strong>This study’s yield is roughly half additive, half non-additive,</strong> and the additive half is entirely the <strong>female (CML donor) lines</strong> — male/tester GCA is zero. That gives a real narrow-sense h² of 0.22: the donor lines carry breedable additive value; the testers don’t differentiate.</li>
+<li>On the trait scale (√variance): female-GCA SD ≈ 0.27 t/ha and SCA SD ≈ 0.27 t/ha on a residual SD ≈ 1.24 t/ha. “Small” is relative — modest genetic SDs against ~1.2 t/ha noise, which is why heritability is only moderate, and only after averaging over 4 environments × 3 reps.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="all-genetic-variance-loads-onto-female-sca-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="all-genetic-variance-loads-onto-female-sca-assessment">3. “All genetic variance loads onto female + SCA” — assessment</h2>
+<p><strong>Premise:</strong> the male testers have little genetic diversity, and their contribution depends on the female (cross) and the environment. <strong>Prediction:</strong> all genetic variance goes into the female and SCA channels.</p>
+<p><strong>Verdict: mostly right, with one refinement and one conceptual correction.</strong></p>
+<section id="routing-rules-and-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="routing-rules-and-the-data">Routing rules and the data</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Statement</th>
+<th>Channel</th>
+<th>This study (t/ha²)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Males have little genetic diversity</td>
+<td>σ²_GCA(male) → 0</td>
+<td><strong>0.0000</strong> ✓</td>
+</tr>
+<tr class="even">
+<td>Female lines differ</td>
+<td>σ²_GCA(female)</td>
+<td>0.0715</td>
+</tr>
+<tr class="odd">
+<td>Contribution “depends on the female” (♀×♂)</td>
+<td>σ²_SCA</td>
+<td>0.0716</td>
+</tr>
+<tr class="even">
+<td>“depends on environment” (♂×E)</td>
+<td>σ²_GCA(male)×E</td>
+<td>0.0043</td>
+</tr>
+<tr class="odd">
+<td>♀ × environment</td>
+<td>σ²_GCA(female)×E</td>
+<td>0.0728</td>
+</tr>
+<tr class="even">
+<td>♀×♂ × environment</td>
+<td>σ²_SCA×E</td>
+<td><strong>0.1176</strong> (largest)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The main-effect prediction is exactly right.</strong> Vg = GCA_F + GCA_M + SCA = 0.0715 + 0 + 0.0716 = 0.143 — the male contributes nothing, so all genetic variance sits in <strong>female + SCA</strong>. The same pattern repeats in the ×E layer: male×E ≈ 0.004 (negligible), while female×E + SCA×E carry the G×E.</p>
+</section>
+<section id="refinement-depends-on-environment-is-its-own-channel" class="level3">
+<h3 class="anchored" data-anchor-id="refinement-depends-on-environment-is-its-own-channel">Refinement — “depends on environment” is its own channel</h3>
+<p>Environment-dependence does <strong>not</strong> fold into the female or SCA <em>main</em> effects; it routes into the <strong>×E</strong> terms. Here those happen to be female-side (0.073) and SCA-side (0.118), so the prediction holds — but only if the ×E versions are explicitly included. SCA×E being the <em>largest</em> genetic component is precisely “the cross contribution depends on the environment.”</p>
+</section>
+<section id="conceptual-correction-zero-male-gca-genetically-uniform-males" class="level3">
+<h3 class="anchored" data-anchor-id="conceptual-correction-zero-male-gca-genetically-uniform-males">Conceptual correction — zero male GCA ≠ genetically uniform males</h3>
+<p>GCA(male) = 0 means only that the testers don’t differ in their <em>average</em> (general, additive) effect. SCA measures something different — whether a <em>specific</em> ♀×♂ pairing beats the prediction from the two parents’ averages.</p>
+<p>The trap: if the males were <em>truly</em> genetically uniform (interchangeable), the male identity wouldn’t matter, so <strong>SCA would also collapse to ≈ 0</strong> and <em>everything</em> would pile onto female GCA <em>alone</em> — not female + SCA. The nonzero SCA (0.0716) and SCA×E (0.118) are positive evidence the males are <strong>not</strong> uniform: they carry <em>specific /interaction</em> diversity (they combine and respond to environments differently) even though they lack <em>additive/average</em> diversity. Sharpen the premise to:</p>
+<blockquote class="blockquote">
+<p>Males have little <strong>general (additive)</strong> diversity, but retain <strong>specific (interaction)</strong> diversity.</p>
+</blockquote>
+<p>These are independent; the data show the first is zero and the second is not.</p>
+</section>
+<section id="honest-caveat-is-sca-real" class="level3">
+<h3 class="anchored" data-anchor-id="honest-caveat-is-sca-real">Honest caveat — is SCA real?</h3>
+<p>The SCA and SCA×E point estimates are imprecise — Wald Z-ratios ≈ 1.1 (well under 2), and the arithmetic SCA spread (≈ 0.18) is about equal to the sampling error of a 12-plot family mean (≈ 0.19). So whether σ²_SCA is <em>real signal</em> or <em>sampling noise</em> is genuinely uncertain. (Wald Z on variance components near a boundary is itself unreliable; the firm support comes from LRT/ANOVA.) The only genetic terms with solid LRT support are <strong>female GCA (p = 0.0002)</strong> and <strong>female GCA×E (p = 0.004)</strong>.</p>
+<p><strong>Bullet-proof conclusion:</strong> the genetic variance is <strong>female-driven (GCA and GCA×E)</strong>, the <strong>male is null</strong>, and SCA/SCA×E are where any male-by-cross-by-environment signal <em>would</em> land — but in these data that signal is too small to distinguish from noise. If the SCA is in fact noise, the situation reduces to the clean end-member of the original prediction: <em>males uniform → all variance in female GCA.</em></p>
+<hr>
+</section>
+</section>
+<section id="take-home" class="level2">
+<h2 class="anchored" data-anchor-id="take-home">Take-home</h2>
+<ol type="1">
+<li><code>isSingular() == TRUE</code> here is <strong>correct and informative</strong>: the male variance is a genuine boundary zero (signal below noise), not an estimation failure.</li>
+<li>Yield variances are in the <strong>same units (t/ha²)</strong> as PMC10819934 — but compare <em>variance components</em>, never the paper’s <em>mean squares</em>.</li>
+<li>The genetic architecture differs: that study is <strong>dominance-led</strong> (h² ≈ 0.01); this one is <strong>female-additive-led</strong> (h² ≈ 0.22) with a null male tester.</li>
+<li>“Variance loads onto female + SCA” is right for the main effects; remember the <strong>×E</strong> channels for environment-dependence, and don’t read zero male GCA as genetically identical testers.</li>
+</ol>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
