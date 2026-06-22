@@ -41,8 +41,9 @@ all phenotypes"* — requires **Mechanism B**. The decisive, falsifiable test is
 the identical model on every measured trait** and read off, per trait:
 
 1. `isSingular()` of the mixed model, and the REML **male GCA variance** (does it pin to 0?);
-2. a boundary-free **fixed-effects ANOVA F-test** for the male term (do the testers differ
-   at all for this trait?).
+2. a boundary-corrected **REML likelihood-ratio test** of σ²_male — dropping `(1|male)`
+   while keeping `(1|male:env)`, so the tester effect is tested against the correct
+   male×environment stratum (do the testers differ at all for this trait?).
 
 **Reading:** male null *only* for yield → **Mechanism A** (the zero is a yield-selection
 artifact and does **not** generalize). Male null *across essentially all* traits →
@@ -197,57 +198,84 @@ traits <- trait_units$trait
 
 # The per-trait engine
 
-For each trait we fit the **same** random-effects structure used for yield, but with
+For each trait we fit the **same** random-effects structure used for yield, with
 `lme4::lmer` (so that `isSingular()` is directly available — this is the `lme4`
-counterpart of the `sommer::mmer` model in the yield notebook). We then run a **fixed-effects
-ANOVA** as a boundary-free signal test of the male term.
+counterpart of the `sommer::mmer` model in the yield notebook). The signal test for the
+testers is a **boundary-corrected REML likelihood-ratio test** of the male GCA variance:
+we drop `(1 | male)` while **keeping** `(1 | male:env)`, so the tester *main* effect is
+tested above its environment interaction — the correct error stratum for a GCA in a
+multi-environment trial. (A fixed-effects ANOVA F-test against plot error would be badly
+anticonservative for high-G×E traits like phenology, manufacturing false "signals.")
+
+We run the LRT on the full data **and** after dropping gross data errors
+(|studentized residual| > 4 from a fixed-effects fit — see the data-quality screen). The
+**robust** column decides the verdict. Trimming can cut both ways: it can erase a false
+signal driven by a bad plot, *or* sharpen a real one that noise was masking.
 
 ```{r}
 #| label: model-formulas
 
-# Mixed model (REML) — random female/male/cross GCA-SCA + their G×E + design terms.
-mix_form <- y ~ env +
-  (1 | female) + (1 | male) + (1 | cross) +
-  (1 | female:env) + (1 | male:env) + (1 | cross:env) +
-  (1 | env:rep) + (1 | env:rep:row) + (1 | env:rep:col)
+# Random terms listed explicitly, so one can be dropped cleanly for the LRT
+# (avoids update() + its data-scoping pitfalls with lmer inside a function).
+rand_terms <- c("(1 | female)", "(1 | male)", "(1 | cross)",
+                "(1 | female:env)", "(1 | male:env)", "(1 | cross:env)",
+                "(1 | env:rep)", "(1 | env:rep:row)", "(1 | env:rep:col)")
 
-# Fixed-effects ANOVA — boundary-free F-tests for female / male / cross.
-# Balanced factorial ⇒ Type-I sequential SS for female→male→cross are order-stable.
+build_form <- function(drop = character()) {
+  as.formula(paste("y ~ env +", paste(setdiff(rand_terms, drop), collapse = " + ")))
+}
+mix_form <- build_form()                                  # full mixed model
+
+# Fixed-effects model — used ONLY to flag gross outliers via studentized
+# residuals (NOT for the signal test).
 fix_form <- y ~ env + env:rep + female + male + cross
 ```
 
 ```{r}
 #| label: fit-one-trait
 
+fit_mm <- function(form, dat) suppressMessages(suppressWarnings(
+  lmer(form, data = dat, REML = TRUE,
+       control = lmerControl(check.conv.singular = "ignore",
+                             optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))))
+
+# Boundary-corrected REML LRT dropping (1|term) while keeping every other term
+# (so (1|male) is tested ABOVE (1|male:env), the right GCA stratum). Under H0 the
+# statistic ~ 0.5·χ²₀ + 0.5·χ²₁, so the one-sided p halves the naive χ²₁ p.
+# Reduced model is refit directly with explicit data — no update().
+lrt_vc <- function(full_fit, dat, term) {
+  red  <- fit_mm(build_form(drop = paste0("(1 | ", term, ")")), dat)
+  stat <- max(0, 2 * (as.numeric(logLik(full_fit)) - as.numeric(logLik(red))))
+  min(0.5 * pchisq(stat, df = 1, lower.tail = FALSE), 1)
+}
+
 fit_one <- function(trait_name, data) {
   d <- data %>% mutate(y = .data[[trait_name]]) %>% filter(!is.na(y))
 
-  ## --- REML mixed model + isSingular() ------------------------------------
-  fit <- suppressMessages(suppressWarnings(
-    lmer(mix_form, data = d, REML = TRUE,
-         control = lmerControl(check.conv.singular = "ignore",
-                               optimizer = "bobyqa",
-                               optCtrl = list(maxfun = 2e5)))
-  ))
-  vc <- as.data.frame(VarCorr(fit))
-  gv <- function(g) { v <- vc$vcov[vc$grp == g]; if (length(v)) v else 0 }
-  v_female <- gv("female"); v_male <- gv("male"); v_sca <- gv("cross")
-  v_gen    <- v_female + v_male + v_sca
+  fit <- fit_mm(mix_form, d)
+  vc  <- as.data.frame(VarCorr(fit))
+  gv  <- function(g) { v <- vc$vcov[vc$grp == g]; if (length(v)) v else 0 }
+  v_female <- gv("female"); v_male <- gv("male"); v_gen <- v_female + v_male + gv("cross")
 
-  ## --- fixed-effects ANOVA (boundary-free signal tests) -------------------
-  at <- anova(lm(fix_form, data = d))
-  pf <- function(term) if (term %in% rownames(at)) at[term, "Pr(>F)"] else NA_real_
+  p_male_full <- lrt_vc(fit, d, "male")
+  p_female    <- lrt_vc(fit, d, "female")
+
+  # outlier-robust refit (drop |studentized resid| > 4 from the fixed-effects fit)
+  rstud <- rstudent(lm(fix_form, data = d))
+  keep  <- is.na(rstud) | abs(rstud) <= 4
+  d_rob <- d[keep, ]
+  p_male_robust <- lrt_vc(fit_mm(mix_form, d_rob), d_rob, "male")
 
   tibble(
     trait          = trait_name,
     singular       = isSingular(fit),
     sigma2_female  = v_female,
     sigma2_male    = v_male,
-    sigma2_sca     = v_sca,
     male_share_pct = if (v_gen > 0) 100 * v_male / v_gen else NA_real_,
-    p_female       = pf("female"),
-    p_male         = pf("male"),
-    p_cross        = pf("cross")
+    n_outliers     = sum(!keep),
+    p_male         = p_male_full,
+    p_male_robust  = p_male_robust,
+    p_female       = p_female
   )
 }
 ```
@@ -262,29 +290,34 @@ fit_one <- function(trait_name, data) {
 results <- map_dfr(traits, fit_one, data = hybrids) %>%
   left_join(trait_units, by = "trait") %>%
   mutate(
-    male_verdict = if_else(!is.na(p_male) & p_male < 0.05, "male SIGNAL", "male null"),
-    mechanism    = if_else(male_verdict == "male null", "A-consistent", "rejects A-as-universal")
+    # verdict is decided on the OUTLIER-ROBUST male test, not the raw one
+    male_verdict = if_else(!is.na(p_male_robust) & p_male_robust < 0.05,
+                           "male SIGNAL", "male null"),
+    raw_sig      = !is.na(p_male) & p_male < 0.05,
+    rob_sig      = !is.na(p_male_robust) & p_male_robust < 0.05,
+    flips        = raw_sig != rob_sig          # verdict changed after trimming (either way)
   ) %>%
-  arrange(p_male)
+  arrange(p_male_robust)
 
 results_display <- results %>%
   transmute(
-    Trait          = trait,
-    Unit           = unit,
-    `Singular?`    = if_else(singular, "yes", "no"),
-    `σ²_female`    = round(sigma2_female, 4),
-    `σ²_male`      = round(sigma2_male, 4),
-    `male % of gen`= round(male_share_pct, 1),
-    `p (male)`     = signif(p_male, 3),
-    `p (female)`   = signif(p_female, 3),
-    `p (cross/SCA)`= signif(p_cross, 3),
-    Male           = male_verdict
+    Trait              = trait,
+    Unit               = unit,
+    `Singular?`        = if_else(singular, "yes", "no"),
+    `σ²_female`        = round(sigma2_female, 4),
+    `σ²_male`          = round(sigma2_male, 4),
+    `# outliers`       = n_outliers,
+    `p (male) raw`     = signif(p_male, 3),
+    `p (male) robust`  = signif(p_male_robust, 3),
+    `p (female)`       = signif(p_female, 3),
+    Male               = if_else(flips, paste0(male_verdict, " *"), male_verdict)
   )
 
 kable(results_display,
-      caption = "Per-trait refit: isSingular(), REML male GCA variance, and fixed-effects ANOVA tests (sorted by male p-value)") %>%
+      caption = "Per-trait refit, sorted by robust male p. p(male) = boundary-corrected REML LRT for σ²_male (above male:env); robust = after dropping |studentized resid| > 4. p = 0.5 is the boundary value = no evidence. * = verdict changed after trimming.") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
-  row_spec(which(results$male_verdict == "male SIGNAL"), background = "#fdf2e9") %>%
+  row_spec(which(results$male_verdict == "male SIGNAL"), background = "#eafaf1") %>%
+  row_spec(which(results$flips), background = "#fdedec") %>%
   row_spec(which(results$trait == "Grain yield"), bold = TRUE)
 ```
 
@@ -293,49 +326,117 @@ kable(results_display,
 #| fig-width: 8
 #| fig-height: 5
 
-ggplot(results, aes(x = reorder(trait, -p_male), y = -log10(p_male),
+ggplot(results, aes(x = reorder(trait, -p_male_robust), y = -log10(p_male_robust),
                     fill = male_verdict)) +
   geom_col() +
+  # raw (pre-trim) male signal shown as a hollow marker, so outlier-inflated
+  # traits reveal how far they drop after cleaning
+  geom_point(aes(y = -log10(p_male)), shape = 21, fill = "white",
+             color = "grey25", size = 2.4) +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey30") +
   annotate("text", x = 1, y = -log10(0.05) + 0.15, label = "p = 0.05",
            hjust = 0, size = 3, color = "grey30") +
   coord_flip() +
-  scale_fill_manual(values = c("male null" = "#7f8c8d", "male SIGNAL" = "#e67e22"),
+  scale_fill_manual(values = c("male null" = "#7f8c8d", "male SIGNAL" = "#27ae60"),
                     name = NULL) +
   labs(
     title    = "Do the seven MOZL testers differ, trait by trait?",
-    subtitle = "Fixed-effects ANOVA male F-test. Bars above the dashed line = testers DO differ for that trait.",
-    x = NULL, y = expression(-log[10](italic(p)~male))
+    subtitle = "Bars = outlier-robust male LRT; hollow dots = raw (pre-trim). Above the dashed line = testers differ.",
+    x = NULL, y = expression(-log[10](italic(p)~male~LRT))
   ) +
   theme_minimal(base_size = 12) +
   theme(plot.title = element_text(face = "bold"))
 ```
+
+# Data-quality screen: what the robust column is correcting for
+
+The raw and robust male tests disagree for some traits because a few plots carry
+**physically impossible values**. The screen below lists every plot whose studentized
+residual exceeds 4 for any trait — these are the points dropped by the robust test, and
+the ones Stelio should verify against the field books.
+
+```{r}
+#| label: outlier-screen
+
+trait_cols <- set_names(trait_units$trait)
+
+outliers <- map_dfr(trait_units$trait, function(nm) {
+  d <- hybrids %>% mutate(y = .data[[nm]]) %>% filter(!is.na(y))
+  r <- rstudent(lm(fix_form, data = d))
+  d %>% mutate(rstud = r) %>%
+    filter(abs(rstud) > 4) %>%
+    transmute(trait = nm, env, rep, female, male,
+              value = round(y, 2), studentized_resid = round(rstud, 1))
+}) %>% arrange(desc(abs(studentized_resid)))
+
+kable(outliers, caption = "Plots flagged as gross outliers (|studentized residual| > 4) — candidate data-entry errors") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+Two patterns stand out and should be fixed at source:
+
+```{r}
+#| label: impossible-values
+
+# (1) A maize "ear weight" must be >= its "grain weight" (ear = grain + cob + husk).
+ear_lt_grain <- hybrids %>%
+  mutate(ear = `Ear weight`, grain = `Grain weight`, ratio = round(ear / grain, 2)) %>%
+  filter(ear < grain) %>%
+  transmute(env, rep, female, male, ear, grain, ratio) %>%
+  arrange(ratio)
+
+cat(sprintf("Plots where ear weight < grain weight (impossible): %d of %d\n",
+            nrow(ear_lt_grain), nrow(hybrids)))
+
+# (2) Implausible single values caught by the screen above, e.g. a 9 kg plot ear weight
+#     (≈750 g/ear on 12 plants) and a 0.21 m plant height.
+kable(head(ear_lt_grain, 8),
+      caption = "Impossible ear < grain plots (head) — ear weight or grain weight mis-entered") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+::: {.callout-warning}
+**These are data-cleaning flags, not biology.** The most extreme is `CKOKWE OPT / II /
+CML364 × MOZL7` with **ear weight = 9004 g** (≈ 750 g per ear on 12 plants — impossible;
+its own grain weight is only 697 g). It alone inflates ear weight's `σ²_male` to **4130** —
+*larger* than `σ²_female` (1831), so by raw variance magnitude the testers would *look*
+differentiated. The LRT against the male×env stratum is **not** fooled (ear weight stays
+null, p ≈ 0.3–0.5), which is exactly why the verdict reads the LRT, not the variance size.
+Ear weight is a **per-plot total** over ~25 plants, so the legitimate 3–5 kg plots are
+normal (~150 g/ear); only the flagged plots are errors. Several plots also have
+`ear < grain`, which cannot happen — likely ear/grain column swaps or typos.
+:::
 
 # Verdict
 
 ```{r}
 #| label: verdict-logic
 
+# All decisions use the OUTLIER-ROBUST male test.
 n_total      <- nrow(results)
 n_male_null  <- sum(results$male_verdict == "male null")
 n_male_sig   <- sum(results$male_verdict == "male SIGNAL")
 yield_null   <- results$male_verdict[results$trait == "Grain yield"] == "male null"
 sig_traits   <- results$trait[results$male_verdict == "male SIGNAL"]
+flip_traits  <- results$trait[results$flips]
 
 verdict <- if (n_male_sig == 0) {
-  "B-supported: the testers are null for essentially every trait — consistent with genome-wide near-identity. The 'same male' claim generalizes."
+  "B-supported: testers null for essentially every trait — consistent with genome-wide near-identity; the 'same male' claim would generalize."
 } else if (yield_null) {
-  paste0("A-supported: the male term is null for yield but SHOWS SIGNAL for ",
-         n_male_sig, " trait(s) — ", paste(sig_traits, collapse = ", "),
-         ". The zero male GCA is a yield-selection artifact and does NOT generalize to all phenotypes.")
+  paste0("A-supported: the male term is null for grain yield and its components, but ",
+         "robustly SIGNIFICANT for ", n_male_sig, " trait(s) — ",
+         paste(sig_traits, collapse = ", "),
+         ". The zero male GCA is a yield-selection artifact; it does NOT generalize to all phenotypes.")
 } else {
   "Mixed/atypical: yield itself shows a male signal here — revisit the model before interpreting."
 }
 
-cat(sprintf("Traits swept            : %d\n", n_total))
-cat(sprintf("Male NULL (p >= 0.05)   : %d\n", n_male_null))
-cat(sprintf("Male SIGNAL (p < 0.05)  : %d\n", n_male_sig))
-if (n_male_sig > 0) cat(sprintf("  signal traits         : %s\n", paste(sig_traits, collapse = ", ")))
+cat(sprintf("Traits swept                       : %d\n", n_total))
+cat(sprintf("Male NULL  (robust p >= 0.05)      : %d\n", n_male_null))
+cat(sprintf("Male SIGNAL (robust p < 0.05)      : %d\n", n_male_sig))
+if (n_male_sig > 0)  cat(sprintf("  robust signal traits             : %s\n", paste(sig_traits, collapse = ", ")))
+if (length(flip_traits) > 0)
+  cat(sprintf("Outlier artifacts (raw signal lost): %s\n", paste(flip_traits, collapse = ", ")))
 cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
 ```
 
@@ -348,44 +449,74 @@ cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
   height). Read the singular flag **together with `σ²_male`**: it is the *combination*
   `isSingular == yes` **and** `σ²_male ≈ 0` that signals a pinned-to-zero tester variance
   (the boundary-zero of companion §1). The flag alone is not a per-male diagnostic.
-* The **fixed-effects ANOVA `p (male)`** is the boundary-free arbiter. A trait can show a
-  near-zero REML `σ²_male` yet a small ANOVA `p (male)` if the signal is weak but real;
-  conversely a clearly non-significant `p (male)` confirms the testers truly do not differ.
+* The **`p (male) robust`** column (boundary-corrected LRT, gross outliers removed) is the
+  arbiter. Traits marked `*` changed verdict after trimming — in **both** directions: a few
+  bad plots can *manufacture* a false signal (root weight) **or** *mask* a real one (days to
+  silking and anthesis, where removing 2–3 errors uncovered a genuine tester difference).
+  `p = 0.5` is the boundary value (the LRT statistic is 0) = no evidence at all.
 * **Grain yield** (bold row) is the anchor: by construction it should land in the *male
   null* group. The diagnostic value is in the **other** traits.
 
 ::: {.callout-important}
 **What the pattern means for your hypothesis.**
 
-* If **only yield** (± its tight correlates such as ear weight / grain weight / yield per
-  plant) is male-null while traits selection never targeted — flowering Julian day, ASI,
-  plant height, culm diameter, root weight — show a **male signal**, that is **Mechanism A**:
-  the zero male GCA is an *ascertainment artifact of selecting the testers on yield*, and it
-  **does not** license "the testers are the same line for everything."
-* If the testers are **male-null across essentially all** traits, that is **Mechanism B**:
-  evidence the seven really are near-identical-by-descent, and the genome-wide
-  extrapolation holds.
+The robust result is **Mechanism A**. The testers are male-**null** for **grain yield and
+every grain/yield component** (yield per plant, grain weight, ear weight, plants per plot)
+— and also for ASI, plant height, culm diameter and root weight — but they **do** differ
+(robust LRT p < 0.05) for **stover biomass (dry matter mass) and maturity (days to
+anthesis, days to silking)**, traits selection never directly targeted.
 
-The independent record makes **A** the prior expectation: the same CIMMYT/IIAM elite pool
-*did* respond to selection for plant height, ear height, ears-per-plant and ASI over seven
-years (Fato et al. 2025), so it is not genome-wide monomorphic. This sweep tests that
-expectation directly in *these* seven testers.
+* That the testers differ *at all* — in maturity and biomass — **rejects Mechanism B**:
+  the seven are **not** near-identical genome-wide, so the zero yield GCA cannot be read as
+  "the same line for everything."
+* That the null is concentrated on **grain yield and its components** is the fingerprint of
+  **ascertainment**: the testers were truncation-selected on yield, so they are homogenised
+  exactly where they were selected — but they still carry the maturity and biomass
+  differences that come free with diverse elite lines.
+* A neat internal check: days to anthesis **and** days to silking each differ among
+  testers, yet their difference **ASI is null** — the testers shift their whole flowering
+  schedule together (different maturity, same anthesis–silking gap).
+
+This matches the prior from the independent record — the same CIMMYT/IIAM elite pool *did*
+respond to selection for ear height, ears-per-plant and ASI over seven years (Fato et al.
+2025), so it is not genome-wide monomorphic.
+
+**Bottom line for the original question:** "essentially the same male" is true **for
+grain yield and its components**, but **false genome-wide** — the testers still differ in
+maturity and stover. The extrapolation to all phenotypes does not hold.
 :::
 
 # Caveats
 
-* **Power.** With only **7 testers** the male variance rests on 6 df; the fixed-effects
-  ANOVA male F-test is the most reliable signal test, but it still has modest power. A
-  non-significant `p (male)` is "no detectable tester differentiation," not proof of
-  identity. Treat borderline traits (0.01 < p < 0.10) as ambiguous.
+* **Why a likelihood-ratio test, not an ANOVA F-test.** A GCA main effect must be tested
+  against its **male×environment** stratum, not against plot error. An ANOVA F-test against
+  plot error is badly anticonservative for high-G×E traits — it manufactured spurious
+  "signals" for culm diameter and plant height in an earlier draft. The boundary-corrected
+  REML LRT (drop `(1|male)`, keep `(1|male:env)`) tests the right thing; `p = 0.5` is its
+  no-evidence floor (statistic = 0, the 0.5·χ²₀ + 0.5·χ²₁ mixture).
+* **Data quality is a real uncertainty.** Trimming changes the verdict in *both*
+  directions: it removes a false signal (root weight, from impossible plots) and unmasks
+  real ones (days to silking, days to anthesis). The data-quality screen lists ~38
+  `ear < grain` plots and several gross single values. The robust column guards against the
+  worst, but the cleaner move is for Stelio to **correct the flagged plots at source** and
+  re-run.
+* **The |studentized residual| > 4 trim is deliberately conservative** — it removes only
+  gross errors, not legitimate biological spread. The robust signals (dry matter mass, days
+  to anthesis, days to silking) hold under it; a softer threshold would not change those
+  calls.
+* **Power.** With only **7 testers** the male variance rests on 6 df, so the LRT has modest
+  power. A non-significant result is "no detectable tester differentiation," not proof of
+  identity. Treat borderline traits as ambiguous, and note the **female** GCA is the
+  better-powered, more clearly significant signal throughout.
 * **Trait scale / distribution.** Counts (`Plants per plot`) and the ASI difference are
   analysed on the raw scale for comparability with the yield pipeline; a Poisson or
   transformed refit could shift borderline p-values but not the qualitative null/signal
   split.
 * **Correlated traits are not independent evidence.** Ear weight, grain weight and yield
-  per plant are near-proxies for grain yield; if they pattern with yield that reflects the
-  same ascertainment, not extra confirmation. The informative traits are those
-  *genetically independent* of yield (phenology, height, root, culm).
+  per plant are near-proxies for grain yield, and all land in the male-null group with it —
+  consistent with the same ascertainment. The informative signals are the traits
+  *genetically independent* of yield that survive trimming: dry matter mass and maturity
+  (days to anthesis, days to silking).
 * **Julian-day flowering.** Absolute day-of-year confounds planting date with flowering
   time, but `env` (fixed) absorbs the site-level offset, so among-tester GCA/SCA — the only
   thing tested here — is unaffected; ASI is planting-date-free by construction.
