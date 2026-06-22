@@ -16,7 +16,9 @@ format:
 [Full diallel](diallel_gca_sca_analysis.html) ·
 [Simulation](gca_simulation.html) ·
 [Genesys CML retrieval](retrieve_CML_genesys.html) ·
-[Iris ANOVA + CLD](iris_anova_cld.html)
+[Iris ANOVA + CLD](iris_anova_cld.html) ·
+[Male GCA singularity & variance routing](male_gca_singularity_and_variance_routing.html) ·
+[Male tester trait-by-trait refit](male_gca_trait_sweep.html)
 :::
 
 {{< include README.md >}}

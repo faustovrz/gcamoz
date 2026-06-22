@@ -10,3 +10,4 @@ project:
     - block_assignment_diagnostics.qmd
     - diallel_gca_sca_analysis.qmd
     - iris_anova_cld.qmd
+    - male_gca_trait_sweep.qmd
