@@ -7,6 +7,9 @@ data/afonso_a_130426.pdf
 data/fato2025.txt
 data/Malik2019.txt
 
+# personal working notes / scratch
+data/202060622_scholar_search.txt
+
 agent/
 /.quarto/
 **/*.quarto_ipynb
