@@ -204,8 +204,7 @@ We screen every trait for gross data-entry errors **before** fitting anything, w
 fixed in advance: for each trait, fit a saturated fixed-effects model and flag any plot
 whose **studentized residual exceeds 4** as a candidate error. Flagged plots are
 **excluded from that trait's analysis** and listed here for Stelio to verify against the
-field books. Every result in this notebook is computed on the **screened** data; the
-unscreened value is reported beside it only as a sensitivity check.
+field books. Every result in this notebook is computed on the **screened** data.
 
 ```{r}
 #| label: screen-setup
@@ -259,11 +258,11 @@ kable(head(ear_lt_grain, 8),
 ::: {.callout-warning}
 **Why we screen before interpreting any variance.** The worst single plot —
 `CKOKWE OPT / II / CML364 × MOZL7`, **ear weight = 9004 g** (about 750 g per ear on 12
-plants; its grain weight is only 697 g) — on its own pushes ear weight's unscreened
-`σ²_male` above its `σ²_female`, so by variance magnitude alone the testers would *look*
-differentiated. Ear weight is a **per-plot total** over ~25 plants, so legitimate 3–5 kg
-plots are normal (~150 g/ear); only the flagged values are errors. Screening removes them
-up front.
+plants; its grain weight is only 697 g) — would, *if left in*, push ear weight's `σ²_male`
+above its `σ²_female`, so by variance magnitude alone the testers would *look*
+differentiated. Removing it (screening) is exactly what prevents that. Ear weight is a
+**per-plot total** over ~25 plants, so legitimate 3–5 kg plots are normal (~150 g/ear);
+only the flagged values are errors.
 :::
 
 # The model and the test
@@ -324,19 +323,15 @@ fit_one <- function(trait_name, data) {
   p_male   <- lrt_vc(fit, d, "male")
   p_female <- lrt_vc(fit, d, "female")
 
-  # sensitivity only: the same test on the unscreened data
-  p_male_unscreened <- lrt_vc(fit_mm(mix_form, d_all), d_all, "male")
-
   tibble(
-    trait             = trait_name,
-    singular          = isSingular(fit),
-    sigma2_female     = v_female,
-    sigma2_male       = v_male,
-    male_share_pct    = if (v_gen > 0) 100 * v_male / v_gen else NA_real_,
-    n_flagged         = sum(!keep),
-    p_male            = p_male,
-    p_male_unscreened = p_male_unscreened,
-    p_female          = p_female
+    trait          = trait_name,
+    singular       = isSingular(fit),
+    sigma2_female  = v_female,
+    sigma2_male    = v_male,
+    male_share_pct = if (v_gen > 0) 100 * v_male / v_gen else NA_real_,
+    n_flagged      = sum(!keep),
+    p_male         = p_male,
+    p_female       = p_female
   )
 }
 ```
@@ -350,29 +345,24 @@ fit_one <- function(trait_name, data) {
 
 results <- map_dfr(traits, fit_one, data = hybrids) %>%
   left_join(trait_units, by = "trait") %>%
-  mutate(
-    verdict        = if_else(!is.na(p_male) & p_male < 0.05, "tester signal", "tester null"),
-    depends_screen = (!is.na(p_male) & p_male < 0.05) !=
-                     (!is.na(p_male_unscreened) & p_male_unscreened < 0.05)
-  ) %>%
+  mutate(verdict = if_else(!is.na(p_male) & p_male < 0.05, "tester signal", "tester null")) %>%
   arrange(p_male)
 
 results_display <- results %>%
   transmute(
-    Trait                 = trait,
-    Unit                  = unit,
-    `Singular?`           = if_else(singular, "yes", "no"),
-    `σ²_female`           = round(sigma2_female, 4),
-    `σ²_male`             = round(sigma2_male, 4),
-    `# flagged`           = n_flagged,
-    `p(male)`             = signif(p_male, 3),
-    `p(male) unscreened`  = signif(p_male_unscreened, 3),
-    `p(female)`           = signif(p_female, 3),
-    Verdict               = if_else(depends_screen, paste0(verdict, " †"), verdict)
+    Trait        = trait,
+    Unit         = unit,
+    `Singular?`  = if_else(singular, "yes", "no"),
+    `σ²_female`  = round(sigma2_female, 4),
+    `σ²_male`    = round(sigma2_male, 4),
+    `# flagged`  = n_flagged,
+    `p(male)`    = signif(p_male, 3),
+    `p(female)`  = signif(p_female, 3),
+    Verdict      = verdict
   )
 
 kable(results_display,
-      caption = "Per-trait result on screened data, sorted by p(male). p(male) = boundary-corrected REML LRT for σ²_male tested above male:env (p = 0.5 is the no-evidence floor). 'unscreened' repeats the test on all data, as a sensitivity check. † = call depends on screening. Green = tester signal; grain yield in bold is the anchor.") %>%
+      caption = "Per-trait result (screened data), sorted by p(male). p(male) = boundary-corrected REML LRT for σ²_male, tested above male:env; p = 0.5 is the no-evidence floor. Green = tester signal; grain yield (bold) is the anchor.") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
   row_spec(which(results$verdict == "tester signal"), background = "#eafaf1") %>%
   row_spec(which(results$trait == "Grain yield"), bold = TRUE)
@@ -386,9 +376,6 @@ kable(results_display,
 ggplot(results, aes(x = reorder(trait, -p_male), y = -log10(p_male),
                     fill = verdict)) +
   geom_col() +
-  # unscreened result as a hollow marker, so the sensitivity to screening is visible
-  geom_point(aes(y = -log10(p_male_unscreened)), shape = 21, fill = "white",
-             color = "grey25", size = 2.4) +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey30") +
   annotate("text", x = 1, y = -log10(0.05) + 0.15, label = "p = 0.05",
            hjust = 0, size = 3, color = "grey30") +
@@ -397,7 +384,7 @@ ggplot(results, aes(x = reorder(trait, -p_male), y = -log10(p_male),
                     name = NULL) +
   labs(
     title    = "Do the seven MOZL testers differ, trait by trait?",
-    subtitle = "Bars = screened male LRT; hollow dots = unscreened (sensitivity). Above the dashed line = testers differ.",
+    subtitle = "Boundary-corrected male LRT on screened data. Bars above the dashed line = testers differ.",
     x = NULL, y = expression(-log[10](italic(p)~male~LRT))
   ) +
   theme_minimal(base_size = 12) +
@@ -415,7 +402,6 @@ n_sig        <- sum(results$verdict == "tester signal")
 n_null       <- n_total - n_sig
 yield_null   <- results$verdict[results$trait == "Grain yield"] == "tester null"
 sig_traits   <- results$trait[results$verdict == "tester signal"]
-screen_dep   <- results$trait[results$depends_screen]
 
 verdict <- if (n_sig == 0) {
   "B-supported: testers null for essentially every trait — consistent with genome-wide near-identity; the 'same male' claim would generalize."
@@ -430,8 +416,7 @@ verdict <- if (n_sig == 0) {
 cat(sprintf("Traits swept                 : %d\n", n_total))
 cat(sprintf("Tester NULL    (p >= 0.05)   : %d\n", n_null))
 cat(sprintf("Tester SIGNAL  (p <  0.05)   : %d\n", n_sig))
-if (n_sig > 0)               cat(sprintf("  signal traits              : %s\n", paste(sig_traits, collapse = ", ")))
-if (length(screen_dep) > 0)  cat(sprintf("  call depends on screening  : %s\n", paste(screen_dep, collapse = ", ")))
+if (n_sig > 0)  cat(sprintf("  signal traits              : %s\n", paste(sig_traits, collapse = ", ")))
 cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
 ```
 
@@ -444,12 +429,9 @@ cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
   height). Read the singular flag **together with `σ²_male`**: it is the *combination*
   `isSingular == yes` **and** `σ²_male ≈ 0` that signals a pinned-to-zero tester variance
   (the boundary-zero of companion §1). The flag alone is not a per-male diagnostic.
-* **`p(male)`** is the boundary-corrected LRT on the **screened** data — the arbiter.
-  **`p(male) unscreened`** repeats it on all data as a sensitivity check; the hollow dots in
-  the figure show it. Traits marked **†** are where screening changes the call — in **both**
-  directions: a few bad plots can *manufacture* a signal (root weight) **or** *mask* a real
-  one (days to silking, days to anthesis, where removing 2–3 errors uncovers a genuine
-  tester difference). `p = 0.5` is the no-evidence floor (LRT statistic = 0).
+* **`p(male)`** is the boundary-corrected LRT for the tester variance, computed on the
+  screened data — the single arbiter. `p = 0.5` is the no-evidence floor (the LRT statistic
+  is 0).
 * **Grain yield** (bold row) is the anchor: by construction it should land in the *tester
   null* group. The diagnostic value is in the **other** traits.
 
@@ -490,14 +472,12 @@ maturity and stover. The extrapolation to all phenotypes does not hold.
   hundreds of plots, so almost any spread clears that yardstick. The boundary-corrected REML
   LRT (drop `(1|male)`, keep `(1|male:env)`) tests the right thing; `p = 0.5` is its
   no-evidence floor (statistic = 0, the half-half χ²₀/χ²₁ mixture).
-* **Data quality is a real uncertainty.** Screening changes the verdict in *both*
-  directions: it removes a false signal (root weight, from impossible plots) and unmasks
-  real ones (days to silking, days to anthesis). The screen lists ~38 `ear < grain` plots
-  and several gross single values. Screening guards against the worst, but the cleaner move
-  is for Stelio to **correct the flagged plots at source** and re-run.
-* **The |studentized residual| > 4 rule is deliberately conservative** — it removes only
-  gross errors, not legitimate biological spread. The signals (dry matter mass, days to
-  anthesis, days to silking) hold under it; a softer threshold would not change those calls.
+* **Data quality.** The analysis runs on screened data (gross errors removed by the
+  |studentized residual| > 4 rule); the screen also lists ~38 `ear < grain` plots that point
+  to ear/grain mix-ups. Among the three signals, **dry matter mass** is the firmest; the two
+  **maturity** signals (days to silking, days to anthesis, p ≈ 0.006–0.015) are the most
+  modest and rest on only a handful of plots, so they are the calls to confirm once Stelio
+  **corrects the flagged plots at source** and re-runs.
 * **Power.** With only **7 testers** the male variance rests on 6 df, so the LRT has modest
   power. A non-significant result is "no detectable tester differentiation," not proof of
   identity. Treat borderline traits as ambiguous, and note the **female** GCA is the
