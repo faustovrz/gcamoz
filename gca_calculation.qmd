@@ -425,6 +425,59 @@ kable(head(genetic_values_sorted, 15), caption = "Top 15 Maize Factorial Hybrids
 
 We use the estimated genetic and environmental variance components from our mixed model (`fit_factorial`) to calculate the narrow-sense ($h^2$) and broad-sense ($H^2$) heritabilities.
 
+::: {.callout-important}
+## Which heritability? Match the ratio to the unit of selection
+
+There is no single heritability for a trait — there is **one per selection scheme**. A
+heritability is always
+$$\frac{\text{genetic variance}}{\text{phenotypic variance}},$$
+but "the phenotypic variance" depends on **what you observe before you select**. Change the
+unit of selection and both the denominator and the meaning change. Two forms appear below,
+answering two different questions:
+
+* **Individual-plot heritability** — *if I selected a single plant on its own single
+  phenotype, what fraction of its superiority is heritable?* This is the classic
+  mass-selection heritability, the one in $R = h^2 S$:
+  $$h^2_{\text{ind}} = \frac{\sigma^2_A}{\sigma^2_A + \sigma^2_D + \sigma^2_{\text{res}}},
+    \qquad \sigma^2_A = 2(\sigma^2_{GCA_F}+\sigma^2_{GCA_M}),\;\; \sigma^2_D = 4\,\sigma^2_{SCA}.$$
+
+* **Entry-mean heritability** — *if I rank the crosses by their mean over $e$ environments
+  and $r$ reps and select among those means, how reliable is that ranking?* It is exactly
+  the squared accuracy $\operatorname{corr}^2(\hat g, g)$ of the replicated cross mean:
+  $$H^2_{\bar{x}} = \frac{\sigma^2_G}{\sigma^2_G + \sigma^2_{GE}/e + \sigma^2_{\text{res}}/(e\,r)}.$$
+
+**For this program the entry-mean form is the decision-relevant one,** for three concrete
+reasons:
+
+1. **The selection unit is the cross, not a plant.** This is a combining-ability trial: you
+   advance *parent combinations* judged on their replicated, multi-environment mean — you
+   never advance a single plot. The heritability must match that unit.
+2. **The data are plot means across reps and environments — that *is* the entry-mean
+   scale.** Most traits are per-plot aggregates (ear weight is a per-plot total over ~25
+   plants; yield is t/ha), so there is no within-plot individual-plant variance in the file
+   and "the individual" is barely a defined object.
+3. **G × E must be down-weighted by how much you replicated.** The entry-mean denominator
+   divides $\sigma^2_{GE}$ by $e$ and $\sigma^2_{\text{res}}$ by $e\,r$, reflecting that
+   averaging shrinks that noise; the individual form ignores replication entirely.
+
+**Does individual-level heritability even make sense here?** As a *concept*, yes — it is the
+textbook narrow-sense heritability and predicts response to mass selection. But for this
+experiment it is the wrong tool: (a) recovering $\sigma^2_A$/$\sigma^2_D$ via the factor-2
+and factor-4 covariance-of-relatives algebra assumes the parents are a *random sample* from
+reference populations under Hardy–Weinberg with negligible epistasis — whereas these are
+**fixed, ascertained elite testers from narrow pools**, so $V_A$/$V_D$ as population
+parameters rest on assumptions the germplasm violates; (b) plot aggregates cannot support a
+plant-level partition without within-plot variance that was never measured; and (c) nobody
+mass-selects single hybrid plants in this program, so the number informs no decision. We
+therefore compute it below for completeness and as a teaching contrast, but **report the
+entry-mean form** as the headline.
+
+The clean way to keep them straight: $h^2_{\text{ind}}$ is a property of the **trait +
+population** (fixed, however you run the trial), while $H^2_{\bar{x}}$ is a property of the
+**trait + population + design** — it rises toward 1 as you add environments and reps,
+because more replication makes the cross mean a more accurate estimate of $g$.
+:::
+
 ## Heritability Formulas for Factorial Designs
 Following Chapter 5 of Isik et al. (2017). Because female and male parental sets come from **distinct gene pools** (CIMMYT lines vs MOZ testers), the genetic variances of the hybrid population decompose as:
 

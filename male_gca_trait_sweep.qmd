@@ -318,7 +318,8 @@ fit_one <- function(trait_name, data) {
   fit <- fit_mm(mix_form, d)                   # PRIMARY model, on screened data
   vc  <- as.data.frame(VarCorr(fit))
   gv  <- function(g) { v <- vc$vcov[vc$grp == g]; if (length(v)) v else 0 }
-  v_female <- gv("female"); v_male <- gv("male"); v_gen <- v_female + v_male + gv("cross")
+  v_female <- gv("female"); v_male <- gv("male"); v_cross <- gv("cross")
+  v_gen    <- v_female + v_male + v_cross
 
   p_male   <- lrt_vc(fit, d, "male")
   p_female <- lrt_vc(fit, d, "female")
@@ -328,6 +329,14 @@ fit_one <- function(trait_name, data) {
     singular       = isSingular(fit),
     sigma2_female  = v_female,
     sigma2_male    = v_male,
+    sigma2_cross   = v_cross,
+    # G×E strata and residual, carried for the entry-mean heritability section
+    sigma2_fxe     = gv("female:env"),
+    sigma2_mxe     = gv("male:env"),
+    sigma2_cxe     = gv("cross:env"),
+    sigma2_resid   = gv("Residual"),
+    n_env          = n_distinct(d$env),                 # environments with data
+    n_rep          = nrow(d) / n_distinct(d$env, d$cross), # mean reps per cross·env
     male_share_pct = if (v_gen > 0) 100 * v_male / v_gen else NA_real_,
     n_flagged      = sum(!keep),
     p_male         = p_male,
@@ -390,6 +399,137 @@ ggplot(results, aes(x = reorder(trait, -p_male), y = -log10(p_male),
   theme_minimal(base_size = 12) +
   theme(plot.title = element_text(face = "bold"))
 ```
+
+# Heritability per trait
+
+The same line × tester model already carries every variance component needed for
+**entry-mean (cross-mean) heritability** — the accuracy with which cross rankings can
+be selected on their mean across environments and replicates, and the most useful
+heritability for multi-environment breeding decisions. Because the female (CIMMYT
+lines) and male (MOZL testers) sets come from **distinct gene pools**, the among-cross
+genetic variance partitions into an additive (GCA) and a dominance (SCA) part (Isik et
+al. 2017; the full derivation is worked in [`gca_calculation.html`](gca_calculation.html)).
+With $e$ environments and $r$ reps per environment:
+
+* **Genetic variance of cross means:** $\sigma^2_G = \sigma^2_{\text{female}} + \sigma^2_{\text{male}} + \sigma^2_{\text{cross}}$
+* **Additive component (entry-mean):** $\sigma^2_{A,\bar{x}} = \sigma^2_{\text{female}} + \sigma^2_{\text{male}}$
+* **Dominance component (entry-mean):** $\sigma^2_{D,\bar{x}} = \sigma^2_{\text{cross}}$
+* **Total G × E:** $\sigma^2_{GE} = \sigma^2_{\text{female:env}} + \sigma^2_{\text{male:env}} + \sigma^2_{\text{cross:env}}$
+* **Entry-mean phenotypic variance:** $\sigma^2_{P,\bar{x}} = \sigma^2_G + \dfrac{\sigma^2_{GE}}{e} + \dfrac{\sigma^2_{\text{res}}}{e\,r}$
+* **Narrow-sense heritability:** $h^2_{\bar{x}} = \sigma^2_{A,\bar{x}} / \sigma^2_{P,\bar{x}}$
+* **Broad-sense heritability:** $H^2_{\bar{x}} = \sigma^2_G / \sigma^2_{P,\bar{x}}$
+
+Both are bounded in $[0, 1]$, the correct behaviour for a properly specified entry-mean
+form. The spatial terms (`env:rep`, `env:rep:row`, `env:rep:col`) are nuisance design
+effects, not part of the genetic or phenotypic partition, so they do not enter these
+formulas. Variance components are taken from the **same screened fits** as the sweep
+above, so each trait's heritability is on its own analysis set.
+
+## Why the dominance component is $\sigma^2_{\text{cross}}$
+
+Each hybrid's genetic value is decomposed by the model into the two parents' general
+combining abilities plus a specific-combination deviation:
+
+$$g_{\text{cross}} = \underbrace{\text{GCA}_{\text{female}}}_{(1\,\mid\,\text{female})}
+                   + \underbrace{\text{GCA}_{\text{male}}}_{(1\,\mid\,\text{male})}
+                   + \underbrace{\text{SCA}_{\text{female}\times\text{male}}}_{(1\,\mid\,\text{cross})}.$$
+
+The `cross` term (the `female × male` combination) is the **specific combining ability
+(SCA)** — by construction the deviation of a hybrid from what its parents' GCAs predict.
+GCA carries the **additive**, transmissible part of the genetic value; SCA carries what is
+left over, the **non-additive** part (dominance, plus any epistasis). Taking the variance
+of the three independent terms gives the among-cross genetic variance and its partition:
+
+$$\sigma^2_G = \operatorname{Var}(g_{\text{cross}})
+            = \underbrace{\sigma^2_{\text{female}} + \sigma^2_{\text{male}}}_{\sigma^2_{A,\bar{x}}\;(\text{additive, GCA})}
+            + \underbrace{\sigma^2_{\text{cross}}}_{\sigma^2_{D,\bar{x}}\;(\text{dominance, SCA})}.$$
+
+So the dominance entry-mean component is **literally the variance of the SCA effects**,
+$\sigma^2_{D,\bar{x}} = \sigma^2_{\text{cross}}$.
+
+**Why no factor of 4 here.** The relation $\sigma^2_D = 4\,\sigma^2_{\text{SCA}}$ (and
+$\sigma^2_A = 2(\sigma^2_{\text{female}} + \sigma^2_{\text{male}})$) reconstructs the
+*individual-organism* variances on the underlying plot scale, because SCA variance among
+full-sib families equals only $\tfrac14\sigma^2_D$:
+
+$$\sigma^2_{A,\text{ind}} = 2(\sigma^2_{\text{female}} + \sigma^2_{\text{male}}),
+  \qquad \sigma^2_{D,\text{ind}} = 4\,\sigma^2_{\text{cross}}.$$
+
+The **entry-mean** heritability here is not after individual $V_A$/$V_D$ — it partitions the
+variance of the **cross means** that selection actually acts on. On that scale the
+components enter *directly, unscaled*; applying the factor-4 would mix the two scales and
+can drive $H^2 > 1$.
+
+**A label caveat.** $\sigma^2_{\text{cross}}$ absorbs **all** non-additive genetic variance
+— dominance *and* epistasis — so "dominance" is conventional shorthand; more precisely it is
+the non-additive (SCA) variance. That is exactly why $H^2$, which includes
+$\sigma^2_{\text{cross}}$, is *broad*-sense, while $h^2$, which uses only the GCA terms, is
+*narrow*-sense.
+
+```{r}
+#| label: heritability-table
+
+herit <- results %>%
+  mutate(
+    sigma2_G  = sigma2_female + sigma2_male + sigma2_cross,  # genetic var of cross means
+    sigma2_A  = sigma2_female + sigma2_male,                 # additive (GCA) part
+    sigma2_GE = sigma2_fxe + sigma2_mxe + sigma2_cxe,        # total G×E
+    Vp_mean   = sigma2_G + sigma2_GE / n_env + sigma2_resid / (n_env * n_rep),
+    h2_narrow = if_else(Vp_mean > 0, sigma2_A / Vp_mean, NA_real_),
+    H2_broad  = if_else(Vp_mean > 0, sigma2_G / Vp_mean, NA_real_)
+  ) %>%
+  arrange(desc(H2_broad))
+
+herit_display <- herit %>%
+  transmute(
+    Trait         = trait,
+    Unit          = unit,
+    `σ²_G`        = round(sigma2_G, 4),
+    `σ²_GxE`      = round(sigma2_GE, 4),
+    `σ²_resid`    = round(sigma2_resid, 4),
+    e             = n_env,
+    r             = round(n_rep, 1),
+    `h² (narrow)` = round(h2_narrow, 3),
+    `H² (broad)`  = round(H2_broad, 3)
+  )
+
+kable(herit_display,
+      caption = "Entry-mean heritability per trait from the line × tester model (screened data), sorted by broad-sense H². σ²_G is the among-cross genetic variance (female + male + cross); h² counts only the additive GCA part (female + male). e = environments, r = mean reps per cross per environment. Grain yield (bold) is the anchor.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  row_spec(which(herit$trait == "Grain yield"), bold = TRUE)
+```
+
+```{r}
+#| label: heritability-plot
+#| fig-width: 8
+#| fig-height: 5
+
+herit %>%
+  transmute(trait, `h² (narrow)` = h2_narrow, `H² (broad)` = H2_broad) %>%
+  pivot_longer(-trait, names_to = "kind", values_to = "value") %>%
+  ggplot(aes(x = reorder(trait, value), y = value, fill = kind)) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.65) +
+  coord_flip(ylim = c(0, 1)) +
+  scale_fill_manual(values = c("h² (narrow)" = "#2980b9", "H² (broad)" = "#8e44ad"),
+                    name = NULL) +
+  labs(
+    title    = "Entry-mean heritability, trait by trait",
+    subtitle = "Same line × tester model, screened data. Narrow-sense uses GCA only; broad-sense adds SCA.",
+    x = NULL, y = "Entry-mean heritability"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "top")
+```
+
+**Reading.** The gap between $H^2$ (broad) and $h^2$ (narrow) is the SCA (dominance)
+contribution; where the two bars are close, the cross-mean signal is almost all
+additive GCA and so transmits reliably to the next generation. A trait can be highly
+heritable here yet still male-null in the sweep above — $H^2$ pools the **female** GCA,
+SCA and the male GCA, so it stays high on female differences alone even when the seven
+testers are interchangeable ($\sigma^2_{\text{male}} \approx 0$). The two tables answer
+different questions: the sweep asks *do the testers differ?*, while this one asks *how
+repeatable is a cross mean?*
 
 # Verdict
 
