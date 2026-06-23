@@ -2,6 +2,11 @@ stelio_mail.txt
 stelio_slack_metadata_request.md
 isik2017_chapter*.txt
 
+# third-party reference materials (not redistributable in-repo)
+data/afonso_a_130426.pdf
+data/fato2025.txt
+data/Malik2019.txt
+
 agent/
 /.quarto/
 **/*.quarto_ipynb
