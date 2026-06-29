@@ -58,7 +58,7 @@ cat("# pairs exceeding 1:", sum(fh_cooc > 1), "\n")
 
 ## ---- STEP 3: Stelio CHOKWE STS ----
 df <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
-  rename(ENV = loc, REP = rep, GEN = gen) %>%   # new schema -> internal names
+  rename(ENV = env, REP = rep, GEN = gen) %>%   # env = location x treatment
   mutate(file_order = row_number())             # entry is damaged; use file order
 cat("\nENV values present:\n"); print(sort(unique(df$ENV)))
 

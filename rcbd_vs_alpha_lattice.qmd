@@ -62,7 +62,7 @@ library(kableExtra)
 raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
   mutate(
     file_order = row_number(),                    # as-entered plot order (entry is damaged)
-    ENV    = factor(loc),
+    ENV    = factor(env),
     REP    = factor(rep, levels = c("I", "II", "III")),
     GEN    = factor(gen, levels = as.character(0:49)),
     Female = factor(female),

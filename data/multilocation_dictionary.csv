@@ -1,6 +1,7 @@
 variable,name,unit,role,notes
 entry,Plot entry (serpentine planting order),NA,design,blank in CHOKWE STS III (14) & NHACOONGO II (1) - fix at source
-loc,Location / environment,NA,design,5 sites
+loc,Location (physical site),NA,design,4 sites; CKOKWE/CHOKWE spelling unified to CHOKWE
+env,Environment (location x treatment),,design,5 levels = loc + OPT/STS code; the analysis environment
 p_input,Phosphorus input (applied P),kg/ha,design,"two levels: 10 (stress) at CHOKWE STS, 50 (optimal) at the other four sites; = GY*1000/PUE"
 treatment,Phosphorus condition / treatment,NA,design,Stress (P=10) vs Optimal (P=50); Chokwe was grown at both levels (OPT vs STS)
 rep,Replicate,NA,design,I / II / III

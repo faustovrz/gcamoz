@@ -5,7 +5,7 @@ suppressPackageStartupMessages({
 set.seed(20260616)
 
 df <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
-  rename(ENV = loc, REP = rep, GEN = gen) %>%   # new schema -> internal names
+  rename(ENV = env, REP = rep, GEN = gen) %>%   # env = location x treatment
   mutate(file_order = row_number())             # entry is damaged; use file order
 
 field <- df %>%

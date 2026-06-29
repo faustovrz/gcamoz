@@ -82,7 +82,7 @@ library(kableExtra)
 raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
   mutate(
     file_order = row_number(),                      # as-entered plot order
-    ENV    = factor(loc),
+    ENV    = factor(env),
     REP    = factor(rep, levels = c("I", "II", "III")),
     GEN    = factor(gen, levels = as.character(0:49)),
     Female = factor(female,
@@ -174,15 +174,18 @@ The **49 hybrids are randomized within each replication**, and the `NAMULONGUE` 
 
 ## Locations / Environments
 
-The trial contains five environments/locations, recorded in the `ENV` column:
+The trial spans **four physical locations** (`loc`), one of which — Chokwe — was grown at
+**two phosphorus levels**, giving **five environments** in the `ENV` column (`env` =
+location + P-treatment code). The applied P, recovered per plot as `GY / PUE`, is exactly
+50 kg/ha (optimal) everywhere except CHOKWE STS at 10 kg/ha (stress):
 
-| Location code in `ENV` | Interpretation in this notebook |
-| :--- | :--- |
-| `CHOKWE STS` | Chokwe stress environment |
-| `CKOKWE OPT` | Chokwe optimum environment, as spelled in the CSV |
-| `NHACOONGO` | Nhacoongo environment |
-| `SUSSUNDENGA` | Sussundenga environment |
-| `MANIQUENIQ` | Maniquenique environment |
+| `ENV` | Location (`loc`) | Treatment | P input (kg/ha) |
+| :--- | :--- | :--- | :--- |
+| `CHOKWE OPT` | Chokwe | Optimal | 50 |
+| `CHOKWE STS` | Chokwe | Stress | 10 |
+| `MANIQUENIQ OPT` | Maniquenique | Optimal | 50 |
+| `NHACOONGO OPT` | Nhacoongo | Optimal | 50 |
+| `SUSSUNDENGA OPT` | Sussundenga | Optimal | 50 |
 
 ## Field Layout Within Each Location
 
@@ -306,7 +309,7 @@ The map below uses the **`ENTRY` column — the recorded planting/allocation ord
 #| warning: false
 
 field_layout <- field %>%
-  filter(ENV == "NHACOONGO") %>%   # field_row / field_col come from the setup chunk
+  filter(ENV == "NHACOONGO OPT") %>%   # field_row / field_col come from the setup chunk
   mutate(entry_type = if_else(GEN == "0", "Check (NAMULONGUE)", "Line × tester hybrid"))
 
 entry_palette <- c(
@@ -323,7 +326,7 @@ ggplot(field_layout, aes(x = field_col, y = field_row, fill = entry_type)) +
   scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
   coord_equal() +
   labs(
-    title    = "Serpentine field layout for NHACOONGO (5 columns × 10 rows per replication)",
+    title    = "Serpentine field layout for NHACOONGO OPT (5 columns × 10 rows per replication)",
     subtitle = "First entry at the top-left corner; planting order snakes left–right then right–left. Tile = GEN code, coloured by entry type.",
     x = "Field column",
     y = "Field row (planting progresses top → bottom)"
@@ -435,7 +438,7 @@ ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
   theme(legend.position = "bottom")
 ```
 
-**Verdict: the layout is RCBD-consistent, not an α-lattice.** A genuine α(0,1) design would show only the two bars of the green reference panel. Instead every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with even a triple in NHACOONGO), and the observed distribution is statistically indistinguishable from the orange random-RCBD simulation. There is no incomplete-block structure: the field rows are simply where a random RCBD allocation happened to fall. (Note also that three environments — CHOKWE STS, CKOKWE OPT, SUSSUNDENGA — share an *identical* distribution, suggesting the same randomization was reused across them.) This is the empirical justification for analysing the trial as an **RCBD with row/column spatial control** in the model that follows.
+**Verdict: the layout is RCBD-consistent, not an α-lattice.** A genuine α(0,1) design would show only the two bars of the green reference panel. Instead every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with even a triple in NHACOONGO), and the observed distribution is statistically indistinguishable from the orange random-RCBD simulation. There is no incomplete-block structure: the field rows are simply where a random RCBD allocation happened to fall. (Note also that three environments — CHOKWE STS, CHOKWE OPT, SUSSUNDENGA OPT — share an *identical* distribution, suggesting the same randomization was reused across them.) This is the empirical justification for analysing the trial as an **RCBD with row/column spatial control** in the model that follows.
 
 # Phenotypic Model
 

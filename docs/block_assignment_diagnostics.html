@@ -2506,7 +2506,7 @@ Important
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/multilocation.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">file_order =</span> <span class="fu">row_number</span>(),                       <span class="co"># as-entered plot order</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(loc),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(env),</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">REP =</span> <span class="fu">factor</span>(rep, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>)),</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">factor</span>(gen, <span class="at">levels =</span> <span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">49</span>)),</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">yield =</span> GY</span>
@@ -3254,35 +3254,35 @@ Warning
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">CHOKWE OPT</td>
+<td style="text-align: right;">0.2406</td>
+<td style="text-align: right;">0.6063</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">CHOKWE STS</td>
 <td style="text-align: right;">0.2406</td>
 <td style="text-align: right;">0.6063</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">0</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">CKOKWE OPT</td>
-<td style="text-align: right;">0.2406</td>
-<td style="text-align: right;">0.6063</td>
-<td style="text-align: right;">34</td>
-<td style="text-align: right;">0</td>
-</tr>
 <tr class="odd">
-<td style="text-align: left;">MANIQUENIQ</td>
+<td style="text-align: left;">MANIQUENIQ OPT</td>
 <td style="text-align: right;">0.2406</td>
 <td style="text-align: right;">0.6063</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">NHACOONGO</td>
+<td style="text-align: left;">NHACOONGO OPT</td>
 <td style="text-align: right;">0.2406</td>
 <td style="text-align: right;">0.6063</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">0</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">SUSSUNDENGA</td>
+<td style="text-align: left;">SUSSUNDENGA OPT</td>
 <td style="text-align: right;">0.2406</td>
 <td style="text-align: right;">0.6063</td>
 <td style="text-align: right;">34</td>
@@ -3824,7 +3824,7 @@ Patterson, H. D., &amp; Williams, E. R. (1976). A new class of resolvable incomp
 <span id="cb31-67"><a href="#cb31-67" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/multilocation.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb31-68"><a href="#cb31-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb31-69"><a href="#cb31-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">file_order =</span> <span class="fu">row_number</span>(),                       <span class="co"># as-entered plot order</span></span>
-<span id="cb31-70"><a href="#cb31-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(loc),</span>
+<span id="cb31-70"><a href="#cb31-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">ENV =</span> <span class="fu">factor</span>(env),</span>
 <span id="cb31-71"><a href="#cb31-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">REP =</span> <span class="fu">factor</span>(rep, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;II&quot;</span>, <span class="st">&quot;III&quot;</span>)),</span>
 <span id="cb31-72"><a href="#cb31-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">GEN =</span> <span class="fu">factor</span>(gen, <span class="at">levels =</span> <span class="fu">as.character</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">49</span>)),</span>
 <span id="cb31-73"><a href="#cb31-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">yield =</span> GY</span>
