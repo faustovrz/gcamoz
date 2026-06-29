@@ -1,0 +1,27 @@
+variable,name,unit,role,notes
+entry,Plot entry (serpentine planting order),NA,design,blank in CHOKWE STS III (14) & NHACOONGO II (1) - fix at source
+loc,Location / environment,NA,design,5 sites
+rep,Replicate,NA,design,I / II / III
+gen,Genotype code,NA,design,0 = check; 1-49 = 7x7 factorial
+female,Female parent (CIMMYT line),NA,design,7 CML lines + Check
+male,Male parent / tester (IIAM donor ID),NA,design,EN17/20/21/25/31/32/64 = NCDII MOZL3/5/6/7/8/9/10
+hybrid,Cross (female x male),NA,design,NA
+GY,Grain yield,t/ha,trait,NA
+GYPP,Grain yield per plant,g,trait,NA
+PUE,Phosphorus-use efficiency,g/g,trait,ratio; definition per field protocol
+RSR,Root:shoot ratio,g/g,trait,ratio
+RYE,Relative yield efficiency,g/g,trait,ratio; definition per field protocol
+HI,Harvest index,g/g,trait,ratio
+NP,Number of plants per plot (stand),count,trait,NA
+EW,Ear weight,g/plot,trait,per-plot total over ~25 plants
+GW,Grain weight,g/plot,trait,NA
+PH,Plant height,cm,trait,MANIQUENIQ recorded in meters for most plots; values <10 converted to cm (x100) in cleaning
+SD,Stem (culm) diameter,cm,trait,NA
+RW,Root weight,g/plot,trait,NA
+DM,Dry matter mass (stover biomass),g/plot,trait,NA
+silking_date,Silking date (female flowering),yyyy-mm-dd,date,parsed to date from mixed dd/mm + Excel-serial source
+anthesis_date,Anthesis date (male flowering),yyyy-mm-dd,date,parsed to date from mixed dd/mm + Excel-serial source
+planting_date,Planting date,yyyy-mm-dd,date,single date per location
+DTS,Days to silking,days,derived,silking_date - planting_date (computed in notebook)
+DTA,Days to anthesis,days,derived,anthesis_date - planting_date (computed in notebook)
+ASI,Anthesis-silking interval,days,derived,DTS - DTA (computed in notebook)

@@ -33,7 +33,7 @@ The phrase *"RCBD with a 7 × 7 NC II design"* and the phrase *"alpha lattice de
 
 | Axis | What it decides | Your trial | Alternatives |
 | :--- | :--- | :--- | :--- |
-| **1. Mating design** | *How the genotypes were created* — which parents were crossed. Drives the **genetic analysis** (GCA / SCA). | **7 × 7 line × tester = North Carolina Design II**: 7 CIMMYT females × 7 MOZL males → 49 F1 hybrids. | Diallel, NC I, NC III, topcross, single-cross panel … |
+| **1. Mating design** | *How the genotypes were created* — which parents were crossed. Drives the **genetic analysis** (GCA / SCA). | **7 × 7 line × tester = North Carolina Design II**: 7 CIMMYT females × 7 IIAM (EN) males → 49 F1 hybrids. | Diallel, NC I, NC III, topcross, single-cross panel … |
 | **2. Field layout (blocking)** | *How the plots are arranged in the soil* to soak up field heterogeneity. Drives the **error-control / blocking term** in the model. | **?** — this is exactly what is unresolved: **RCBD** or **alpha lattice**. | RCBD, alpha lattice, square/rectangular lattice, augmented, row–column, p-rep … |
 
 ::: {.callout-important}
@@ -61,13 +61,14 @@ library(kableExtra)
 
 raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
   mutate(
-    ENV    = factor(ENV),
-    REP    = factor(REP, levels = c("I", "II", "III")),
-    GEN    = factor(GEN, levels = as.character(0:49)),
-    Female = factor(Female),
-    Male   = factor(Male),
-    cross  = factor(`Female x Male`),
-    yield  = `Yield t/ha`
+    file_order = row_number(),                    # as-entered plot order (entry is damaged)
+    ENV    = factor(loc),
+    REP    = factor(rep, levels = c("I", "II", "III")),
+    GEN    = factor(gen, levels = as.character(0:49)),
+    Female = factor(female),
+    Male   = factor(male),
+    cross  = factor(hybrid),
+    yield  = GY
   )
 
 # Hybrids-only frame (check held out), mirroring the companion notebook.
@@ -83,7 +84,7 @@ hybrids <- raw_data %>%
 The genetic material is a **factorial / line × tester** cross — Comstock & Robinson's **North Carolina Design II** [@comstock1948; @isik2017]. Two disjoint parent sets are crossed in every combination:
 
 * **Females / lines:** 7 CIMMYT CML donors.
-* **Males / testers:** 7 Mozambique `MOZL` testers.
+* **Males / testers:** 7 IIAM testers (`EN17`, `EN20`, `EN21`, `EN25`, `EN31`, `EN32`, `EN64`).
 * **Hybrids:** all 7 × 7 = **49 F1 combinations**, plus a repeated `NAMULONGUE` **check** → **50 entries** evaluated per replication.
 
 ```{r}
@@ -151,7 +152,7 @@ rcbd_vc <- as.data.frame(VarCorr(rcbd_fit)) %>%
   transmute(Term = grp, Variance = round(vcov, 4))
 
 kable(rcbd_vc,
-      caption = "RCBD variance components on the real Yield t/ha (env:rep = the single complete-block term).") %>%
+      caption = "RCBD variance components on the real grain yield (GY, t/ha; env:rep = the single complete-block term).") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
@@ -345,11 +346,12 @@ maxc <- 9   # display range for co-occurrence counts
 
 # Recover the field row (putative k = 5 incomplete block) from the serpentine
 # planting order, exactly as multilocation_alpha_lattice.qmd does. (Serpentine
-# direction sets the column only; row membership is just groups of 5 along ENTRY.)
+# direction sets the column only; row membership is just groups of 5 along the
+# planting sequence — we use file order because the entry column is damaged.)
 blk <- raw_data %>%
-  arrange(ENTRY) %>%
   group_by(ENV, REP) %>%
-  mutate(plot_order = row_number(ENTRY),
+  arrange(file_order, .by_group = TRUE) %>%
+  mutate(plot_order = row_number(),
          field_row  = ceiling(plot_order / 5)) %>%
   ungroup() %>%
   mutate(gen = as.integer(as.character(GEN)))

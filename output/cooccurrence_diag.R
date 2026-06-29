@@ -4,11 +4,13 @@ suppressPackageStartupMessages({
 
 set.seed(20260616)
 
-df <- read_csv("data/multilocation.csv", show_col_types = FALSE)
+df <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  rename(ENV = loc, REP = rep, GEN = gen) %>%   # new schema -> internal names
+  mutate(file_order = row_number())             # entry is damaged; use file order
 
 field <- df %>%
   group_by(ENV, REP) %>%
-  arrange(ENTRY, .by_group = TRUE) %>%
+  arrange(file_order, .by_group = TRUE) %>%
   mutate(
     plot_order = row_number(),
     field_row  = ceiling(plot_order / 5),
@@ -18,7 +20,7 @@ field <- df %>%
   ungroup() %>%
   mutate(GEN = as.integer(GEN))
 
-stopifnot(nrow(field) == 600)
+stopifnot(nrow(field) == 750)   # 5 environments x 3 reps x 50 entries
 gens <- sort(unique(field$GEN))
 stopifnot(length(gens) == 50)
 cat("N genotypes:", length(gens), " range:", min(gens), "-", max(gens), "\n")
@@ -66,7 +68,7 @@ per_env <- lapply(envs, function(e) {
 names(per_env) <- envs
 maxc_env <- max(sapply(per_env, max))
 
-# (b) pooled across all 12 replicates
+# (b) pooled across all 15 replicates (5 env x 3 reps)
 pooled <- cooc_counts(field, c("ENV", "REP", "field_row"))
 maxc_pool <- max(pooled)
 
@@ -77,7 +79,7 @@ env_tab <- sapply(per_env, dist_table, maxc = maxc)
 rownames(env_tab) <- paste0("count=", 0:maxc)
 print(env_tab)
 
-cat("\n=== (b) POOLED (12 reps) distribution ===\n")
+cat("\n=== (b) POOLED (15 reps) distribution ===\n")
 pool_tab <- dist_table(pooled, maxc = maxc)
 names(pool_tab) <- paste0("count=", 0:maxc)
 print(pool_tab)
@@ -125,10 +127,10 @@ alpha_df <- tibble(count = 0:maxc, pairs = alpha_pairs,
                    panel = "Alpha(0,1) lattice (ideal)", type = "Alpha")
 
 plot_all <- bind_rows(plot_df, sim_df, alpha_df)
-# 2x3 grid (row-major): envs fill cols 1-2; col 3 = Alpha (top), RCBD (bottom)
+# 5 env panels + ideal alpha + random-RCBD expectation, in a 3-column grid
 plot_all$panel <- factor(plot_all$panel,
-                         levels = c(envs[1], envs[2], "Alpha(0,1) lattice (ideal)",
-                                    envs[3], envs[4], "Random RCBD (sim mean)"))
+                         levels = c(envs, "Alpha(0,1) lattice (ideal)",
+                                    "Random RCBD (sim mean)"))
 plot_all$type <- factor(plot_all$type, levels = c("Observed", "Alpha", "RCBD"))
 
 p <- ggplot(plot_all, aes(x = factor(count), y = pairs, fill = type)) +

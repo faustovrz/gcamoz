@@ -57,13 +57,15 @@ cat("Max co-occurrence:", fh_max, "\n")
 cat("# pairs exceeding 1:", sum(fh_cooc > 1), "\n")
 
 ## ---- STEP 3: Stelio CHOKWE STS ----
-df <- read_csv("data/multilocation.csv", show_col_types = FALSE)
+df <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  rename(ENV = loc, REP = rep, GEN = gen) %>%   # new schema -> internal names
+  mutate(file_order = row_number())             # entry is damaged; use file order
 cat("\nENV values present:\n"); print(sort(unique(df$ENV)))
 
 chk <- df %>%
   filter(ENV == "CHOKWE STS") %>%
   group_by(REP) %>%
-  arrange(ENTRY, .by_group = TRUE) %>%
+  arrange(file_order, .by_group = TRUE) %>%
   mutate(plot_order = row_number(),
          field_row  = ceiling(plot_order / 5)) %>%
   ungroup() %>%

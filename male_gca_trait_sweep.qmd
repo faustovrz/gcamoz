@@ -2,7 +2,7 @@
 title: "Is the Male Tester Null Only for Yield, or Genome-Wide? A Trait-by-Trait Refit"
 subtitle: "Refitting the line × tester model on every phenotype in `data/multilocation.csv` and inspecting `isSingular()` and the male (tester) effect per trait"
 author: "Fausto Rodriguez Zapata"
-date: "2026-06-22"
+date: "2026-06-29"
 format:
   html:
     theme: cosmo
@@ -25,7 +25,8 @@ The yield model in [`multilocation_alpha_lattice.html`](multilocation_alpha_latt
 gives a **zero male (tester) GCA** and `isSingular() == TRUE`. The
 [companion note](https://faustovrz.github.io/gcamoz/male_gca_singularity_and_variance_routing.html)
 argues
-this has a *germplasm* cause: the seven MOZL testers were **double-ascertained** (an
+this has a *germplasm* cause: the seven IIAM testers (donors **EN17, EN20, EN21, EN25,
+EN31, EN32, EN64** — the NCDII MOZL3/5/6/7/8/9/10 lines) were **double-ascertained** (an
 already-narrow CIMMYT/IIAM elite pool — CIMMYT ESA mean genetic distance ≈ 0.29, four
 lines dominating 29–58 % of hybrids; Masuka et al. 2017 — then **truncation-selected on
 yield** under phosphorus sufficiency), so they behave for combining-ability purposes as
@@ -76,26 +77,34 @@ held out of the line × tester decomposition.
 
 raw_data <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
   mutate(
-    ENV    = factor(ENV),
-    REP    = factor(REP, levels = c("I", "II", "III")),
-    GEN    = factor(GEN, levels = as.character(0:49)),
-    Female = factor(Female,
+    file_order = row_number(),                          # as-entered plot order
+    ENV    = factor(loc),
+    REP    = factor(rep, levels = c("I", "II", "III")),
+    GEN    = factor(gen, levels = as.character(0:49)),
+    Female = factor(female,
                     levels = c("Check",
                                "CML364", "CML366", "CML434", "CML435",
                                "CML439", "CML530", "CML532")),
-    Male   = factor(Male,
+    # Males carry their IIAM donor IDs (NCDII MOZL3/5/6/7/8/9/10 = EN17/20/21/25/31/32/64).
+    Male   = factor(male,
                     levels = c("Check",
-                               "MOZL3", "MOZL5", "MOZL6", "MOZL7",
-                               "MOZL8", "MOZL9", "MOZL10"))
+                               "EN17", "EN20", "EN21", "EN25",
+                               "EN31", "EN32", "EN64")),
+    planting_date = as.Date(planting_date)
   )
 
-# Field coordinates from the serpentine planting order (5 columns x 10 rows, snaking
-# down along ENTRY) — identical to the yield notebook.
+# Field coordinates from the serpentine planting order (5 columns x 10 rows). ENTRY is the
+# serpentine planting order, and it increases monotonically down the file within every
+# ENV x REP block — so the file row order *is* the ENTRY order. We index plot_order by the
+# file order rather than the `entry` column itself because two reps have damaged entries
+# (CHOKWE STS III: 14 blanks + numbers that duplicate rep II's range; NHACOONGO II: 1
+# blank) on which `row_number(entry)` would misplace plots. The physical row sequence is
+# intact, so this recovers the exact serpentine layout. (Flag for Stelio to fix at source.)
 field <- raw_data %>%
-  arrange(ENTRY) %>%
   group_by(ENV, REP) %>%
+  arrange(file_order, .by_group = TRUE) %>%
   mutate(
-    plot_order = row_number(ENTRY),
+    plot_order = row_number(),
     field_row  = ceiling(plot_order / 5),
     pos_in_row = ((plot_order - 1) %% 5) + 1,
     field_col  = if_else(field_row %% 2 == 1, pos_in_row, 6L - pos_in_row)
@@ -103,46 +112,39 @@ field <- raw_data %>%
   ungroup()
 ```
 
-## Flowering dates → Julian day (no planting date available)
+## Flowering dates → days from planting
 
-Stelio recorded **flowering dates**, not days-from-sowing, and there is **no planting
-date** in the file. We therefore score flowering time as the **Julian day (day-of-year)**
-of each event:
+Stelio's updated file now carries a **single planting date per location**, so we score
+flowering time as **days from planting** — the agronomically standard scale — instead of the
+day-of-year proxy the earlier version had to use:
 
-* **Days to silking** = Julian day of `F. D. Female` (female flowering / silk).
-* **Days to anthesis** = Julian day of `F. D. Male` (male flowering / pollen shed).
-* **ASI** (anthesis–silking interval) = silking − anthesis, a within-plot difference that
+* **DTS** (days to silking) = `silking_date` (female flowering / silk) − planting date.
+* **DTA** (days to anthesis) = `anthesis_date` (male flowering / pollen shed) − planting date.
+* **ASI** (anthesis–silking interval) = DTS − DTA, a within-plot difference that
   is **independent of planting date** regardless.
 
-Because `env` is a **fixed** effect in every model below, any site-level shift in planting
-date is absorbed by the environment means — so the *among-tester* GCA/SCA estimates for the
-Julian-day traits are unaffected by the missing sowing date (only the absolute intercept
-would be). The raw dates come in two formats (`22/09` and `12-Oct`); we parse both.
+Because `env` is a **fixed** effect in every model below, the per-location planting date is
+absorbed by the environment means, so the *among-tester* GCA/SCA estimates are clean. The
+`silking_date`, `anthesis_date` and `planting_date` columns are stored as proper `yyyy-mm-dd`
+dates in `data/multilocation.csv` (the raw file mixed `dd/mm` strings and Excel date serials;
+these were parsed into dates during data cleaning), so here we simply take the day difference.
 
 ```{r}
-#| label: flowering-julian
-
-fd_to_julian <- function(x) {
-  x  <- trimws(as.character(x))
-  dt <- parse_date_time(x, orders = c("d/m", "d-b", "dm", "db"),
-                        locale = "C", quiet = TRUE)
-  yday(dt)   # Julian day of year
-}
+#| label: flowering-days
 
 field <- field %>%
   mutate(
-    days_to_silking  = fd_to_julian(`F. D. Female`),
-    days_to_anthesis = fd_to_julian(`F. D. Male`),
-    ASI              = days_to_silking - days_to_anthesis
+    DTS = as.integer(silking_date  - planting_date),
+    DTA = as.integer(anthesis_date - planting_date),
+    ASI = DTS - DTA
   )
 
-# Confirm every flowering date parsed (no silent NAs introduced by format quirks).
+# Confirm every flowering date differenced to a day count (no missing dates).
 parse_check <- tibble(
-  column           = c("F. D. Female", "F. D. Male"),
-  n_unparsed       = c(sum(is.na(field$days_to_silking)),
-                       sum(is.na(field$days_to_anthesis)))
+  trait      = c("DTS (silking)", "DTA (anthesis)"),
+  n_missing  = c(sum(is.na(field$DTS)), sum(is.na(field$DTA)))
 )
-kable(parse_check, caption = "Flowering-date parse check (Julian day) — unparsed values should be 0") %>%
+kable(parse_check, caption = "Flowering-date check (days from planting) — missing values should be 0") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
 
@@ -160,42 +162,35 @@ hybrids <- field %>%
     col    = factor(field_col, levels = 1:5),
     female = droplevels(Female),
     male   = droplevels(Male),
-    cross  = factor(`Female x Male`),
-    # --- traits ---
-    `Grain yield`        = `Yield t/ha`,
-    `Yield per plant`    = `yield g/plant (g)`,
-    `Plants per plot`    = `Plant Number`,
-    `Ear weight`         = `Ear weight (g)`,
-    `Grain weight`       = `grain weight (g)`,
-    `Plant height`       = `Plant Height (m)`,
-    `Culm diameter`      = `Culm Diameter (cm)`,
-    `Days to silking`    = days_to_silking,
-    `Days to anthesis`   = days_to_anthesis,
-    `ASI`                = ASI,
-    `Dry matter mass`    = `Dry matter mass (g)`,
-    `Root weight`        = `Root Weight (g)`
+    cross  = factor(hybrid),
+    # --- traits, carried by their publication abbreviations (see dictionary below) ---
+    GY, GYPP, PUE, RSR, RYE, HI, NP, EW, GW, PH, SD, RW, DM, DTS, DTA, ASI
   )
+```
 
-trait_units <- tribble(
-  ~trait,              ~unit,
-  "Grain yield",       "t/ha",
-  "Yield per plant",   "g",
-  "Plants per plot",   "count",
-  "Ear weight",        "g/plot",
-  "Grain weight",      "g/plot",
-  "Plant height",      "m",
-  "Culm diameter",     "cm",
-  "Days to silking",   "Julian day",
-  "Days to anthesis",  "Julian day",
-  "ASI",               "days",
-  "Dry matter mass",   "g",
-  "Root weight",       "g"
-)
+Trait names everywhere below are the **publication abbreviations**; the metadata table maps
+each to its full name and unit. It is read from `data/multilocation_dictionary.csv`, the
+single source of truth for the column dictionary. The sweep covers **all sixteen plot-level
+phenotypes**, including the efficiency/index ratios (PUE phosphorus-use efficiency, RSR
+root:shoot, RYE relative yield efficiency, HI harvest index).
 
-kable(trait_units, caption = "Traits swept (all plot-level phenotypes in the file)") %>%
+```{r}
+#| label: trait-dictionary
+
+# Phenotypes carried into the model (order = display order).
+traits <- c("GY", "GYPP", "PUE", "RSR", "RYE", "HI", "NP", "EW", "GW", "PH", "SD", "RW", "DM",
+            "DTS", "DTA", "ASI")
+
+dict <- read_csv("data/multilocation_dictionary.csv", show_col_types = FALSE)
+trait_units <- dict %>%
+  filter(variable %in% traits) %>%
+  mutate(variable = factor(variable, levels = traits)) %>%
+  arrange(variable) %>%
+  transmute(trait = as.character(variable), name, unit)
+
+kable(trait_units %>% transmute(Abbrev = trait, Trait = name, Unit = unit),
+      caption = "Trait dictionary — swept phenotypes, publication abbreviations and units (full metadata in `data/multilocation_dictionary.csv`).") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
-
-traits <- trait_units$trait
 ```
 
 # Data-quality screen
@@ -242,7 +237,7 @@ A second, physical check: a maize **ear weight** must be at least its **grain we
 #| label: impossible-values
 
 ear_lt_grain <- hybrids %>%
-  mutate(ear = `Ear weight`, grain = `Grain weight`, ratio = round(ear / grain, 2)) %>%
+  mutate(ear = EW, grain = GW, ratio = round(ear / grain, 2)) %>%
   filter(ear < grain) %>%
   transmute(env, rep, female, male, ear, grain, ratio) %>%
   arrange(ratio)
@@ -256,13 +251,15 @@ kable(head(ear_lt_grain, 8),
 ```
 
 ::: {.callout-warning}
-**Why we screen before interpreting any variance.** The worst single plot —
-`CKOKWE OPT / II / CML364 × MOZL7`, **ear weight = 9004 g** (about 750 g per ear on 12
-plants; its grain weight is only 697 g) — would, *if left in*, push ear weight's `σ²_male`
-above its `σ²_female`, so by variance magnitude alone the testers would *look*
-differentiated. Removing it (screening) is exactly what prevents that. Ear weight is a
-**per-plot total** over ~25 plants, so legitimate 3–5 kg plots are normal (~150 g/ear);
-only the flagged values are errors.
+**Why we screen before interpreting any variance.** In the earlier file a single
+mis-entered ear-weight plot (≈ 9 kg, against a normal 3–5 kg per-plot total over ~25 plants)
+was enough, *if left in*, to push ear weight's `σ²_male` above its `σ²_female` — so by
+variance magnitude alone the testers would have *looked* differentiated. Stelio's cleaning
+fixed the ear/grain values (the impossible-plot count above is now **0**), so the live
+data-entry errors have moved to the **flowering dates**: a few plots where an Excel date
+serial or a `dd/mm` month was mistyped (a silking of 19 days, an anthesis *before* planting).
+The screen flags these and excludes them per trait — which matters most for the maturity
+traits, where the tester signal actually lives.
 :::
 
 # The model and the test
@@ -374,7 +371,7 @@ kable(results_display,
       caption = "Per-trait result (screened data), sorted by p(male). p(male) = boundary-corrected REML LRT for σ²_male, tested above male:env; p = 0.5 is the no-evidence floor. Green = tester signal; grain yield (bold) is the anchor.") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
   row_spec(which(results$verdict == "tester signal"), background = "#eafaf1") %>%
-  row_spec(which(results$trait == "Grain yield"), bold = TRUE)
+  row_spec(which(results$trait == "GY"), bold = TRUE)
 ```
 
 ```{r}
@@ -392,7 +389,7 @@ ggplot(results, aes(x = reorder(trait, -p_male), y = -log10(p_male),
   scale_fill_manual(values = c("tester null" = "#7f8c8d", "tester signal" = "#27ae60"),
                     name = NULL) +
   labs(
-    title    = "Do the seven MOZL testers differ, trait by trait?",
+    title    = "Do the seven IIAM testers differ, trait by trait?",
     subtitle = "Boundary-corrected male LRT on screened data. Bars above the dashed line = testers differ.",
     x = NULL, y = expression(-log[10](italic(p)~male~LRT))
   ) +
@@ -406,7 +403,7 @@ The same line × tester model already carries every variance component needed fo
 **entry-mean (cross-mean) heritability** — the accuracy with which cross rankings can
 be selected on their mean across environments and replicates, and the most useful
 heritability for multi-environment breeding decisions. Because the female (CIMMYT
-lines) and male (MOZL testers) sets come from **distinct gene pools**, the among-cross
+lines) and male (IIAM testers) sets come from **distinct gene pools**, the among-cross
 genetic variance partitions into an additive (GCA) and a dominance (SCA) part (Isik et
 al. 2017; the full derivation is worked in [`gca_calculation.html`](gca_calculation.html)).
 With $e$ environments and $r$ reps per environment:
@@ -496,7 +493,7 @@ herit_display <- herit %>%
 kable(herit_display,
       caption = "Entry-mean heritability per trait from the line × tester model (screened data), sorted by broad-sense H². σ²_G is the among-cross genetic variance (female + male + cross); h² counts only the additive GCA part (female + male). e = environments, r = mean reps per cross per environment. Grain yield (bold) is the anchor.") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
-  row_spec(which(herit$trait == "Grain yield"), bold = TRUE)
+  row_spec(which(herit$trait == "GY"), bold = TRUE)
 ```
 
 ```{r}
@@ -540,7 +537,7 @@ repeatable is a cross mean?*
 n_total      <- nrow(results)
 n_sig        <- sum(results$verdict == "tester signal")
 n_null       <- n_total - n_sig
-yield_null   <- results$verdict[results$trait == "Grain yield"] == "tester null"
+yield_null   <- results$verdict[results$trait == "GY"] == "tester null"
 sig_traits   <- results$trait[results$verdict == "tester signal"]
 
 verdict <- if (n_sig == 0) {
@@ -563,10 +560,10 @@ cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
 ## How to read this
 
 * **`isSingular()` flags *any* boundary component, not the male term specifically.** This
-  model has nine random effects, and with only 4 environments / 7 testers some G×E or
+  model has nine random effects, and with only 5 environments / 7 testers some G×E or
   spatial term sits on the boundary for almost every trait — so `isSingular()` is `yes`
-  for most rows *even when the male GCA is large and significant* (e.g. culm diameter, plant
-  height). Read the singular flag **together with `σ²_male`**: it is the *combination*
+  for **every** row here, *even when the male GCA is significant* (e.g. DTS, DTA). Read the
+  singular flag **together with `σ²_male`**: it is the *combination*
   `isSingular == yes` **and** `σ²_male ≈ 0` that signals a pinned-to-zero tester variance
   (the boundary-zero of companion §1). The flag alone is not a per-male diagnostic.
 * **`p(male)`** is the boundary-corrected LRT for the tester variance, computed on the
@@ -579,29 +576,32 @@ cat(sprintf("\nMechanism verdict:\n%s\n", verdict))
 **What the pattern means for your hypothesis.**
 
 The robust result is **Mechanism A**. The testers are male-**null** for **grain yield and
-every grain/yield component** (yield per plant, grain weight, ear weight, plants per plot)
-— and also for ASI, plant height, culm diameter and root weight — but they **do** differ
-(robust LRT p < 0.05) for **stover biomass (dry matter mass) and maturity (days to
-anthesis, days to silking)**, traits selection never directly targeted.
+every grain/yield component** (yield per plant, grain weight, ear weight, plants per plot),
+for the **efficiency/index ratios** (phosphorus-use efficiency, harvest index, root:shoot,
+relative yield efficiency), and also for ASI, plant height, culm diameter, root weight and
+even **stover biomass (dry matter mass)** — but they **do** differ (robust LRT p < 0.05) for
+**maturity alone: days to silking (DTS, p ≈ 1×10⁻⁴) and days to anthesis (DTA, p ≈ 0.003)**,
+a trait axis selection never directly targeted.
 
-* That the testers differ *at all* — in maturity and biomass — **rejects Mechanism B**:
+* That the testers differ *at all* — in flowering time — **rejects Mechanism B**:
   the seven are **not** near-identical genome-wide, so the zero yield GCA cannot be read as
   "the same line for everything."
-* That the null is concentrated on **grain yield and its components** is the fingerprint of
-  **ascertainment**: the testers were truncation-selected on yield, so they are homogenised
-  exactly where they were selected — but they still carry the maturity and biomass
-  differences that come free with diverse elite lines.
-* A neat internal check: days to anthesis **and** days to silking each differ among
-  testers, yet their difference **ASI is null** — the testers shift their whole flowering
-  schedule together (different maturity, same anthesis–silking gap).
+* That the null covers **grain yield, all its components, biomass, and even
+  phosphorus-use efficiency**, leaving only **maturity** standing, is the fingerprint of
+  **ascertainment**: the testers were truncation-selected on yield (under phosphorus
+  sufficiency), so they are homogenised across the whole yield/efficiency complex — but they
+  still carry the phenology differences that come free with diverse elite lines.
+* A neat internal check: DTA **and** DTS each differ among testers, yet their difference
+  **ASI is null** — the testers shift their whole flowering schedule together (different
+  maturity, same anthesis–silking gap).
 
 This matches the prior from the independent record — the same CIMMYT/IIAM elite pool *did*
 respond to selection for ear height, ears-per-plant and ASI over seven years (Fato et al.
 2025), so it is not genome-wide monomorphic.
 
 **Bottom line for the original question:** "essentially the same male" is true **for
-grain yield and its components**, but **false genome-wide** — the testers still differ in
-maturity and stover. The extrapolation to all phenotypes does not hold.
+grain yield, its components and biomass**, but **false genome-wide** — the testers still
+differ in maturity. The extrapolation to all phenotypes does not hold.
 :::
 
 # Caveats
@@ -613,27 +613,27 @@ maturity and stover. The extrapolation to all phenotypes does not hold.
   LRT (drop `(1|male)`, keep `(1|male:env)`) tests the right thing; `p = 0.5` is its
   no-evidence floor (statistic = 0, the half-half χ²₀/χ²₁ mixture).
 * **Data quality.** The analysis runs on screened data (gross errors removed by the
-  |studentized residual| > 4 rule); the screen also lists ~38 `ear < grain` plots that point
-  to ear/grain mix-ups. Among the three signals, **dry matter mass** is the firmest; the two
-  **maturity** signals (days to silking, days to anthesis, p ≈ 0.006–0.015) are the most
-  modest and rest on only a handful of plots, so they are the calls to confirm once Stelio
-  **corrects the flagged plots at source** and re-runs.
+  |studentized residual| > 4 rule). Stelio's cleaning resolved the earlier `ear < grain`
+  mix-ups (now **0** such plots), so the remaining flagged plots are concentrated in the
+  **flowering dates** — a handful of mistyped silking/anthesis values (a silking of 19 days,
+  anthesis dates *before* planting, a few wrong Excel date serials). Because the only tester
+  signal is in maturity, DTS (p ≈ 1×10⁻⁴) and DTA (p ≈ 0.003) are the calls to confirm once
+  Stelio **verifies the flagged flowering plots at source** and re-runs.
 * **Power.** With only **7 testers** the male variance rests on 6 df, so the LRT has modest
   power. A non-significant result is "no detectable tester differentiation," not proof of
   identity. Treat borderline traits as ambiguous, and note the **female** GCA is the
   better-powered, more clearly significant signal throughout.
-* **Trait scale / distribution.** Counts (`Plants per plot`) and the ASI difference are
+* **Trait scale / distribution.** Counts (`NP`) and the ASI difference are
   analysed on the raw scale for comparability with the yield pipeline; a Poisson or
   transformed refit could shift borderline p-values but not the qualitative null/signal
   split.
 * **Correlated traits are not independent evidence.** Ear weight, grain weight and yield
   per plant are near-proxies for grain yield, and all land in the male-null group with it —
-  consistent with the same ascertainment. The informative signals are the traits
-  *genetically independent* of yield that survive screening: dry matter mass and maturity
-  (days to anthesis, days to silking).
-* **Julian-day flowering.** Absolute day-of-year confounds planting date with flowering
-  time, but `env` (fixed) absorbs the site-level offset, so among-tester GCA/SCA — the only
-  thing tested here — is unaffected; ASI is planting-date-free by construction.
+  consistent with the same ascertainment. The informative signal is the one trait axis
+  *genetically independent* of yield that survives screening: maturity (DTS and DTA).
+* **Days-from-planting flowering.** DTS and DTA are now scored as days from each location's
+  single planting date; `env` (fixed) absorbs the site-level offset, so among-tester GCA/SCA
+  — the only thing tested here — is unaffected, and ASI is planting-date-free by construction.
 * **`lme4` vs `sommer`.** This sweep uses `lme4` to expose `isSingular()`; point estimates
   of the variance components can differ slightly from `sommer::mmer` but the boundary
   behaviour (which is what we test) is the same.
