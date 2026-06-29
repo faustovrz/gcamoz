@@ -1,6 +1,8 @@
 variable,name,unit,role,notes
 entry,Plot entry (serpentine planting order),NA,design,blank in CHOKWE STS III (14) & NHACOONGO II (1) - fix at source
 loc,Location / environment,NA,design,5 sites
+p_input,Phosphorus input (applied P),kg/ha,design,"two levels: 10 (stress) at CHOKWE STS, 50 (optimal) at the other four sites; = GY*1000/PUE"
+treatment,Phosphorus condition / treatment,NA,design,Stress (P=10) vs Optimal (P=50); Chokwe was grown at both levels (OPT vs STS)
 rep,Replicate,NA,design,I / II / III
 gen,Genotype code,NA,design,0 = check; 1-49 = 7x7 factorial
 female,Female parent (CIMMYT line),NA,design,7 CML lines + Check
@@ -8,7 +10,7 @@ male,Male parent / tester (IIAM donor ID),NA,design,EN17/20/21/25/31/32/64 = NCD
 hybrid,Cross (female x male),NA,design,NA
 GY,Grain yield,t/ha,trait,NA
 GYPP,Grain yield per plant,g,trait,NA
-PUE,Phosphorus-use efficiency,g/g,trait,ratio; definition per field protocol
+PUE,Phosphorus-use efficiency,g/g,trait,= GY(kg/ha)/p_input; bimodal across P treatments (high under stress)
 RSR,Root:shoot ratio,g/g,trait,ratio
 RYE,Relative yield efficiency,g/g,trait,ratio; definition per field protocol
 HI,Harvest index,g/g,trait,ratio
