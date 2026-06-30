@@ -63,9 +63,19 @@ The real founder identifiers (which replace the earlier `MOZ1`–`MOZ7` placehol
 | Mozambique testers | Male local tester lines (IIAM IDs) | `EN17`, `EN20`, `EN21`, `EN25`, `EN31`, `EN32`, `EN64` |
 | Commercial check | Standard reference entry | `NAMULONGUE` (`GEN = 0`) |
 
-::: {.callout-note}
-The Mozambique testers carry their IIAM donor IDs `EN17`, `EN20`, `EN21`, `EN25`, `EN31`, `EN32`, `EN64` (the NCDII `MOZL3`/`MOZL5`/`MOZL6`/`MOZL7`/`MOZL8`/`MOZL9`/`MOZL10` lines; seven testers). The CIMMYT line `CML530` is part of the female set; the earlier draft had incorrectly listed `CML440`.
-:::
+The Mozambique testers carry their **IIAM donor IDs** — `EN17`, `EN20`, `EN21`, `EN25`, `EN31`, `EN32`, `EN64` — which are the canonical identifiers used throughout this analysis. The `MOZL3`–`MOZL10` labels (the "NCDII ID" in the donor records) are a **legacy, ad hoc identifier** carried over from an earlier stage of the project; they are kept here only as a cross-reference to older files and field books, and name the same seven testers. The CIMMYT line `CML530` is part of the female set; the earlier draft had incorrectly listed `CML440`.
+
+The full pedigrees of the seven IIAM tester donors:
+
+| IIAM ID | NCDII ID | Pedigree |
+| :--- | :--- | :--- |
+| `EN17` | `MOZL3` | `(ZM421-6-4-1-2-2-2-2-B/CML491-1)-10-1-1-1-1-1-B` |
+| `EN20` | `MOZL5` | `(ZM421-6-4-1-2-2-2-2-B/CML491-1)-34-1-1-1-1-1-B` |
+| `EN21` | `MOZL6` | `(ZM421-6-4-1-2-2-2-2-B/CML491-1)-36-1-1-1-1-1-B` |
+| `EN25` | `MOZL7` | `(ZM421-18-8-1-3-1-3-1-3-B/CLRCY034-1)-29-1-1-1-1-1-B` |
+| `EN31` | `MOZL8` | `(ZM421-18-8-1-3-1-3-1-3-B/CLRCY034-1)-13-1-1-1-1-1-B` |
+| `EN32` | `MOZL9` | `(ZM421-18-8-1-3-1-3-1-3-B/CLRCY034-1)-14-1-1-1-1-1-B` |
+| `EN64` | `MOZL10` | `(MATUBASG-26-1-3-3-1-2-5-1-B/CML539-1)-63-1-1-1-1-1-B` |
 
 # R Setup and Data Import
 
@@ -539,7 +549,8 @@ ggplot(hybrids, aes(x = env, y = yield, fill = env)) +
     fill = "Environment"
   ) +
   theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(face = "bold", color = "#1a202c"))
+  theme(plot.title = element_text(face = "bold", color = "#1a202c"),
+        axis.text.x = element_text(angle = 30, hjust = 1))
 ```
 
 # Fixed-Effects Calculations: Factorial Combining Ability
