@@ -91,7 +91,7 @@ ggplot(hybrids, aes(x = env, y = PUE, color = treatment)) +
   scale_color_manual(values = trt_pal, name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.12))) +
   labs(title = "PUE across the five environments",
-       y = "PUE  (g grain g⁻¹ P)") +
+       y = expression("PUE  (g grain " * g^{-1} * " P)")) +
   pue_theme
 ```
 
@@ -112,7 +112,7 @@ ggplot(hybrids, aes(x = PUE, fill = treatment)) +
                  position = "identity") +
   scale_fill_manual(values = trt_pal, name = NULL) +
   labs(title = "PUE is bimodal — the two modes are the two P treatments",
-       x = "PUE  (g grain g⁻¹ P)", y = "Plots") +
+       x = expression("PUE  (g grain " * g^{-1} * " P)"), y = "Plots") +
   theme_classic(base_size = 13) +
   theme(legend.position = "top",
         plot.title = element_text(face = "bold", hjust = 0.5))
