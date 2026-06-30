@@ -1,0 +1,142 @@
+---
+title: "Phosphorus-Use Efficiency (PUE): a distribution check"
+subtitle: "Is PUE one long-tailed/Gaussian distribution, or a bimodal mixture of the two phosphorus treatments? With PUE performance across environments in beeswarm + boxplot style."
+author: "Fausto Rodriguez Zapata"
+date: "2026-06-29"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+# The question
+
+`PUE` (phosphorus-use efficiency) in `data/multilocation.csv` looked suspicious — a very
+flat, high-variance spread that could be a long tail or a wide Gaussian. The hypothesis
+(Stelio) is that it is really **bimodal**, one mode per **phosphorus condition**: P-stress
+vs. no stress.
+
+That is exactly what the data say. PUE is computed as grain yield per unit applied
+phosphorus,
+
+$$\text{PUE} = \frac{\text{GY (kg/ha)}}{\text{P input (kg/ha)}},$$
+
+so the applied P is recoverable as `GY * 1000 / PUE`. It collapses to **two discrete values
+with zero within-location variance** — `50 kg/ha` (optimal) at four environments and
+`10 kg/ha` (stress) at CHOKWE STS — which is carried in the `p_input` and `treatment`
+columns. The small stress denominator inflates PUE, so the "second mode" is simply the
+stress site.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(ggbeeswarm)   # geom_quasirandom — beeswarm points
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+#| label: data
+
+hybrids <- read_csv("data/multilocation.csv", show_col_types = FALSE) %>%
+  filter(gen != 0) %>%                       # drop the NAMULONGUE check
+  mutate(
+    env       = factor(env),
+    treatment = factor(treatment, levels = c("Optimal", "Stress"))
+  )
+
+# Shared style: base_size 14, transparent boxplots, beeswarm points (the inv4m look,
+# built on base ggplot2 theme_classic() — no ggpubr needed).
+pue_theme <- theme_classic(base_size = 14) +
+  theme(
+    plot.title      = element_text(size = 14, face = "bold", hjust = 0.5),
+    plot.margin     = margin(t = 20, r = 8, b = 5, l = 5, unit = "pt"),
+    axis.title.y    = element_text(size = 12),
+    axis.title.x    = element_blank(),
+    axis.text.x     = element_text(size = 11, face = "bold", color = "black",
+                                   angle = 30, hjust = 1),
+    axis.text.y     = element_text(size = 10),
+    legend.position = "top"
+  )
+
+trt_pal <- c("Optimal" = "#2c7fb8", "Stress" = "#d95f0e")
+```
+
+# Performance across Environments
+
+PUE for the 49 line × tester hybrids in each environment, drawn in the **beeswarm +
+transparent-boxplot** style: the data points sit in the background (`geom_quasirandom`) with
+a transparent boxplot in front (`alpha = 0`), coloured by phosphorus **treatment**. The
+single stress environment (CHOKWE STS, orange) stands far above the four optimal sites — the
+visual signature of the bimodality.
+
+```{r}
+#| label: pue-across-env
+#| fig-width: 10
+#| fig-height: 6
+#| warning: false
+
+ggplot(hybrids, aes(x = env, y = PUE, color = treatment)) +
+  geom_quasirandom(size = 1.1, alpha = 0.55, width = 0.32) +          # points: background
+  geom_boxplot(width = 0.25, linewidth = 1.0, alpha = 0,              # transparent box: front
+               outlier.shape = NA) +
+  scale_color_manual(values = trt_pal, name = NULL) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.12))) +
+  labs(title = "PUE across the five environments",
+       y = "PUE  (g grain g⁻¹ P)") +
+  pue_theme
+```
+
+# Is PUE bimodal?
+
+Pooled across environments, PUE is clearly **two humps**, not one. Splitting by `treatment`
+shows each treatment is its own well-separated, roughly unimodal cluster — so the overall
+bimodality is **entirely** the optimal-vs-stress contrast, nothing within a P regime.
+
+```{r}
+#| label: pue-hist
+#| fig-width: 9
+#| fig-height: 4.5
+#| warning: false
+
+ggplot(hybrids, aes(x = PUE, fill = treatment)) +
+  geom_histogram(binwidth = 50, color = "white", alpha = 0.85,
+                 position = "identity") +
+  scale_fill_manual(values = trt_pal, name = NULL) +
+  labs(title = "PUE is bimodal — the two modes are the two P treatments",
+       x = "PUE  (g grain g⁻¹ P)", y = "Plots") +
+  theme_classic(base_size = 13) +
+  theme(legend.position = "top",
+        plot.title = element_text(face = "bold", hjust = 0.5))
+```
+
+```{r}
+#| label: pue-by-treatment
+
+hybrids %>%
+  group_by(Treatment = treatment, `P input (kg/ha)` = p_input) %>%
+  summarise(n = n(),
+            `mean PUE` = round(mean(PUE), 0),
+            `sd`       = round(sd(PUE), 0),
+            min        = round(min(PUE), 0),
+            max        = round(max(PUE), 0),
+            .groups = "drop") %>%
+  kable(caption = "PUE summary by phosphorus treatment. The stress site's 10 kg/ha denominator (vs 50) is what lifts its PUE into the upper mode.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+**Reading.** PUE is not a single skewed/Gaussian distribution — it is a **mixture of two P
+treatments**. PUE (and the other efficiency ratios) are therefore only comparable *within*
+a phosphorus regime; pooling optimal and stress plots is what produced the flat,
+high-variance "distribution" that looked wrong. For any model, the P treatment belongs in
+the design (here it is absorbed by the fixed `env` term, since `CHOKWE OPT` and `CHOKWE STS`
+are distinct environments).
