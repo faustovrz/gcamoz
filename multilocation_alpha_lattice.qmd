@@ -366,7 +366,7 @@ In a 5 × 10 layout the only contiguous grouping that yields an incomplete block
 ```{r}
 #| label: cooccurrence-test
 #| fig.width: 10
-#| fig.height: 6
+#| fig.height: 7.5
 #| warning: false
 
 set.seed(20260616)
@@ -423,11 +423,13 @@ alpha_pairs <- numeric(maxc + 1); alpha_pairs[1] <- 925; alpha_pairs[2] <- 300
 alpha_df <- tibble(count = 0:maxc, pairs = alpha_pairs,
                    panel = "Alpha(0,1) lattice (ideal)", type = "Alpha")
 
-# Panels: the 5 environments in order, then the two references; laid out at ncol = 3.
+# 3-column grid: the 5 environments fill columns 1-2 (row-major), and column 3 holds the
+# two design references — Alpha(0,1) ideal (row 1) and random-RCBD (row 2).
 plot_all <- bind_rows(obs_df, sim_df, alpha_df) %>%
   mutate(
-    panel = factor(panel, levels = c(envs, "Alpha(0,1) lattice (ideal)",
-                                     "Random RCBD (sim mean)")),
+    panel = factor(panel, levels = c(envs[1], envs[2], "Alpha(0,1) lattice (ideal)",
+                                     envs[3], envs[4], "Random RCBD (sim mean)",
+                                     envs[5])),
     type  = factor(type, levels = c("Observed", "Alpha", "RCBD"))
   )
 
@@ -435,6 +437,7 @@ ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
   geom_col() +
   geom_text(aes(label = round(pairs)), vjust = -0.3, size = 2.6) +
   facet_wrap(~ panel, ncol = 3, scales = "free_y") +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.18))) +   # headroom so labels clear the strips
   scale_fill_manual(values = c(Observed = "#2c7fb8", Alpha = "#31a354",
                                RCBD = "#d95f0e")) +
   labs(
