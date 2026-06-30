@@ -1,14 +1,14 @@
 # Zero Male GCA, Singular Fits, and Where the Genetic Variance Goes
 
-**Trait:** Husked ear yield (HEY), `Yield t/ha`
-**Design:** Multilocation 7 × 7 line × tester (NC-II) — 7 CIMMYT/CML donor lines (females) × 7 MOZL testers (males), 4 environments × 3 replications, alpha-lattice / RCBD layout
-**Source notebook:** [`multilocation_alpha_lattice.html`](multilocation_alpha_lattice.html)
+**Trait:** Husked ear yield (HEY), grain yield `GY` (t/ha)
+**Design:** Multilocation 7 × 7 line × tester (NC-II) — 7 CIMMYT/CML donor lines (females) × 7 IIAM `EN` testers (males; the legacy `MOZL` IDs), **5 environments** × 3 replications (four sites, with Chokwe grown at optimal *and* P-stress levels), alpha-lattice / RCBD layout
+**Source notebooks:** [`multilocation_alpha_lattice.html`](multilocation_alpha_lattice.html); the trait-by-trait refit proposed in §3.5 is carried out in [`male_gca_trait_sweep.html`](male_gca_trait_sweep.html)
 
 This note documents three connected questions that came up while interpreting the
 combining-ability model: (1) what `isSingular()` means and why the male term triggers
 it, (2) how the yield variance components compare with a published sweet × waxy maize
 study, and (3) the **germplasm hypothesis** behind the zero male GCA — that the seven
-yield-selected MOZL testers carry so little additive diversity they behave as
+yield-selected IIAM (`EN`) testers carry so little additive diversity they behave as
 "essentially the same male" — including whether that extends to all phenotypes or only
 to yield.
 
@@ -29,11 +29,12 @@ what `isSingular()` flags.
 
 This is the male (tester) term here:
 
-- Fixed-effects ANOVA: male MS = 1.55 **< residual MS = 2.23** (p = 0.65).
+- Fixed-effects ANOVA: male MS = 1.48 **< residual MS = 3.03** (p = 0.82).
 - Because the between-male mean square is *below* residual, the unconstrained REML
   variance is **negative** → clamped to 0 → singular.
-- The apparent SCA "spread" from family means (≈ 0.18) is fully accounted for by the
-  sampling error of a 12-plot mean (residual / 12 ≈ 0.19).
+- The arithmetic SCA "spread" from family means (≈ 0.21) is now of the same order as the
+  sampling error of a 15-plot cross mean (residual / 15 ≈ 0.16); the REML SCA variance
+  (0.086) is correspondingly small and not significant (Wald Z ≈ 1.3).
 
 ### Common misconception
 
@@ -79,14 +80,14 @@ variance components*: the paper's are σ²ₐ = 0.01 and σ²_d = 0.99.
 
 | Quantity | This study | PMC10819934 |
 |---|---|---|
-| GCA female (additive, ♀) | 0.0715 | — |
+| GCA female (additive, ♀) | 0.0132 | — |
 | GCA male (additive, ♂) | **0.0000** (singular) | — |
-| **Additive σ²ₐ total** | **≈ 0.072** | **0.01** |
-| **Non-additive / SCA (σ²_d)** | **0.0716** | **0.99** |
-| Total G×E | 0.195 | (significant; not split into VC) |
-| Residual variance | 1.530 | error MS 0.39 |
-| Narrow-sense h² | **0.224** | **0.01** |
-| Broad-sense H² | 0.448 | — |
+| **Additive σ²ₐ total** | **≈ 0.013** | **0.01** |
+| **Non-additive / SCA (σ²_d)** | **0.0856** | **0.99** |
+| Total G×E | 0.179 | (significant; not split into VC) |
+| Residual variance | 2.347 | error MS 0.39 |
+| Narrow-sense h² | **0.045** | **0.01** |
+| Broad-sense H² | 0.339 | — |
 
 > The paper's mean-square columns (GCA♂ 30.35, etc.) are *not* on this scale — do not
 > compare them to the variance components above.
@@ -96,14 +97,16 @@ variance components*: the paper's are σ²ₐ = 0.01 and σ²_d = 0.99.
 - **The published yield is almost pure non-additive:** σ²_d = 0.99 dwarfs σ²ₐ = 0.01, so
   narrow-sense h² ≈ 0.01. Yield comes from specific ♀×♂ combinations (heterosis) — as
   expected for a sweet × waxy hybrid program built to exploit dominance.
-- **This study's yield is roughly half additive, half non-additive,** and the additive
-  half is entirely the **female (CML donor) lines** — male/tester GCA is zero. That gives
-  a real narrow-sense h² of 0.22: the donor lines carry breedable additive value; the
-  testers don't differentiate.
-- On the trait scale (√variance): female-GCA SD ≈ 0.27 t/ha and SCA SD ≈ 0.27 t/ha on a
-  residual SD ≈ 1.24 t/ha. "Small" is relative — modest genetic SDs against ~1.2 t/ha
-  noise, which is why heritability is only moderate, and only after averaging over
-  4 environments × 3 reps.
+- **This study's yield is mostly non-additive too,** but for a different reason: the
+  among-cross genetic variance is dominated by **SCA (0.086)** over a small additive part
+  (**0.013**, all of it female — male GCA is zero), so narrow-sense h² is only **0.045**.
+  Across five environments the donor lines barely separate on their *across-environment
+  average* — most of their action shows up as **female × environment** (see §3.2), and the
+  testers add nothing additive.
+- On the trait scale (√variance): female-GCA SD ≈ 0.11 t/ha and SCA SD ≈ 0.29 t/ha on a
+  residual SD ≈ 1.53 t/ha. The genetic SDs are small against ~1.5 t/ha plot noise, which
+  is why across-environment heritability is low even after averaging over
+  5 environments × 3 reps.
 
 ---
 
@@ -112,7 +115,7 @@ variance components*: the paper's are σ²ₐ = 0.01 and σ²_d = 0.99.
 The zero male GCA in Section 1 is not just a statistical curiosity — it has a concrete
 **germplasm explanation**. The working hypothesis is:
 
-> The seven MOZL testers (males) carry very little additive genetic diversity for yield —
+> The seven IIAM (`EN`) testers (males) carry very little additive genetic diversity for yield —
 > they behave, for combining-ability purposes, as if they were *essentially the same
 > male*. The breedable genetic variation comes from the introduced CIMMYT/CML donor lines
 > (females) and from how specific crosses behave across environments.
@@ -159,7 +162,7 @@ document this:
   *"gave 29 to 58% of the hybrids a **narrow genetic base**."* And the stated cause is the
   same mechanism as Stelio's selection: ***"selection pressure for defined traits can result
   in the narrowing down of the genetic base"*** (all lines "improved for yield and adaptation
-  to the mid-altitude environment"). The MOZL testers are drawn from exactly this
+  to the mid-altitude environment"). The IIAM (`EN`) testers are drawn from exactly this
   yield-and-adaptation-selected, four-line-dominated pool — so near-zero additive divergence
   for yield among seven of them is the expected outcome, not a surprise.
 - **Founder base, and the "Ecuador" recollection.** CIMMYT's tropical heterotic groups rest
@@ -191,23 +194,26 @@ fitted components:
 | Statement | Channel | This study (t/ha²) |
 |---|---|---|
 | Males carry little additive diversity | σ²_GCA(male) → 0 | **0.0000** ✓ |
-| Introduced female lines differ | σ²_GCA(female) | 0.0715 |
-| Contribution "depends on the female" (♀×♂) | σ²_SCA | 0.0716 |
-| Male response "depends on environment" (♂×E) | σ²_GCA(male)×E | 0.0043 |
-| ♀ × environment | σ²_GCA(female)×E | 0.0728 |
-| ♀×♂ × environment | σ²_SCA×E | **0.1176** (largest) |
+| Introduced female lines differ | σ²_GCA(female) | 0.0132 |
+| Contribution "depends on the female" (♀×♂) | σ²_SCA | 0.0856 |
+| Male response "depends on environment" (♂×E) | σ²_GCA(male)×E | 0.0308 |
+| ♀ × environment | σ²_GCA(female)×E | **0.1484** (largest) |
+| ♀×♂ × environment | σ²_SCA×E | 0.0000 (singular) |
 
-**The main-effect prediction holds exactly.** Vg = GCA_F + GCA_M + SCA =
-0.0715 + 0 + 0.0716 = 0.143 — the male contributes nothing, so all genetic variance sits
-in **female + SCA**. The same pattern repeats in the ×E layer: male×E ≈ 0.004 (negligible)
-while female×E + SCA×E carry the G×E. Both male channels — additive *and* its
-environment interaction — are effectively dead.
+**The main-effect prediction holds.** Vg = GCA_F + GCA_M + SCA = 0.0132 + 0 + 0.0856 =
+0.099 — the male contributes nothing, so the among-cross genetic variance sits in
+**female + SCA**, though even the female main effect is modest. In the ×E layer the male
+interaction is small (male×E ≈ 0.031), **female×E (0.148) is now the single largest
+genetic component**, and SCA×E has itself collapsed to zero (singular). The male additive
+channel is dead; the live genetic signal is the donor lines' *environment-specific*
+performance.
 
-**Caveat (routing of "environment").** "Depends on the environment" does **not** fold into
-the female or SCA *main* effects; it routes into the **×E** terms. Those happen to be
-female-side (0.073) and SCA-side (0.118), so the hypothesis still holds — but only once the
-×E versions are counted. SCA×E being the *largest* genetic component is literally "the
-cross contribution depends on the environment."
+**Caveat (routing of "environment").** Much of the donor-line signal does **not** fold into
+the female *main* effect — it routes into **female×E**: the CML lines re-rank across the
+five environments, most sharply between the optimal sites and the Chokwe P-stress site.
+That female×E is the largest genetic term is literally "which donor line is best depends on
+the environment," and it is why the across-environment narrow-sense h² (0.045) is so low —
+the additive signal that *would* transmit is largely environment-specific.
 
 ### 3.3 Does "essentially the same male" extend to *all* phenotypes?
 
@@ -246,14 +252,15 @@ Even for yield, read the zero carefully. GCA(male) = 0 means only that the teste
 differ in their *average* (general, additive) effect. SCA is a different thing — whether a
 *specific* ♀×♂ pairing beats the prediction from the two parents' averages. If the males
 were *literally* interchangeable, the male identity wouldn't matter, **SCA would also
-collapse to ≈ 0**, and everything would pile onto female GCA *alone* — not female + SCA.
-The non-zero SCA (0.0716) and SCA×E (0.118) say the males are **not** identical: they carry
-*specific/interaction* diversity (they combine and respond to environments differently)
-even though their *additive/average* diversity is nil.
+collapse to ≈ 0**, and everything would pile onto female GCA *alone*. The non-zero SCA
+(0.086) says the males are **not** identical: they retain modest *specific-combination*
+diversity (some ♀×♂ pairings beat their parents' average) even though their
+*additive/average* diversity is nil. Its environment interaction, SCA×E, is itself ≈ 0 —
+the specific combinations that exist are stable across environments.
 
 > Sharpened premise: the testers have little **general (additive)** diversity for yield,
-> but retain **specific (interaction)** diversity — and, per §3.3, likely retain additive
-> diversity for traits other than yield.
+> but retain modest **specific-combination (SCA)** diversity — and, per §3.3, likely retain
+> additive diversity for traits other than yield.
 
 ### 3.5 A falsifiable test
 
@@ -272,21 +279,31 @@ Fato et al. (2025) makes the first outcome the more likely one a priori (non-yie
 respond to selection in this germplasm), but it is worth confirming directly in *these*
 seven testers.
 
+**This refit has now been run** ([`male_gca_trait_sweep.html`](male_gca_trait_sweep.html)):
+across all 16 plot-level phenotypes the male term is singular/null for grain yield and every
+yield component, for biomass, and for the efficiency/index ratios, and differs (boundary-
+corrected LRT p < 0.05) **only for maturity** — days to silking and days to anthesis. That
+is exactly the **Mechanism A** signature: the testers are homogenised where they were
+selected (yield and its correlates) but still carry the phenology differences selection
+never targeted. The "essentially the same male" claim holds *for yield*, not genome-wide.
+
 ### Honest statistical caveat — is SCA real?
 
-The SCA and SCA×E point estimates are imprecise — Wald Z-ratios ≈ 1.1 (well under 2), and
-the arithmetic SCA spread (≈ 0.18) is about equal to the sampling error of a 12-plot family
-mean (≈ 0.19). So whether σ²_SCA is *real signal* or *sampling noise* is genuinely
-uncertain. (Wald Z on variance components near a boundary is itself unreliable; firm
-support comes from LRT/ANOVA.) The only genetic terms with solid LRT support are **female
-GCA (p = 0.0002)** and **female GCA×E (p = 0.004)**.
+The SCA point estimate is imprecise — Wald Z ≈ 1.3 (under 2), and the arithmetic SCA spread
+(≈ 0.21) is of the same order as the sampling error of a 15-plot family mean (≈ 0.16); SCA×E
+is estimated at the boundary (≈ 0). So whether σ²_SCA is *real signal* or *sampling noise*
+is genuinely uncertain. (Wald Z on variance components near a boundary is itself unreliable;
+firmer support comes from LRT/ANOVA.) By the fixed-effects ANOVA the **female** main effect
+still differs (p = 0.008), and **female×E** is the strongest random genetic term (Z ≈ 1.8,
+p ≈ 0.03) — though the female *main-effect* REML variance is small precisely because most of
+the donor-line signal has routed into that female×E term. The male is null on every test.
 
-**Bottom line:** the genetic variance is **female-driven (GCA and GCA×E)**, the **male is
-null for yield**, and SCA/SCA×E are where any male-by-cross-by-environment signal *would*
-land — but that signal is too small here to distinguish from noise. The germplasm history
-explains the null male cleanly; the open question, settled only by the trait-by-trait
-refit, is whether the testers are "the same male" *for yield specifically* (likely) or
-*genome-wide* (not supported by the genetic-gain record).
+**Bottom line:** the genetic variance is **female-driven, but largely through
+female×environment** rather than a stable female main effect; the **male is null for
+yield** on every test; and SCA / SCA×E are small (SCA×E ≈ 0). The germplasm history explains
+the null male cleanly; the open question — whether the testers are "the same male" *for
+yield specifically* or *genome-wide* — is settled by the trait-by-trait refit (§3.5), which
+now supports the yield-specific (Mechanism A) reading.
 
 > *On the "Ecuador" recollection (now resolved):* it most plausibly refers to **Ecuador
 > 573**, one of the **founder populations of CIMMYT heterotic group B** (alongside ETO,
@@ -301,8 +318,10 @@ refit, is whether the testers are "the same male" *for yield specifically* (like
    genuine boundary zero (signal below noise), not an estimation failure.
 2. Yield variances are in the **same units (t/ha²)** as PMC10819934 — but compare
    *variance components*, never the paper's *mean squares*.
-3. The genetic architecture differs: that study is **dominance-led** (h² ≈ 0.01); this
-   one is **female-additive-led** (h² ≈ 0.22) with a null male tester.
+3. The genetic architecture differs: that study is **dominance-led** (h² ≈ 0.01); this one
+   has a **null male tester**, a small additive part carried only by the females, and most
+   of its genetic action in **SCA and female×environment** — so across-environment
+   narrow-sense h² is low (≈ 0.05).
 4. The null male tester has a **germplasm cause**: the seven were double-ascertained
    (an already-narrow elite pool, then truncation-selected on yield). That pool is
    independently documented as low-diversity (CIMMYT ESA mean genetic distance 0.294, four
