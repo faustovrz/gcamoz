@@ -184,18 +184,18 @@ The **49 hybrids are randomized within each replication**, and the `NAMULONGUE` 
 
 ## Locations / Environments
 
-The trial spans **four physical locations** (`loc`), one of which — Chokwe — was grown at
-**two phosphorus levels**, giving **five environments** in the `ENV` column (`env` =
-location + P-treatment code). The applied P, recovered per plot as `GY / PUE`, is exactly
-50 kg/ha (optimal) everywhere except CHOKWE STS at 10 kg/ha (stress):
+The trial spans **four physical locations** (`loc`) run under two **phosphorus treatments**,
+giving **five environments** in the `ENV` column (`env` = location + P-treatment code): three
+are **P-stress** and two are **optimal**. The applied P, recovered per plot as `GY / PUE`, is
+exactly 10 kg/ha (stress) at the three stress environments and 50 kg/ha at the two optimal:
 
 | `ENV` | Location (`loc`) | Treatment | P input (kg/ha) |
 | :--- | :--- | :--- | :--- |
 | `CHOKWE OPT` | Chokwe | Optimal | 50 |
 | `CHOKWE STS` | Chokwe | Stress | 10 |
 | `MANIQUENIQ OPT` | Maniquenique | Optimal | 50 |
-| `NHACOONGO OPT` | Nhacoongo | Optimal | 50 |
-| `SUSSUNDENGA OPT` | Sussundenga | Optimal | 50 |
+| `NHACOONGO STS` | Nhacoongo | Stress | 10 |
+| `SUSSUNDENGA STS` | Sussundenga | Stress | 10 |
 
 ## Field Layout Within Each Location
 
@@ -319,7 +319,7 @@ The map below uses the **`ENTRY` column — the recorded planting/allocation ord
 #| warning: false
 
 field_layout <- field %>%
-  filter(ENV == "NHACOONGO OPT") %>%   # field_row / field_col come from the setup chunk
+  filter(ENV == "NHACOONGO STS") %>%   # field_row / field_col come from the setup chunk
   mutate(entry_type = if_else(GEN == "0", "Check (NAMULONGUE)", "Line × tester hybrid"))
 
 entry_palette <- c(
@@ -336,7 +336,7 @@ ggplot(field_layout, aes(x = field_col, y = field_row, fill = entry_type)) +
   scale_y_reverse(breaks = 1:10, expand = c(0, 0)) +
   coord_equal() +
   labs(
-    title    = "Serpentine field layout for NHACOONGO OPT (5 columns × 10 rows per replication)",
+    title    = "Serpentine field layout for NHACOONGO STS (5 columns × 10 rows per replication)",
     subtitle = "First entry at the top-left corner; planting order snakes left–right then right–left. Tile = GEN code, coloured by entry type.",
     x = "Field column",
     y = "Field row (planting progresses top → bottom)"
@@ -451,7 +451,7 @@ ggplot(plot_all, aes(factor(count), pairs, fill = type)) +
   theme(legend.position = "bottom")
 ```
 
-**Verdict: the layout is RCBD-consistent, not an α-lattice.** A genuine α(0,1) design would show only the two bars of the green reference panel. Instead every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with even a triple in NHACOONGO), and the observed distribution is statistically indistinguishable from the orange random-RCBD simulation. There is no incomplete-block structure: the field rows are simply where a random RCBD allocation happened to fall. (Note also that three environments — CHOKWE STS, CHOKWE OPT, SUSSUNDENGA OPT — share an *identical* distribution, suggesting the same randomization was reused across them.) This is the empirical justification for analysing the trial as an **RCBD with row/column spatial control** in the model that follows.
+**Verdict: the layout is RCBD-consistent, not an α-lattice.** A genuine α(0,1) design would show only the two bars of the green reference panel. Instead every environment carries a real bar at **count = 2** (≈ 34 pairs co-occur twice, with even a triple in NHACOONGO), and the observed distribution is statistically indistinguishable from the orange random-RCBD simulation. There is no incomplete-block structure: the field rows are simply where a random RCBD allocation happened to fall. (Note also that several environments share an *identical* co-occurrence distribution, suggesting the same randomization was reused across them.) This is the empirical justification for analysing the trial as an **RCBD with row/column spatial control** in the model that follows.
 
 # Phenotypic Model
 
@@ -843,11 +843,11 @@ kable(gxe_results, caption = "Genetic variances, G × E, and entry-mean heritabi
 ::: {.callout-important}
 **Why these estimates look the way they do — and what is real vs. fixable.**
 
-*   **Male (tester) GCA and SCA×E estimate to ~0, and this is correct.** A fixed-effects ANOVA gives male `MS = 1.48`, *below* the residual `MS = 3.03` (`p = 0.82`), so the unconstrained REML variance is negative and is pinned at 0 (`Z ≈ 0`); the SCA×environment term (`cross:env`) likewise estimates to 0. The SCA (cross) variance is small (≈ 0.09, ANOVA `p = 0.06`). The real signal is **female (line) GCA** (ANOVA `p = 0.008`) and its **environment interaction** (`female:env` is the largest G×E variance, ≈ 0.15): the seven CIMMYT donor lines differ and re-rank across sites; the seven local testers do not.
+*   **Male (tester) GCA and SCA×E estimate to ~0, and this is correct.** A fixed-effects ANOVA gives male `MS = 1.14`, *below* the residual `MS = 2.96` (`p = 0.89`), so the unconstrained REML variance is negative and is pinned at 0 (`Z ≈ 0`); the SCA×environment term (`cross:env`) likewise estimates to 0. The SCA (cross) variance is small (≈ 0.08, ANOVA `p = 0.07`). The real signal is **female (line) GCA** (ANOVA `p = 0.002`) and its **environment interaction** (`female:env` is the largest G×E variance, ≈ 0.14): the seven CIMMYT donor lines differ and re-rank across sites; the seven local testers do not.
 
-*   **Narrow-sense $h^2_{\bar{x}}$ is genuinely low (~0.05).** Additive variance is small and one-sided (males add nothing), and $\sigma^2_{GCA_F \times E}$ (≈ 0.15) is *larger* than $\sigma^2_{GCA_F}$ (≈ 0.01) — the lines re-rank strongly across five climatically distinct sites (NHACOONGO mean 5.25 vs. SUSSUNDENGA 7.41 t/ha). Across-environment narrow-sense heritability *should* be low when G×E dominates the additive signal.
+*   **Narrow-sense $h^2_{\bar{x}}$ is low (~0.12).** Additive variance is small and one-sided (males add nothing), and $\sigma^2_{GCA_F \times E}$ (≈ 0.14) is *larger* than $\sigma^2_{GCA_F}$ (≈ 0.04) — the lines re-rank strongly across five climatically distinct sites (NHACOONGO mean 5.25 vs. SUSSUNDENGA 7.41 t/ha). Across-environment narrow-sense heritability *should* be low when G×E dominates the additive signal.
 
-*   **The field row/column spatial terms are modelled (`env:rep:row`, `env:rep:col`), which is why $H^2_{\bar{x}}$ is realistic.** The field **row** carries a **highly significant** variance (≈ 0.51, `Z ≈ 4.0`) and the column a smaller one (≈ 0.08, `Z ≈ 1.2`); together they absorb genuine field gradient across the 5 × 10 grid that would otherwise inflate the residual. Compared with a plain RCBD (rep only) the residual drops ~19% (2.91 → 2.35) and broad-sense $H^2_{\bar{x}}$ rises from ≈ 0.26 to ≈ **0.34**. These coordinates are Stelio's real planting positions (5 × 10 serpentine), so this is a legitimate spatial correction, not an arbitrary split.
+*   **The field row/column spatial terms are modelled (`env:rep:row`, `env:rep:col`), which is why $H^2_{\bar{x}}$ is realistic.** The field **row** carries a **highly significant** variance (≈ 0.56, `Z ≈ 4.3`) and the column a smaller one (≈ 0.08, `Z ≈ 1.3`); together they absorb genuine field gradient across the 5 × 10 grid that would otherwise inflate the residual. Compared with a plain RCBD (rep only) the residual drops ~22% (2.86 → 2.25) and broad-sense $H^2_{\bar{x}}$ rises from ≈ 0.30 to ≈ **0.39**. These coordinates are Stelio's real planting positions (5 × 10 serpentine), so this is a legitimate spatial correction, not an arbitrary split.
 :::
 
 # Step-by-Step Checklist for Stelio {#sec-checklist}

@@ -27,10 +27,10 @@ phosphorus,
 $$\text{PUE} = \frac{\text{GY (kg/ha)}}{\text{P input (kg/ha)}},$$
 
 so the applied P is recoverable as `GY * 1000 / PUE`. It collapses to **two discrete values
-with zero within-location variance** — `50 kg/ha` (optimal) at four environments and
-`10 kg/ha` (stress) at CHOKWE STS — which is carried in the `p_input` and `treatment`
-columns. The small stress denominator inflates PUE, so the "second mode" is simply the
-stress site.
+with zero within-location variance** — `10 kg/ha` (stress) at three environments (CHOKWE STS,
+NHACOONGO, SUSSUNDENGA) and `50 kg/ha` (optimal) at the other two (CHOKWE OPT, MANIQUENIQ) —
+which is carried in the `p_input` and `treatment` columns. The small stress denominator
+inflates PUE, so the upper mode is simply the stress environments.
 
 ```{r}
 #| label: setup
@@ -75,8 +75,8 @@ trt_pal <- c("Optimal" = "#2c7fb8", "Stress" = "#d95f0e")
 PUE for the 49 line × tester hybrids in each environment, drawn in the **beeswarm +
 transparent-boxplot** style: the data points sit in the background (`geom_quasirandom`) with
 a transparent boxplot in front (`alpha = 0`), coloured by phosphorus **treatment**. The
-single stress environment (CHOKWE STS, orange) stands far above the four optimal sites — the
-visual signature of the bimodality.
+three stress environments (orange) stand far above the two optimal sites — the visual
+signature of the bimodality.
 
 ```{r}
 #| label: pue-across-env

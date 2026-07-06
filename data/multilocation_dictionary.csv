@@ -1,9 +1,9 @@
 variable,name,unit,role,notes
 entry,Plot entry (serpentine planting order),NA,design,blank in CHOKWE STS III (14) & NHACOONGO II (1) - fix at source
 loc,Location (physical site),NA,design,4 sites; CKOKWE/CHOKWE spelling unified to CHOKWE
-env,Environment (location x treatment),,design,5 levels = loc + OPT/STS code; the analysis environment
-p_input,Phosphorus input (applied P),kg/ha,design,"two levels: 10 (stress) at CHOKWE STS, 50 (optimal) at the other four sites; = GY*1000/PUE"
-treatment,Phosphorus condition / treatment,NA,design,Stress (P=10) vs Optimal (P=50); Chokwe was grown at both levels (OPT vs STS)
+env,Environment (location x treatment),NA,design,"5 levels = loc + OPT/STS code (regenerated from treatment): CHOKWE OPT, CHOKWE STS, MANIQUENIQ OPT, NHACOONGO STS, SUSSUNDENGA STS"
+p_input,Phosphorus input (applied P),kg/ha,design,"two levels: 10 (stress) at CHOKWE STS / NHACOONGO / SUSSUNDENGA, 50 (optimal) at CHOKWE OPT / MANIQUENIQ; = GY*1000/PUE"
+treatment,Phosphorus condition / treatment,NA,design,"Stress (P=10) vs Optimal (P=50); this version: 3 stress (CHOKWE STS, NHACOONGO, SUSSUNDENGA) + 2 optimal (CHOKWE OPT, MANIQUENIQ)"
 rep,Replicate,NA,design,I / II / III
 gen,Genotype code,NA,design,0 = check; 1-49 = 7x7 factorial
 female,Female parent (CIMMYT line),NA,design,7 CML lines + Check
@@ -21,7 +21,8 @@ GW,Grain weight,g/plot,trait,NA
 PH,Plant height,cm,trait,MANIQUENIQ recorded in meters for most plots; values <10 converted to cm (x100) in cleaning
 SD,Stem (culm) diameter,cm,trait,NA
 RW,Root weight,g/plot,trait,NA
-DM,Dry matter mass (stover biomass),g/plot,trait,NA
+SW,Shoot dry weight,g/plot,trait,shoot (stover) dry weight; root:shoot denominator (RSR = RW/SW)
+TDM,Total dry mass,g/plot,trait,SW + RW (total plant dry mass); replaces the earlier mislabeled DM = total biomass
 silking_date,Silking date (female flowering),yyyy-mm-dd,date,parsed to date from mixed dd/mm + Excel-serial source
 anthesis_date,Anthesis date (male flowering),yyyy-mm-dd,date,parsed to date from mixed dd/mm + Excel-serial source
 planting_date,Planting date,yyyy-mm-dd,date,single date per location
