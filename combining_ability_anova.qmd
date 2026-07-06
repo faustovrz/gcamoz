@@ -182,15 +182,16 @@ gca_all %>% filter(trait %in% c("GY","PUE")) %>%
 
 ```{r}
 #| label: top-hybrids
-for (tn in c("GY","PUE")) {
-  tab <- sca_all %>% filter(trait == tn) %>%
+top_ct <- map_dfr(c("GY", "PUE"), function(tn) {
+  sca_all %>% filter(trait == tn) %>%
     arrange(desc(val)) %>% head(8) %>%
-    transmute(Hybrid = paste0(female, " × ", male),
+    transmute(Trait = tn, Hybrid = paste0(female, " × ", male),
               `Cross mean` = round(val, 3), SCA = round(SCA, 3))
-  print(kable(tab, caption = paste0("Top 8 hybrids for ", tn,
-              " (cross mean across environments) with their SCA deviation.")) %>%
-        kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE))
-}
+})
+
+kable(top_ct, caption = "Top 8 hybrids for the priority traits (cross mean across environments) with their SCA deviation.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
 ```
 
 # Summary
