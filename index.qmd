@@ -23,8 +23,8 @@ standalone notebook that feeds the paper's **Methods** and its **figures/tables*
 physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS, ASI).
 
 1. [Descriptive statistics, data quality & normality](descriptive_stats.html)
-2. Phosphorus treatment effects — Chokwe OPT vs STS · *in progress*
-3. Combining ability: ANOVA + GCA/SCA · *planned*
+2. [Phosphorus treatment effects — Chokwe OPT vs STS](phosphorus_effects.html)
+3. Combining ability: ANOVA + GCA/SCA · *in progress*
 4. Variance components, G×E, heritability & genetic parameters (REML-BLUP) · *planned*
 5. Trait correlations & PUE regression · *planned*
 6. Stability (AMMI / GGE biplot) · *planned*

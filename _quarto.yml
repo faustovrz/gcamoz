@@ -13,3 +13,4 @@ project:
     - male_gca_trait_sweep.qmd
     - pue_distribution.qmd
     - descriptive_stats.qmd
+    - phosphorus_effects.qmd

@@ -1,0 +1,153 @@
+---
+title: "Phosphorus Treatment Effects (Chokwe)"
+subtitle: "Analysis 2 of the PUE hybrid series — the paired optimal-vs-stress phosphorus contrast at Chokwe, across the 11 phenotypes"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series — notebook 2.** Shared data preparation: `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+The phosphorus treatment is estimable **only at Chokwe**, the one site grown at both
+**optimal** (50 kg P ha⁻¹) and **stress** (10 kg P ha⁻¹) levels with the *same* 49 line ×
+tester hybrids (the other four environments each received a single P level, so there the P
+effect is confounded with site). We therefore restrict this analysis to the Chokwe paired
+trial: 2 treatments × 3 replications × 49 hybrids = 294 plots.
+
+For each of the 11 phenotypes we fit the mixed model
+
+$$y = \mu + \tau_{\text{treatment}} + r_{(\text{treatment})} + g_{\text{genotype}} + (\tau g)_{\text{genotype}\times\text{treatment}} + \varepsilon,$$
+
+with **treatment fixed** and replication (within treatment), genotype, and
+genotype × treatment random. The treatment effect is tested with a Kenward–Roger F-test
+(`lmerTest`); estimated marginal means (optimal, stress) and their difference come from
+`emmeans`. The genotype × treatment term (whether hybrids *respond differently* to P) is
+tested by a likelihood-ratio test (`ranova`).
+
+::: {.callout-warning appearance="simple"}
+**PUE caveat.** PUE = grain yield / applied P, and applied P is 10 vs 50 kg ha⁻¹ by design,
+so the optimal-vs-stress difference in PUE is **mechanical (the denominator)**, not a
+biological response. Read the PUE row as a definitional consequence; the biological P
+response is in GY and the physiological traits.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(lme4)
+library(lmerTest)     # Kenward-Roger F-tests + ranova
+library(emmeans)
+library(ggbeeswarm)
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")
+
+chokwe <- hybrids %>%
+  filter(loc == "CHOKWE") %>%
+  mutate(treatment = droplevels(treatment), gen = droplevels(gen))
+
+emm_opts <- emmeans::emm_options(lmerTest.limit = 400, pbkrtest.limit = 400)
+ctrl <- lmerControl(check.conv.singular = "ignore", optimizer = "bobyqa",
+                    optCtrl = list(maxfun = 2e5))
+```
+
+# The phosphorus contrast, trait by trait
+
+```{r}
+#| label: treatment-plot
+#| fig-width: 11
+#| fig-height: 13
+#| warning: false
+
+ck_long <- chokwe %>%
+  select(treatment, rep, gen, all_of(analysis_traits)) %>%
+  pivot_longer(all_of(analysis_traits), names_to = "trait", values_to = "value") %>%
+  left_join(trait_meta, by = "trait") %>%
+  mutate(panel = factor(paste0(trait, "  (", unit, ")"),
+                        levels = paste0(trait_meta$trait, "  (", trait_meta$unit, ")")))
+
+trt_pal <- c("Optimal" = "#2c7fb8", "Stress" = "#d95f0e")
+
+ggplot(ck_long, aes(x = treatment, y = value, color = treatment)) +
+  geom_quasirandom(size = 0.6, alpha = 0.55, width = 0.3) +
+  geom_boxplot(width = 0.25, linewidth = 0.7, alpha = 0, outlier.shape = NA) +
+  facet_wrap(~ panel, scales = "free_y", ncol = 3) +
+  scale_color_manual(values = trt_pal, name = NULL) +
+  labs(x = NULL, y = NULL,
+       title = "Optimal vs P-stress at Chokwe (49 hybrids, 3 reps)") +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        legend.position = "top")
+```
+
+# Treatment effect estimates
+
+```{r}
+#| label: treatment-model
+#| message: false
+#| warning: false
+
+fit_trt <- function(tn, d) {
+  d <- d %>% mutate(y = .data[[tn]]) %>% filter(!is.na(y))
+  m <- suppressMessages(suppressWarnings(
+    lmer(y ~ treatment + (1 | treatment:rep) + (1 | gen) + (1 | treatment:gen),
+         data = d, control = ctrl)))
+  em  <- as.data.frame(emmeans(m, ~ treatment))
+  opt <- em$emmean[em$treatment == "Optimal"]
+  sts <- em$emmean[em$treatment == "Stress"]
+  p_trt <- tryCatch(anova(m)[["Pr(>F)"]][1], error = function(e) NA_real_)
+  rv    <- suppressMessages(suppressWarnings(ranova(m)))
+  p_gxt <- rv[grepl("treatment:gen", rownames(rv)), "Pr(>Chisq)"]
+  tibble(trait = tn, Optimal = opt, Stress = sts,
+         diff = opt - sts, pct = 100 * (opt - sts) / sts,
+         p_treatment = p_trt, p_GxT = ifelse(length(p_gxt), p_gxt, NA_real_))
+}
+
+trt_res <- map_dfr(analysis_traits, fit_trt, d = chokwe) %>%
+  left_join(trait_meta, by = "trait") %>%
+  arrange(trait)
+
+trt_res %>%
+  transmute(
+    Group = group, Trait = trait, Unit = unit,
+    Optimal = round(Optimal, 3), Stress = round(Stress, 3),
+    `Δ (Opt−Str)` = round(diff, 3), `% change` = round(pct, 1),
+    `p (treatment)` = signif(p_treatment, 3),
+    `p (G×T)` = signif(p_GxT, 3),
+    Effect = case_when(is.na(p_treatment) ~ "—",
+                       p_treatment < 0.05 & diff > 0 ~ "↓ under stress",
+                       p_treatment < 0.05 & diff < 0 ~ "↑ under stress",
+                       TRUE ~ "n.s.")
+  ) %>%
+  kable(caption = "Chokwe optimal-vs-stress phosphorus effect per trait. Δ and % change are optimal − stress (marginal means); p(treatment) = Kenward–Roger F-test; p(G×T) = LRT for genotype × treatment. PUE is denominator-driven (see caveat).") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+# Summary
+
+* **Which traits respond to P at Chokwe** are the rows with a significant `p (treatment)` —
+  the biological phosphorus response (read GY and the Group-B physiological traits; PUE is
+  mechanical).
+* **Genotype × treatment** (`p (G×T)`) flags traits where hybrids *differ in their P
+  response* — the traits where a stress-specific ranking of hybrids exists, relevant to
+  selecting for the low-P target environment.
+* This paired contrast is the clean estimate of the P effect; the multi-environment G×E
+  (across all five environments) is handled in the combining-ability notebooks (3–4).
