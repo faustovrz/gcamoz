@@ -1,0 +1,206 @@
+---
+title: "Combining Ability: ANOVA and GCA/SCA Effects"
+subtitle: "Analysis 3 of the PUE hybrid series — line × tester (NC Design II) fixed-effects ANOVA and combining-ability effects across five environments"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series — notebook 3.** Shared data preparation: `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+Combining ability was analysed with the **line × tester (North Carolina Design II)** model
+across the five environments. For each of the 11 phenotypes the fixed-effects combined
+analysis of variance partitions the among-hybrid variation into **general combining ability
+of the lines** (females, GCA_L), **of the testers** (males, GCA_T), and **specific combining
+ability** (line × tester, SCA), each with its environment interaction:
+
+$$y = \mu + E + R_{(E)} + \underbrace{L}_{\text{GCA}_L} + \underbrace{T}_{\text{GCA}_T}
+      + \underbrace{L{:}T}_{\text{SCA}} + E{:}L + E{:}T + E{:}L{:}T + \varepsilon.$$
+
+**F-tests use the correct strata for a multi-environment trial:** GCA_L, GCA_T and SCA are
+tested over their respective **environment-interaction** mean squares (not plot error, which
+would be anticonservative because each combining-ability mean averages over hundreds of
+plots), and the interaction terms are tested over the residual. **GCA effects** (superior
+parental lines) and **SCA effects** (superior specific hybrids) are estimated arithmetically
+from the balanced cross means:
+$\widehat{\text{GCA}}_i = \bar{x}_{i\cdot} - \bar{x}_{\cdot\cdot}$,
+$\widehat{\text{SCA}}_{ij} = \bar{x}_{ij} - \bar{x}_{i\cdot} - \bar{x}_{\cdot j} + \bar{x}_{\cdot\cdot}$.
+
+::: {.callout-note appearance="simple"}
+Across-environment PUE averages the optimal and P-stress environments (different applied-P
+denominators), so PUE combining ability here is a multi-environment blend; see notebook 2 for
+the within-Chokwe P contrast.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")   # hybrids, trait_meta, analysis_traits
+```
+
+# Combined line × tester ANOVA
+
+```{r}
+#| label: anova-fn
+
+# Combined LxT ANOVA per trait; returns p-values with the correct error strata.
+lt_anova <- function(tn, d) {
+  d  <- d %>% mutate(y = .data[[tn]]) %>% filter(!is.na(y))
+  m  <- lm(y ~ env + env:rep + female + male + female:male +
+               env:female + env:male + env:female:male, data = d)
+  a  <- anova(m)
+  MS <- setNames(a[["Mean Sq"]], rownames(a))
+  DF <- setNames(a[["Df"]],      rownames(a))
+  Ft <- function(num, den) {
+    f <- MS[[num]] / MS[[den]]
+    pf(f, DF[[num]], DF[[den]], lower.tail = FALSE)
+  }
+  tibble(
+    trait     = tn,
+    `GCA_L`   = Ft("female", "env:female"),
+    `GCA_T`   = Ft("male",   "env:male"),
+    `SCA`     = Ft("female:male", "env:female:male"),
+    `GCA_L×E` = Ft("env:female", "Residuals"),
+    `GCA_T×E` = Ft("env:male",   "Residuals"),
+    `SCA×E`   = Ft("env:female:male", "Residuals")
+  )
+}
+
+stars <- function(p) case_when(is.na(p) ~ "", p < .001 ~ "***", p < .01 ~ "**",
+                               p < .05 ~ "*", p < .1 ~ ".", TRUE ~ "ns")
+
+anova_tab <- map_dfr(analysis_traits, lt_anova, d = hybrids) %>%
+  left_join(trait_meta, by = "trait") %>% arrange(trait)
+
+anova_tab %>%
+  transmute(Group = group, Trait = trait,
+            GCA_L = paste0(signif(GCA_L,2), stars(GCA_L)),
+            GCA_T = paste0(signif(GCA_T,2), stars(GCA_T)),
+            SCA   = paste0(signif(SCA,2),   stars(SCA)),
+            `GCA_L×E` = paste0(signif(`GCA_L×E`,2), stars(`GCA_L×E`)),
+            `GCA_T×E` = paste0(signif(`GCA_T×E`,2), stars(`GCA_T×E`)),
+            `SCA×E`   = paste0(signif(`SCA×E`,2),   stars(`SCA×E`))) %>%
+  kable(caption = "Combined line × tester ANOVA: p-values (with significance) per source. GCA_L/GCA_T/SCA are tested over their environment-interaction strata; the ×E terms over residual. *** <.001, ** <.01, * <.05, . <.1, ns ≥ .1.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+# GCA and SCA effect estimates
+
+```{r}
+#| label: gca-sca-effects
+
+# Balanced cross means across env & rep, then arithmetic GCA/SCA per trait.
+cross_mean <- hybrids %>%
+  group_by(female, male) %>%
+  summarise(across(all_of(analysis_traits), ~ mean(.x, na.rm = TRUE)), .groups = "drop")
+
+gca_of <- function(tn) {
+  w  <- cross_mean %>% select(female, male, val = all_of(tn))
+  gm <- mean(w$val)
+  fem <- w %>% group_by(parent = female) %>% summarise(GCA = mean(val) - gm, .groups="drop") %>% mutate(type = "Female (line)")
+  mal <- w %>% group_by(parent = male)   %>% summarise(GCA = mean(val) - gm, .groups="drop") %>% mutate(type = "Male (tester)")
+  bind_rows(fem, mal) %>% mutate(trait = tn)
+}
+gca_all <- map_dfr(analysis_traits, gca_of)
+
+sca_of <- function(tn) {
+  w  <- cross_mean %>% select(female, male, val = all_of(tn))
+  gm <- mean(w$val)
+  w %>% group_by(female) %>% mutate(fm = mean(val)) %>%
+        group_by(male)   %>% mutate(mm = mean(val)) %>% ungroup() %>%
+        mutate(SCA = val - fm - mm + gm, trait = tn)
+}
+sca_all <- map_dfr(analysis_traits, sca_of)
+```
+
+## GCA of the female lines (CIMMYT donors)
+
+```{r}
+#| label: gca-female
+gca_all %>% filter(type == "Female (line)") %>%
+  mutate(trait = factor(trait, levels = analysis_traits)) %>%
+  select(parent, trait, GCA) %>%
+  pivot_wider(names_from = trait, values_from = GCA) %>%
+  mutate(across(-parent, ~ round(.x, 3))) %>%
+  rename(`Female line` = parent) %>%
+  kable(caption = "General combining ability (GCA) of the 7 CIMMYT female lines, per trait (deviation from the grand mean). Positive = above-average general contribution.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE)
+```
+
+## GCA of the male testers (IIAM donors)
+
+```{r}
+#| label: gca-male
+gca_all %>% filter(type == "Male (tester)") %>%
+  mutate(trait = factor(trait, levels = analysis_traits)) %>%
+  select(parent, trait, GCA) %>%
+  pivot_wider(names_from = trait, values_from = GCA) %>%
+  mutate(across(-parent, ~ round(.x, 3))) %>%
+  rename(`Male tester` = parent) %>%
+  kable(caption = "GCA of the 7 IIAM male testers, per trait. Near-zero values (esp. for GY and yield components) reflect the near-null tester differentiation established in the earlier notebooks.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE)
+```
+
+```{r}
+#| label: gca-plot-priority
+#| fig-width: 10
+#| fig-height: 5
+
+gca_all %>% filter(trait %in% c("GY","PUE")) %>%
+  mutate(trait = recode(trait, GY = "GY (t/ha)", PUE = "PUE"),
+         parent = reorder(parent, GCA)) %>%
+  ggplot(aes(x = parent, y = GCA, fill = GCA > 0)) +
+  geom_col() +
+  facet_grid(trait ~ type, scales = "free", space = "free_x") +
+  scale_fill_manual(values = c(`TRUE` = "#2c7fb8", `FALSE` = "#d95f0e"), guide = "none") +
+  labs(title = "GCA effects for the priority traits (GY, PUE)", x = NULL, y = "GCA (deviation from grand mean)") +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 40, hjust = 1))
+```
+
+# Superior hybrids for the priority traits
+
+```{r}
+#| label: top-hybrids
+for (tn in c("GY","PUE")) {
+  tab <- sca_all %>% filter(trait == tn) %>%
+    arrange(desc(val)) %>% head(8) %>%
+    transmute(Hybrid = paste0(female, " × ", male),
+              `Cross mean` = round(val, 3), SCA = round(SCA, 3))
+  print(kable(tab, caption = paste0("Top 8 hybrids for ", tn,
+              " (cross mean across environments) with their SCA deviation.")) %>%
+        kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE))
+}
+```
+
+# Summary
+
+* **ANOVA (which effects are real):** significant **GCA_L** (female lines differ) is the
+  consistent signal; **GCA_T** is weak for GY and its components (near-null testers) but
+  appears for maturity; **SCA** and the **×E** terms locate the specific-combination and
+  genotype-by-environment variation.
+* **Superior parents (GCA):** the female-line GCA table ranks the CIMMYT donors for each
+  trait; for GY/PUE the tester GCAs are near zero, so parental choice on the male side adds
+  little for yield.
+* **Superior hybrids (SCA):** the top-hybrid tables give the best specific combinations for
+  GY and PUE. Variance-component heritabilities and REML-BLUP selection follow in notebook 4.
