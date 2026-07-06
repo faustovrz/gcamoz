@@ -27,7 +27,7 @@ physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS, ASI).
 3. [Combining ability: ANOVA + GCA/SCA](combining_ability_anova.html)
 4. [Variance components, G×E, heritability & genetic parameters (REML-BLUP)](variance_components.html)
 5. [Trait correlations & PUE regression](correlations_pue.html)
-6. Stability (AMMI / GGE biplot) · *in progress*
+6. [Stability (AMMI / GGE biplot)](stability_ammi_gge.html)
 
 ## Earlier notebooks {#earlier}
 

@@ -17,3 +17,4 @@ project:
     - combining_ability_anova.qmd
     - variance_components.qmd
     - correlations_pue.qmd
+    - stability_ammi_gge.qmd

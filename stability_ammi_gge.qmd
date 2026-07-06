@@ -1,0 +1,155 @@
+---
+title: "Stability Analysis: AMMI and GGE Biplots"
+subtitle: "Analysis 6 of the PUE hybrid series — genotype × environment interaction and identification of stable, high-performing hybrids for GY and PUE"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series — notebook 6.** Shared data preparation: `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+Genotype × environment interaction and stability were analysed for the two priority traits
+(**GY, PUE**) with the `metan` package across the five environments (49 hybrids, 3 reps).
+The **AMMI** model (additive main effects + multiplicative interaction) decomposes the G×E
+into interaction principal components (IPCA); the **AMMI2 biplot** (IPCA1 vs IPCA2) shows how
+hybrids and environments interact, and stability is summarised by the **WAAS** index
+(weighted average of absolute scores — smaller = more stable). Because a stable but
+low-yielding hybrid is not useful, we combine stability and performance in the **WAASY**
+index (equal weight to mean and stability) to rank hybrids. The **GGE biplot** (genotype +
+G×E) gives the *which-won-where* view (mega-environments and their winning hybrids) and the
+mean-vs-stability view.
+
+::: {.callout-note appearance="simple"}
+PUE across environments blends the optimal and P-stress sites (different applied-P
+denominators); its stability here is the stability of the across-environment PUE ranking.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(metan)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")
+
+dat <- hybrids %>% transmute(ENV = env, GEN = cross, REP = rep, GY, PUE)
+
+ammi_gy  <- performs_ammi(dat, ENV, GEN, REP, resp = GY,  verbose = FALSE)
+ammi_pue <- performs_ammi(dat, ENV, GEN, REP, resp = PUE, verbose = FALSE)
+gge_gy   <- gge(dat, ENV, GEN, resp = GY)
+gge_pue  <- gge(dat, ENV, GEN, resp = PUE)
+waas_gy  <- waas(dat, ENV, GEN, REP, resp = GY,  verbose = FALSE)
+waas_pue <- waas(dat, ENV, GEN, REP, resp = PUE, verbose = FALSE)
+```
+
+# AMMI analysis
+
+```{r}
+#| label: ammi-anova
+#| warning: false
+bind_rows(
+  ammi_gy$GY$ANOVA   %>% mutate(Trait = "GY",  .before = 1),
+  ammi_pue$PUE$ANOVA %>% mutate(Trait = "PUE", .before = 1)
+) %>%
+  filter(Source %in% c("ENV","GEN","GEN:ENV","PC1","PC2")) %>%
+  transmute(Trait, Source, Df,
+            `Mean Sq` = round(`Mean Sq`, 3),
+            `F` = round(`F value`, 2),
+            p = signif(`Pr(>F)`, 2),
+            `% G×E` = round(Proportion, 1)) %>%
+  kable(caption = "AMMI ANOVA (key sources) for GY and PUE; PC1/PC2 = interaction principal components with their share of the G×E sum of squares.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: ammi-biplot
+#| fig-width: 12
+#| fig-height: 5.5
+#| warning: false
+arrange_ggplot(
+  plot(ammi_gy,  type = 2) + labs(title = "GY"),
+  plot(ammi_pue, type = 2) + labs(title = "PUE"),
+  ncol = 2
+)
+```
+
+# GGE biplots
+
+*Which-won-where*: the polygon vertices are the best hybrids in each sector; environments
+falling in a sector are "won" by that vertex hybrid (mega-environments).
+
+```{r}
+#| label: gge-www
+#| fig-width: 12
+#| fig-height: 5.5
+#| warning: false
+arrange_ggplot(
+  plot(gge_gy,  type = 3) + labs(title = "GY — which-won-where"),
+  plot(gge_pue, type = 3) + labs(title = "PUE — which-won-where"),
+  ncol = 2
+)
+```
+
+*Mean vs stability*: the abscissa ranks hybrids by mean performance; distance along the
+ordinate measures instability.
+
+```{r}
+#| label: gge-mvs
+#| fig-width: 12
+#| fig-height: 5.5
+#| warning: false
+arrange_ggplot(
+  plot(gge_gy,  type = 2) + labs(title = "GY — mean vs stability"),
+  plot(gge_pue, type = 2) + labs(title = "PUE — mean vs stability"),
+  ncol = 2
+)
+```
+
+# Stable, high-performing hybrids (WAASY)
+
+```{r}
+#| label: waasy
+#| warning: false
+top_waasy <- function(w, resp, n = 8) {
+  w[[resp]]$model %>%
+    dplyr::filter(type == "GEN") %>%
+    dplyr::arrange(dplyr::desc(WAASY)) %>%
+    dplyr::transmute(Trait = resp, Hybrid = Code,
+                     Mean = round(Y, 3), WAAS = round(WAAS, 3), WAASY = round(WAASY, 1)) %>%
+    head(n)
+}
+
+bind_rows(top_waasy(waas_gy, "GY"), top_waasy(waas_pue, "PUE")) %>%
+  kable(caption = "Top 8 hybrids per priority trait by WAASY (joint mean + stability; higher = better). WAAS is the stability score (lower = more stable).") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+# Summary
+
+* **G×E structure:** the AMMI ANOVA shows how much of the interaction the first two IPCA axes
+  capture; a large PC1 share means a few environments/hybrids dominate the interaction.
+* **Which-won-where:** the GGE polygon identifies whether the five environments form one or
+  several mega-environments and names the winning hybrid in each — directly relevant to
+  whether one hybrid can be recommended across sites or selection must be environment-specific.
+* **Recommendation set:** the WAASY table lists hybrids that are simultaneously high-yielding
+  and stable for GY and for PUE — the shortlist that, together with the GCA/BLUP results
+  (notebook 4) and the indirect-selection traits (notebook 5), supports the breeding
+  recommendation for low-phosphorus environments.
