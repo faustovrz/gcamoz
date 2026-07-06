@@ -1,0 +1,183 @@
+---
+title: "Trait Correlations & PUE Regression"
+subtitle: "Analysis 5 of the PUE hybrid series — genetic correlations among the 11 phenotypes and the traits that drive phosphorus-use efficiency"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series — notebook 5.** Shared data preparation: `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+Because grain yield and PUE are weakly heritable directly (notebook 4), we ask whether the
+more heritable traits (maturity, height, biomass) **track PUE**, which would enable indirect
+selection. Correlations are computed at the **genetic (among-hybrid) level** on the 49
+line × tester cross means averaged over environments and replications (Pearson r, tested with
+`Hmisc::rcorr`). We then regress **PUE** and **GY** on the physiological (B) and auxiliary
+(C) traits, using **standardized** predictors so coefficients are comparable in magnitude
+(importance).
+
+::: {.callout-note appearance="simple"}
+Three structural constraints are respected in the regressions: **PUE = GY / applied P**, so
+GY is excluded as a PUE predictor (it would be near-tautological); **TDM = SW + RW** and
+**ASI = DTS − DTA** are exact identities, so TDM and ASI are excluded to avoid perfect
+collinearity (SW, RW, DTA and DTS are kept).
+:::
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(Hmisc)        # rcorr: correlation + p-values (load first; it masks some dplyr verbs)
+library(tidyverse)
+library(broom)
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")
+
+# genetic (among-hybrid) level: 49 cross means over environments and reps
+cross_mean <- hybrids %>%
+  group_by(female, male, cross) %>%
+  summarise(across(all_of(analysis_traits), ~ mean(.x, na.rm = TRUE)), .groups = "drop")
+
+trait_lab <- setNames(paste0(trait_meta$trait), trait_meta$trait)  # A->B->C order preserved
+```
+
+# Genetic correlations among traits
+
+```{r}
+#| label: corr-heatmap
+#| fig-width: 8.5
+#| fig-height: 7.5
+
+M  <- as.matrix(cross_mean[, analysis_traits])
+rc <- Hmisc::rcorr(M)                       # r and P on the 49 cross means
+
+r_long <- as.data.frame(as.table(rc$r)) %>% rename(x = Var1, y = Var2, r = Freq)
+p_long <- as.data.frame(as.table(rc$P)) %>% rename(x = Var1, y = Var2, p = Freq)
+cor_df <- left_join(r_long, p_long, by = c("x","y")) %>%
+  mutate(x = factor(x, levels = analysis_traits),
+         y = factor(y, levels = rev(analysis_traits)),
+         star = case_when(is.na(p) ~ "", p < .001 ~ "***", p < .01 ~ "**",
+                          p < .05 ~ "*", TRUE ~ ""),
+         label = ifelse(as.character(x) == as.character(y), "",
+                        paste0(sprintf("%.2f", r), star)))
+
+ggplot(cor_df, aes(x, y, fill = r)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = label), size = 2.9) +
+  scale_fill_gradient2(low = "#d95f0e", mid = "white", high = "#2c7fb8",
+                       midpoint = 0, limits = c(-1, 1), name = "r") +
+  labs(title = "Genetic (among-hybrid) correlations", x = NULL, y = NULL,
+       subtitle = "Pearson r on 49 cross means; *** <.001, ** <.01, * <.05") +
+  coord_equal() +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid = element_blank())
+```
+
+# Which traits track PUE and GY?
+
+```{r}
+#| label: corr-with-priority
+assoc <- cor_df %>%
+  filter(y %in% c("PUE","GY"), as.character(x) != as.character(y)) %>%
+  transmute(`Priority trait` = y, Trait = x, r = round(r, 3),
+            p = signif(p, 2), sig = star) %>%
+  arrange(`Priority trait`, desc(abs(r)))
+
+assoc %>%
+  kable(caption = "Genetic correlation of each trait with the priority traits (PUE, GY), ranked by |r|.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: corr-bar
+#| fig-width: 9
+#| fig-height: 5
+cor_df %>%
+  filter(y %in% c("PUE","GY"), as.character(x) != as.character(y)) %>%
+  ggplot(aes(x = reorder(x, r), y = r, fill = r > 0)) +
+  geom_col() +
+  facet_wrap(~ y) +
+  scale_fill_manual(values = c(`TRUE` = "#2c7fb8", `FALSE` = "#d95f0e"), guide = "none") +
+  coord_flip() +
+  labs(title = "Genetic correlations with the priority traits", x = NULL, y = "Pearson r") +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+# Multiple regression: drivers of PUE and GY
+
+Standardized regressions of each priority trait on the physiological + auxiliary traits
+(GY and TDM excluded per the constraints above). Coefficients are directly comparable;
+larger |β| = stronger association.
+
+```{r}
+#| label: regression
+preds <- c("HI","RSR","RW","SW","PH","DTA","DTS")   # TDM=SW+RW and ASI=DTS−DTA excluded (exact identities)
+
+zdat <- cross_mean %>% mutate(across(all_of(analysis_traits), ~ as.numeric(scale(.x))))
+
+reg_of <- function(resp) {
+  f <- reformulate(preds, response = resp)
+  m <- lm(f, data = zdat)
+  broom::tidy(m) %>% filter(term != "(Intercept)") %>%
+    transmute(Response = resp, Trait = term,
+              `β (std)` = round(estimate, 3), p = signif(p.value, 2),
+              sig = case_when(p.value < .001 ~ "***", p.value < .01 ~ "**",
+                              p.value < .05 ~ "*", p.value < .1 ~ ".", TRUE ~ "")) %>%
+    arrange(desc(abs(`β (std)`))) %>%
+    mutate(R2 = round(summary(m)$r.squared, 3))
+}
+
+bind_rows(reg_of("PUE"), reg_of("GY")) %>%
+  kable(caption = "Standardized multiple regression of PUE and GY on the physiological + auxiliary traits. R² (model fit) shown per response. Larger |β| = stronger partial association.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = c(1, 6), valign = "top")
+```
+
+```{r}
+#| label: scatter-top
+#| fig-width: 10
+#| fig-height: 4
+top2 <- cor_df %>% filter(y == "PUE", as.character(x) != "PUE") %>%
+  slice_max(abs(r), n = 3) %>% pull(x) %>% as.character()
+
+cross_mean %>%
+  select(PUE, all_of(top2)) %>%
+  pivot_longer(all_of(top2), names_to = "trait", values_to = "value") %>%
+  ggplot(aes(value, PUE)) +
+  geom_point(color = "#2c7fb8", alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "#d95f0e", linewidth = 0.8) +
+  facet_wrap(~ trait, scales = "free_x") +
+  labs(title = "PUE vs its strongest genetic correlates (cross means)", y = "PUE", x = NULL) +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+# Summary
+
+* **PUE tracks grain yield** most strongly (definitional: PUE = GY / P), so the traits
+  correlated with GY are the traits correlated with PUE.
+* **Indirect-selection candidates** are the *heritable* traits (notebook 4: maturity,
+  height, biomass) that also show a significant genetic correlation with PUE/GY in the table
+  above — these are where selection can act reliably even though PUE itself is weakly
+  heritable directly.
+* The standardized regressions rank the physiological/auxiliary traits by their partial
+  association with PUE and GY, giving the paper's shortlist of secondary selection traits.

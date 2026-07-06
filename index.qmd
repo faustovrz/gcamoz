@@ -26,8 +26,8 @@ physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS, ASI).
 2. [Phosphorus treatment effects — Chokwe OPT vs STS](phosphorus_effects.html)
 3. [Combining ability: ANOVA + GCA/SCA](combining_ability_anova.html)
 4. [Variance components, G×E, heritability & genetic parameters (REML-BLUP)](variance_components.html)
-5. Trait correlations & PUE regression · *in progress*
-6. Stability (AMMI / GGE biplot) · *planned*
+5. [Trait correlations & PUE regression](correlations_pue.html)
+6. Stability (AMMI / GGE biplot) · *in progress*
 
 ## Earlier notebooks {#earlier}
 

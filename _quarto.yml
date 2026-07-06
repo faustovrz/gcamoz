@@ -16,3 +16,4 @@ project:
     - phosphorus_effects.qmd
     - combining_ability_anova.qmd
     - variance_components.qmd
+    - correlations_pue.qmd
