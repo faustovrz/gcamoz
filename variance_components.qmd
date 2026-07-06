@@ -1,0 +1,184 @@
+---
+title: "Variance Components, Heritability & Genetic Parameters"
+subtitle: "Analysis 4 of the PUE hybrid series — REML-BLUP mixed models: variance components, G×E, gene action (AV, DV, H², h², BR) and superior-hybrid selection"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series — notebook 4.** Shared data preparation: `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+For each of the 11 phenotypes we fit the line × tester mixed model across the five
+environments with `sommer::mmer` (REML), with environment fixed and combining-ability terms,
+their environment interactions, and the field-design terms random:
+
+$$y = \mu + E + (L + T + L{:}T) + (L{:}E + T{:}E + L{:}T{:}E) + (\text{rep} + \text{row} + \text{col})_{(E)} + \varepsilon,$$
+
+where $L$ = female line GCA, $T$ = male tester GCA, $L{:}T$ = SCA. From the REML variance
+components we derive gene action and heritability (definitions below), and from the BLUPs we
+rank hybrids by genotypic value for the priority traits.
+
+::: {.callout-note appearance="simple"}
+**Genetic parameters (listed in every table).** With $e=5$ environments, $r=3$ reps:
+
+* $\sigma^2_{GCA} = \sigma^2_L + \sigma^2_T$ (additive/GCA), $\sigma^2_{SCA}=\sigma^2_{L:T}$ (non-additive)
+* **AV** = additive variance $= 2(\sigma^2_L+\sigma^2_T)$; **DV** = dominance variance $= 4\,\sigma^2_{SCA}$ (individual-plot scale)
+* $\sigma^2_G=\sigma^2_L+\sigma^2_T+\sigma^2_{SCA}$; $\sigma^2_{GE}=\sigma^2_{L:E}+\sigma^2_{T:E}+\sigma^2_{L:T:E}$; $\bar V_P=\sigma^2_G+\sigma^2_{GE}/e+\sigma^2_\varepsilon/(er)$
+* **H²** (broad, entry-mean) $=\sigma^2_G/\bar V_P$; **h²** (narrow, entry-mean) $=(\sigma^2_L+\sigma^2_T)/\bar V_P$
+* **BR** (Baker's ratio) $=\dfrac{2(\sigma^2_L+\sigma^2_T)}{2(\sigma^2_L+\sigma^2_T)+\sigma^2_{SCA}}$ — predictability (→1 additive, →0 dominance)
+
+AV/DV are individual-scale gene-action estimates; H²/h² are entry-mean (selection) heritabilities — the two scales are reported side by side but not mixed.
+:::
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(sommer)       # load first so dplyr::select (loaded after) is not masked
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")
+
+e_env <- n_distinct(hybrids$env)   # 5
+r_rep <- 3
+```
+
+# Variance components and genetic parameters
+
+```{r}
+#| label: fit-vc
+#| message: false
+#| warning: false
+
+fit_one <- function(tn, d) {
+  d <- d %>% mutate(y = .data[[tn]]) %>% filter(!is.na(y))
+  fit <- suppressMessages(suppressWarnings(mmer(
+    y ~ env,
+    random = ~ female + male + cross + female:env + male:env + cross:env +
+               env:rep + env:rep:row + env:rep:col,
+    data = d, verbose = FALSE)))
+  vc <- summary(fit)$varcomp
+  # clamp variance components at their 0 boundary (REML can return slight negatives
+  # for terms with near-zero genetic variance, e.g. RSR).
+  g  <- function(k) { v <- vc$VarComp[sub("\\.y-y$","",rownames(vc)) == k]; if (length(v)) max(0, v) else 0 }
+  sL <- g("female"); sT <- g("male"); sS <- g("cross")
+  sLE <- g("female:env"); sTE <- g("male:env"); sSE <- g("cross:env"); sE <- g("units")
+  sG  <- sL + sT + sS
+  sGE <- sLE + sTE + sSE
+  Vp  <- sG + sGE / e_env + sE / (e_env * r_rep)
+  tibble(trait = tn,
+         s2_L = sL, s2_T = sT, s2_SCA = sS, s2_GE = sGE, s2_res = sE,
+         AV = 2 * (sL + sT), DV = 4 * sS,
+         H2 = sG / Vp, h2 = (sL + sT) / Vp,
+         BR = if (2*(sL+sT) + sS > 0) 2*(sL+sT) / (2*(sL+sT) + sS) else NA_real_)
+}
+
+vc_res <- map_dfr(analysis_traits, fit_one, d = hybrids) %>%
+  left_join(trait_meta, by = "trait") %>% arrange(trait)
+```
+
+```{r}
+#| label: vc-table
+vc_res %>%
+  transmute(Group = group, Trait = trait,
+            `σ²_GCA(L)` = round(s2_L, 4), `σ²_GCA(T)` = round(s2_T, 4),
+            `σ²_SCA` = round(s2_SCA, 4), `σ²_G×E` = round(s2_GE, 4),
+            `σ²_resid` = round(s2_res, 3)) %>%
+  kable(caption = "REML variance components per trait (line × tester across 5 environments). L = female line, T = male tester.") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: genpar-table
+vc_res %>%
+  transmute(Group = group, Trait = trait,
+            AV = round(AV, 4), DV = round(DV, 4),
+            `H² (broad)` = round(H2, 3), `h² (narrow)` = round(h2, 3),
+            `BR (Baker)` = round(BR, 3)) %>%
+  kable(caption = "Gene action and heritability per trait. AV = additive variance = 2(σ²GCA_L+σ²GCA_T); DV = dominance variance = 4σ²SCA; H² = broad-sense (entry-mean); h² = narrow-sense (entry-mean); BR = Baker's ratio (→1 additive/predictable).") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: herit-plot
+#| fig-width: 9
+#| fig-height: 6
+vc_res %>%
+  select(trait, group, `h² (narrow)` = h2, `H² (broad)` = H2) %>%
+  pivot_longer(c(`h² (narrow)`, `H² (broad)`), names_to = "kind", values_to = "value") %>%
+  ggplot(aes(x = trait, y = value, fill = kind)) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.65) +
+  facet_grid(~ group, scales = "free_x", space = "free_x") +
+  scale_fill_manual(values = c("h² (narrow)" = "#2980b9", "H² (broad)" = "#8e44ad"), name = NULL) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(title = "Entry-mean heritability per trait", x = NULL, y = "Heritability") +
+  theme_bw(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "top",
+        axis.text.x = element_text(angle = 40, hjust = 1))
+```
+
+# Superior hybrids by genotypic value (BLUP)
+
+For the priority traits we rank hybrids by **genotypic value** GV = GCA_L(BLUP) + GCA_T(BLUP)
++ SCA(BLUP) from the REML fit.
+
+```{r}
+#| label: blup-select
+#| message: false
+#| warning: false
+
+top_hybrids <- function(tn, d, n = 8) {
+  d <- d %>% mutate(y = .data[[tn]]) %>% filter(!is.na(y))
+  fit <- suppressMessages(suppressWarnings(mmer(
+    y ~ env,
+    random = ~ female + male + cross + female:env + male:env + cross:env +
+               env:rep + env:rep:row + env:rep:col,
+    data = d, verbose = FALSE)))
+  fb <- fit$U$female$y; mb <- fit$U$male$y; cb <- fit$U$cross$y
+  key <- d %>% distinct(cross, female, male) %>% mutate(cross = as.character(cross))
+  key %>%
+    mutate(GCA_L = fb[paste0("female", female)],
+           GCA_T = mb[paste0("male", male)],
+           SCA   = cb[paste0("cross", cross)],
+           GV    = GCA_L + GCA_T + SCA) %>%
+    arrange(desc(GV)) %>% head(n) %>%
+    transmute(Trait = tn, Hybrid = paste0(female, " × ", male),
+              GCA_L = round(GCA_L,3), GCA_T = round(GCA_T,3),
+              SCA = round(SCA,3), GV = round(GV,3))
+}
+
+top_gv <- map_dfr(c("GY", "PUE"), top_hybrids, d = hybrids)
+
+kable(top_gv, caption = "Top 8 hybrids for the priority traits by genotypic value (GV = GCA_L + GCA_T + SCA, BLUP).") %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+# Summary
+
+* **Where the additive (GCA) signal is:** read AV and h² — highest for maturity (DTA, DTS)
+  and the traits with female-line differentiation; **GY and PUE have low h²** (male tester
+  GCA ≈ 0), so direct selection on across-environment yield/PUE is weak.
+* **Baker's ratio (BR)** near 1 flags additively-controlled, predictable traits (parental
+  GCA predicts hybrid performance); low BR flags dominance/SCA-driven traits.
+* **Superior hybrids** for GY and PUE are ranked by BLUP genotypic value above — the
+  selection output feeding the paper's recommendation.
+* Because yield/PUE are weakly heritable directly, notebook 5 asks whether the more heritable
+  traits (maturity, biomass) **correlate** with PUE, enabling indirect selection.

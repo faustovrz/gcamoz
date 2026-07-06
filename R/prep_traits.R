@@ -82,7 +82,7 @@ design_cols <- c("entry", "loc", "env", "treatment", "p_input",
                  "field_row", "field_col")
 
 plots <- field_multiloc %>%                          # every plot, incl. the check
-  select(all_of(design_cols), all_of(analysis_traits))
+  dplyr::select(all_of(design_cols), all_of(analysis_traits))   # dplyr:: — sommer masks select()
 
 hybrids <- plots %>%                                 # 49 line x tester hybrids only
   filter(gen != "0") %>%
