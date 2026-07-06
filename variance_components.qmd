@@ -37,10 +37,12 @@ rank hybrids by genotypic value for the priority traits.
 * **AV** = additive variance $= 2(\sigma^2_L+\sigma^2_T)$; **DV** = dominance variance $= 4\,\sigma^2_{SCA}$ (individual-plot scale)
 * $\sigma^2_G=\sigma^2_L+\sigma^2_T+\sigma^2_{SCA}$; $\sigma^2_{GE}=\sigma^2_{L:E}+\sigma^2_{T:E}+\sigma^2_{L:T:E}$; $\bar V_P=\sigma^2_G+\sigma^2_{GE}/e+\sigma^2_\varepsilon/(er)$
 * **H²** (broad, entry-mean) $=\sigma^2_G/\bar V_P$; **h²** (narrow, entry-mean) $=(\sigma^2_L+\sigma^2_T)/\bar V_P$
-* **BR** (Baker's ratio) $=\dfrac{2(\sigma^2_L+\sigma^2_T)}{2(\sigma^2_L+\sigma^2_T)+\sigma^2_{SCA}}$ — predictability (→1 additive, →0 dominance)
+* **BR — Baker's ratio** (predictability ratio; Baker 1978) $=\dfrac{2(\sigma^2_L+\sigma^2_T)}{2(\sigma^2_L+\sigma^2_T)+\sigma^2_{SCA}}$. The proportion of among-cross genetic variance that is **additive (GCA)**: **BR → 1** means hybrid performance is predictable from the parents' general combining ability (additive control), while **BR → 0** means specific combining ability / dominance predominates and performance depends on the particular cross.
 
 AV/DV are individual-scale gene-action estimates; H²/h² are entry-mean (selection) heritabilities — the two scales are reported side by side but not mixed.
 :::
+
+*Reference — Baker RJ (1978) Issues in diallel analysis. Crop Science 18:533–536. <https://doi.org/10.2135/cropsci1978.0011183X001800040001x>*
 
 ```{r}
 #| label: setup
