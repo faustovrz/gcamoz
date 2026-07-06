@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Maize Combining Ability — gcamoz</title>
+<title>gcamoz — Maize combining ability &amp; PUE</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2346,7 +2346,12 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#maize-combining-ability-field-trial-analysis-line-tester-gcasca" id="toc-maize-combining-ability-field-trial-analysis-line-tester-gcasca" class="nav-link active" data-scroll-target="#maize-combining-ability-field-trial-analysis-line-tester-gcasca">Maize Combining Ability Field-Trial Analysis (Line × Tester GCA/SCA)</a>
+  <li><a href="#gcamoz-combining-ability-phosphorus-use-efficiency-in-mozambican-maize-hybrids" id="toc-gcamoz-combining-ability-phosphorus-use-efficiency-in-mozambican-maize-hybrids" class="nav-link active" data-scroll-target="#gcamoz-combining-ability-phosphorus-use-efficiency-in-mozambican-maize-hybrids">gcamoz — combining ability &amp; phosphorus-use efficiency in Mozambican maize hybrids</a>
+  <ul class="collapse">
+  <li><a href="#paper-series" id="toc-paper-series" class="nav-link" data-scroll-target="#paper-series">Paper analysis series — PUE hybrid study</a></li>
+  <li><a href="#earlier" id="toc-earlier" class="nav-link" data-scroll-target="#earlier">Earlier notebooks</a></li>
+  </ul></li>
+  <li><a href="#maize-combining-ability-field-trial-analysis-line-tester-gcasca" id="toc-maize-combining-ability-field-trial-analysis-line-tester-gcasca" class="nav-link" data-scroll-target="#maize-combining-ability-field-trial-analysis-line-tester-gcasca">Maize Combining Ability Field-Trial Analysis (Line × Tester GCA/SCA)</a>
   <ul class="collapse">
   <li><a href="#two-connected-workflows" id="toc-two-connected-workflows" class="nav-link" data-scroll-target="#two-connected-workflows">Two connected workflows</a></li>
   <li><a href="#breeding-and-experimental-design-real-trial" id="toc-breeding-and-experimental-design-real-trial" class="nav-link" data-scroll-target="#breeding-and-experimental-design-real-trial">Breeding and Experimental Design (real trial)</a>
@@ -2372,16 +2377,39 @@ window.Quarto = {
 
 
 
-<div class="callout callout-style-simple callout-tip">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><strong>Rendered reports:</strong> <a href="multilocation_alpha_lattice.html">Multilocation RCBD GCA/SCA</a> · <a href="gca_calculation.html">GCA/SCA teaching notebook</a> · <a href="diallel_gca_sca_analysis.html">Full diallel</a> · <a href="gca_simulation.html">Simulation</a> · <a href="retrieve_CML_genesys.html">Genesys CML retrieval</a> · <a href="iris_anova_cld.html">Iris ANOVA + CLD</a> · <a href="male_gca_singularity_and_variance_routing.html">Male GCA singularity &amp; variance routing</a> · <a href="male_gca_trait_sweep.html">Male tester trait-by-trait refit</a></p>
-</div>
-</div>
-</div>
+<section id="gcamoz-combining-ability-phosphorus-use-efficiency-in-mozambican-maize-hybrids" class="level1">
+<h1>gcamoz — combining ability &amp; phosphorus-use efficiency in Mozambican maize hybrids</h1>
+<p>Analyses of a 7 × 7 line × tester (NC Design II) maize trial across five environments, supporting maize breeding for low-phosphorus conditions in Mozambique. Data and column dictionary: <code>data/multilocation.csv</code>, <code>data/multilocation_dictionary.csv</code>.</p>
+<section id="paper-series" class="level2">
+<h2 class="anchored" data-anchor-id="paper-series">Paper analysis series — PUE hybrid study</h2>
+<p>The manuscript’s analytical framework (Joe Gage, lab meeting 2026-07-06). Each analysis is a standalone notebook that feeds the paper’s <strong>Methods</strong> and its <strong>figures/tables</strong>; all share <code>R/prep_traits.R</code> and the 11 phenotypes grouped <strong>A – selection</strong> (GY, PUE), <strong>B – physiological</strong> (HI, RSR, RW, SW, TDM), <strong>C – auxiliary</strong> (PH, DTA, DTS, ASI).</p>
+<ol type="1">
+<li><a href="descriptive_stats.html">Descriptive statistics, data quality &amp; normality</a></li>
+<li>Phosphorus treatment effects — Chokwe OPT vs STS · <em>in progress</em></li>
+<li>Combining ability: ANOVA + GCA/SCA · <em>planned</em></li>
+<li>Variance components, G×E, heritability &amp; genetic parameters (REML-BLUP) · <em>planned</em></li>
+<li>Trait correlations &amp; PUE regression · <em>planned</em></li>
+<li>Stability (AMMI / GGE biplot) · <em>planned</em></li>
+</ol>
+</section>
+<section id="earlier" class="level2">
+<h2 class="anchored" data-anchor-id="earlier">Earlier notebooks</h2>
+<p>Design, exploratory and teaching analyses that preceded the paper series.</p>
+<ul>
+<li><a href="multilocation_alpha_lattice.html">Multilocation RCBD field layout &amp; line × tester GCA/SCA</a></li>
+<li><a href="rcbd_vs_alpha_lattice.html">RCBD vs alpha-lattice</a></li>
+<li><a href="block_assignment_diagnostics.html">Block-assignment diagnostics</a></li>
+<li><a href="male_gca_trait_sweep.html">Male tester trait-by-trait refit</a></li>
+<li><a href="male_gca_singularity_and_variance_routing.html">Male GCA singularity &amp; variance routing</a></li>
+<li><a href="pue_distribution.html">PUE distribution check</a></li>
+<li><a href="gca_calculation.html">GCA/SCA teaching notebook</a></li>
+<li><a href="diallel_gca_sca_analysis.html">Full diallel</a></li>
+<li><a href="gca_simulation.html">GCA/SCA simulation</a></li>
+<li><a href="retrieve_CML_genesys.html">Genesys CML retrieval</a></li>
+<li><a href="iris_anova_cld.html">Iris ANOVA + CLD</a></li>
+</ul>
+</section>
+</section>
 <section id="maize-combining-ability-field-trial-analysis-line-tester-gcasca" class="level1">
 <h1>Maize Combining Ability Field-Trial Analysis (Line × Tester GCA/SCA)</h1>
 <p>A structured R/Quarto repository designed to instruct plant-breeding students in maize field-trial analysis, General Combining Ability (GCA), and Specific Combining Ability (SCA).</p>

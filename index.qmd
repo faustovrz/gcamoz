@@ -1,5 +1,5 @@
 ---
-pagetitle: "Maize Combining Ability — gcamoz"
+pagetitle: "gcamoz — Maize combining ability & PUE"
 format:
   html:
     theme: cosmo
@@ -9,16 +9,40 @@ format:
     code-tools: false
 ---
 
-::: {.callout-tip appearance="simple"}
-**Rendered reports:**
-[Multilocation RCBD GCA/SCA](multilocation_alpha_lattice.html) ·
-[GCA/SCA teaching notebook](gca_calculation.html) ·
-[Full diallel](diallel_gca_sca_analysis.html) ·
-[Simulation](gca_simulation.html) ·
-[Genesys CML retrieval](retrieve_CML_genesys.html) ·
-[Iris ANOVA + CLD](iris_anova_cld.html) ·
-[Male GCA singularity & variance routing](male_gca_singularity_and_variance_routing.html) ·
-[Male tester trait-by-trait refit](male_gca_trait_sweep.html)
-:::
+# gcamoz — combining ability & phosphorus-use efficiency in Mozambican maize hybrids
+
+Analyses of a 7 × 7 line × tester (NC Design II) maize trial across five environments,
+supporting maize breeding for low-phosphorus conditions in Mozambique. Data and column
+dictionary: `data/multilocation.csv`, `data/multilocation_dictionary.csv`.
+
+## Paper analysis series — PUE hybrid study {#paper-series}
+
+The manuscript's analytical framework (Joe Gage, lab meeting 2026-07-06). Each analysis is a
+standalone notebook that feeds the paper's **Methods** and its **figures/tables**; all share
+`R/prep_traits.R` and the 11 phenotypes grouped **A – selection** (GY, PUE), **B –
+physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS, ASI).
+
+1. [Descriptive statistics, data quality & normality](descriptive_stats.html)
+2. Phosphorus treatment effects — Chokwe OPT vs STS · *in progress*
+3. Combining ability: ANOVA + GCA/SCA · *planned*
+4. Variance components, G×E, heritability & genetic parameters (REML-BLUP) · *planned*
+5. Trait correlations & PUE regression · *planned*
+6. Stability (AMMI / GGE biplot) · *planned*
+
+## Earlier notebooks {#earlier}
+
+Design, exploratory and teaching analyses that preceded the paper series.
+
+* [Multilocation RCBD field layout & line × tester GCA/SCA](multilocation_alpha_lattice.html)
+* [RCBD vs alpha-lattice](rcbd_vs_alpha_lattice.html)
+* [Block-assignment diagnostics](block_assignment_diagnostics.html)
+* [Male tester trait-by-trait refit](male_gca_trait_sweep.html)
+* [Male GCA singularity & variance routing](male_gca_singularity_and_variance_routing.html)
+* [PUE distribution check](pue_distribution.html)
+* [GCA/SCA teaching notebook](gca_calculation.html)
+* [Full diallel](diallel_gca_sca_analysis.html)
+* [GCA/SCA simulation](gca_simulation.html)
+* [Genesys CML retrieval](retrieve_CML_genesys.html)
+* [Iris ANOVA + CLD](iris_anova_cld.html)
 
 {{< include README.md >}}

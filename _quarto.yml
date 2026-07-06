@@ -12,3 +12,4 @@ project:
     - iris_anova_cld.qmd
     - male_gca_trait_sweep.qmd
     - pue_distribution.qmd
+    - descriptive_stats.qmd

@@ -1,0 +1,194 @@
+---
+title: "Descriptive Statistics, Data Quality & Normality"
+subtitle: "Analysis 1 of the PUE hybrid series — the 11 phenotypes (Joe Gage's list) across five environments in `data/multilocation.csv`"
+author: "Fausto Rodriguez Zapata"
+date: "2026-07-06"
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**Paper series.** This is notebook 1 of the analytical framework Joe Gage laid out (lab
+meeting, 2026-07-06). Each analysis is a separate notebook that feeds the paper's **Methods**
+and its **figures/tables**. Shared data preparation lives in `R/prep_traits.R`.
+:::
+
+# Methods (for the paper)
+
+We evaluate the **11 phenotypes** of the line × tester (NC Design II) trial — 7 CIMMYT
+females × 7 IIAM testers (49 hybrids) plus the `NAMULONGUE` check, in 3 replications across
+**5 environments** (four sites; Chokwe grown at both optimal and P-stress; NHACOONGO and
+SUSSUNDENGA under P-stress). Traits are grouped as Joe specified: **A – hybrid selection**
+(GY, PUE), **B – physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS,
+ASI). Data quality was assessed by scanning for missing values and by flagging outliers with
+the Tukey inter-quartile-range (IQR) rule (boxplot fences at 1.5 × IQR, extreme values at
+3 × IQR). Distributional form was examined per trait with the **Shapiro–Wilk** test,
+complemented by Q–Q plots and histograms; model-based residual diagnostics are reported with
+the mixed models in the combining-ability notebooks.
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(ggbeeswarm)   # geom_quasirandom — beeswarm points
+library(knitr)
+library(kableExtra)
+
+source("R/prep_traits.R")   # -> hybrids, plots, trait_meta, analysis_traits, iqr_outliers()
+
+# tidy long form of the 49 hybrids over the 11 analysed traits, ordered A -> B -> C
+hyb_long <- hybrids %>%
+  select(env, treatment, rep, female, male, cross, all_of(analysis_traits)) %>%
+  pivot_longer(all_of(analysis_traits), names_to = "trait", values_to = "value") %>%
+  left_join(trait_meta, by = "trait") %>%
+  mutate(trait = factor(trait, levels = analysis_traits),
+         panel = paste0(trait, "  (", unit, ")"),
+         panel = factor(panel, levels = paste0(trait_meta$trait, "  (", trait_meta$unit, ")")))
+
+trt_pal <- c("Optimal" = "#2c7fb8", "Stress" = "#d95f0e")
+```
+
+# Trait dictionary
+
+```{r}
+#| label: trait-dictionary
+trait_meta %>%
+  transmute(Group = group, Abbrev = trait, Trait = name, Unit = unit) %>%
+  kable(caption = "The 11 analysed phenotypes, grouped as in Joe Gage's framework. Full column metadata in `data/multilocation_dictionary.csv`.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+# Data quality assessment
+
+Per trait: sample size, missing values, and the count of plots beyond the Tukey fences
+(1.5 × IQR = boxplot whiskers; 3 × IQR = extreme). These flag *candidate* data-entry issues
+for verification against the field books — they are reported, not removed here.
+
+```{r}
+#| label: data-quality
+dq <- hyb_long %>%
+  group_by(Group = group, Trait = trait) %>%
+  summarise(
+    n            = sum(!is.na(value)),
+    missing      = sum(is.na(value)),
+    `outliers 1.5×IQR` = sum(iqr_outliers(value, 1.5)),
+    `outliers 3×IQR`   = sum(iqr_outliers(value, 3.0)),
+    .groups = "drop"
+  )
+kable(dq, caption = "Data-quality summary per trait (49 hybrids × 15 env-reps = 735 plots).") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: outlier-list
+hyb_long %>%
+  filter(iqr_outliers(value, 3.0)) %>%
+  transmute(Trait = trait, env, rep, cross, value = round(value, 2)) %>%
+  arrange(Trait, desc(abs(value))) %>%
+  kable(caption = "Plots beyond the 3×IQR (extreme) fence — candidates to verify at source.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+# Distributions across environments
+
+Each trait shown as **beeswarm points (background) with a transparent boxplot in front**,
+by environment, coloured by phosphorus treatment. Panels are ordered by trait group (A → B
+→ C); the P-stress environments (orange) separate most clearly for PUE and the biomass
+traits.
+
+```{r}
+#| label: distribution-atlas
+#| fig-width: 11
+#| fig-height: 13
+#| warning: false
+
+ggplot(hyb_long, aes(x = env, y = value, color = treatment)) +
+  geom_quasirandom(size = 0.5, alpha = 0.5, width = 0.32) +
+  geom_boxplot(width = 0.25, linewidth = 0.7, alpha = 0, outlier.shape = NA) +
+  facet_wrap(~ panel, scales = "free_y", ncol = 3) +
+  scale_color_manual(values = trt_pal, name = NULL) +
+  labs(x = NULL, y = NULL,
+       title = "Phenotype distributions across the five environments") +
+  theme_classic(base_size = 12) +
+  theme(plot.title  = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 40, hjust = 1, size = 8),
+        strip.text  = element_text(face = "bold"),
+        legend.position = "top")
+```
+
+# Normality assessment
+
+Shapiro–Wilk test per trait on the plot-level values (W near 1 and p ≥ 0.05 ⇒ no departure
+from normality detected). Ratio and interval traits (PUE, RSR, HI, ASI) most often deviate;
+this flags candidates for transformation or for a distribution-aware model downstream.
+
+```{r}
+#| label: shapiro
+sw <- hyb_long %>%
+  group_by(Group = group, Trait = trait) %>%
+  summarise(W = shapiro.test(value)$statistic,
+            p = shapiro.test(value)$p.value, .groups = "drop") %>%
+  mutate(`W` = round(W, 3),
+         `p (Shapiro–Wilk)` = signif(p, 3),
+         Normal = if_else(p >= 0.05, "yes", "no")) %>%
+  select(Group, Trait, W, `p (Shapiro–Wilk)`, Normal)
+
+kable(sw, caption = "Shapiro–Wilk normality test per trait (plot-level values).") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+```{r}
+#| label: qq-plots
+#| fig-width: 11
+#| fig-height: 13
+#| warning: false
+
+ggplot(hyb_long, aes(sample = value)) +
+  stat_qq(size = 0.4, alpha = 0.5, color = "#2c7fb8") +
+  stat_qq_line(color = "#d95f0e", linewidth = 0.6) +
+  facet_wrap(~ panel, scales = "free", ncol = 3) +
+  labs(title = "Normal Q–Q plots", x = "Theoretical quantiles", y = "Sample quantiles") +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"))
+```
+
+```{r}
+#| label: histograms
+#| fig-width: 11
+#| fig-height: 13
+#| warning: false
+
+ggplot(hyb_long, aes(x = value, fill = group)) +
+  geom_histogram(bins = 25, color = "white", linewidth = 0.2) +
+  facet_wrap(~ panel, scales = "free", ncol = 3) +
+  scale_fill_brewer(palette = "Set2", name = NULL) +
+  labs(title = "Histograms", x = NULL, y = "Plots") +
+  theme_classic(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold"),
+        legend.position = "top")
+```
+
+# Summary
+
+* **Completeness:** the 49 hybrids are fully replicated (735 plots, no missing values in the
+  11 analysed traits).
+* **Outliers:** the IQR scan lists candidate plots per trait (table above) for field-book
+  verification; the flowering, biomass, PH and stem traits are the ones with occasional
+  extreme values.
+* **Normality:** the ratio/interval traits (PUE, RSR, HI, ASI) show the strongest departures
+  from normality — carried forward as transformation candidates. The Gaussian-scale mixed
+  models in notebooks 3–4 will be checked with residual diagnostics on the fitted models.
