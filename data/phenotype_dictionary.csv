@@ -1,0 +1,47 @@
+variable,name,role,unit,formula,project,scale,raw_header,notes
+anthesis_date,Anthesis date (male flowering),date,yyyy-mm-dd,"",multilocation,plot,"",parsed to date from mixed dd/mm + Excel-serial source
+planting_date,Planting date,date,yyyy-mm-dd,"",multilocation,plot,"",single date per location
+silking_date,Silking date (female flowering),date,yyyy-mm-dd,"",multilocation,plot,"",parsed to date from mixed dd/mm + Excel-serial source
+ASI,Anthesis-silking interval,derived,days,"",multilocation,plot,"",DTS - DTA (computed in notebook)
+DTA,Days to anthesis,derived,days,"",multilocation,plot,"",anthesis_date - planting_date (computed in notebook)
+DTS,Days to silking,derived,days,"",multilocation,plot,"",silking_date - planting_date (computed in notebook)
+entry,Plot entry (serpentine planting order),design,,"",multilocation,plot,"",blank in CHOKWE STS III (14) & NHACOONGO II (1) - fix at source
+env,Environment (location x treatment),design,,"",multilocation,plot,"","5 levels = loc + OPT/STS code (regenerated from treatment): CHOKWE OPT, CHOKWE STS, MANIQUENIQ OPT, NHACOONGO STS, SUSSUNDENGA STS"
+female,Female parent (CIMMYT line),design,,"",multilocation,plot,"",7 CML lines + Check
+gen,Genotype code,design,,"",multilocation,plot,"",0 = check; 1-49 = 7x7 factorial
+hybrid,Cross (female x male),design,,"",multilocation,plot,"",
+loc,Location (physical site),design,,"",multilocation,plot,"",4 sites; CKOKWE/CHOKWE spelling unified to CHOKWE
+male,Male parent / tester (IIAM donor ID),design,,"",multilocation,plot,"",EN17/20/21/25/31/32/64 = NCDII MOZL3/5/6/7/8/9/10
+p_input,Phosphorus input (applied P),design,kg/ha,"",multilocation,plot,"","two levels: 10 (stress) at CHOKWE STS / NHACOONGO / SUSSUNDENGA, 50 (optimal) at CHOKWE OPT / MANIQUENIQ; = GY*1000/PUE"
+plant,F2 plant ID (field book number),design,NA,"",qtl_f2,plant,plant,1-188; 93 & 94 not genotyped; 20 IDs unphenotyped; 166 have both
+rep,Replicate,design,,"",multilocation,plot,"",I / II / III
+treatment,Phosphorus condition / treatment,design,,"",multilocation,plot,"","Stress (P=10) vs Optimal (P=50); this version: 3 stress (CHOKWE STS, NHACOONGO, SUSSUNDENGA) + 2 optimal (CHOKWE OPT, MANIQUENIQ)"
+obs,Field observation note,note,NA,"",qtl_f2,plant,OBS:,15 plants flagged 'Higher M.C' - GY/GYPP not on a common moisture basis
+EH,Ear insertion height,trait,cm,"",qtl_f2,plant,Height of Ear Insertion(cm),""
+EW,Ear weight,trait,g/plot,"",multilocation,plot,"",per-plot total over ~25 plants
+EW,Ear weight,trait,g/plant,"",qtl_f2,plant,Ear weight(g),PER PLANT - do not pool with multilocation g/plot
+GW,Grain weight,trait,g/plot,"",multilocation,plot,"",""
+GY,Grain yield,trait,t/ha,"",multilocation,plot,"",""
+GY,Grain yield,trait,t/ha,GYPP*0.0533333,qtl_f2,plant,Yield,"implies ~53,333 plants/ha (0.1875 m2/plant)"
+GYPP,Grain yield per plant,trait,g,"",multilocation,plot-derived,"",""
+GYPP,Grain yield per plant,trait,g/plant,"",qtl_f2,plant,yield (g/plt),""
+HI,Harvest index,trait,g/g,UNVERIFIED,multilocation,plot,"",dictionary says only 'ratio'; not reproduced from data - CONFIRM
+HI,Harvest index,trait,g/g,GYPP/SW,qtl_f2,plant,HI,NOT conventional HI: denominator excludes the ear. Grain-per-shoot.
+NP,Number of plants per plot (stand),trait,count,"",multilocation,plot,"",""
+PAPP,Plant appearance (visual score),trait,score 1-4,"",qtl_f2,plant,plant appearance,"ORDINAL, not continuous - use scanone(model='np')"
+PH,Plant height,trait,cm,"",multilocation,plot-mean,"",""
+PH,Plant height,trait,cm,"",qtl_f2,plant,Plant height(cm),""
+PUE,Phosphorus-use efficiency,trait,g/g,GY(kg/ha)/p_input,multilocation,plot,"",p_input = 10 (stress) or 50 (optimal) kg/ha
+PUE,Phosphorus-use efficiency,trait,g/g,GY(kg/ha)/20,qtl_f2,plant,PUE,"p_input = 20 kg P/ha, DERIVED numerically (sd 2.8e-16); neither multilocation rate"
+RSR,Root:shoot ratio,trait,g/g,RW/SW,multilocation,plot,"",""
+RSR,Root:shoot ratio,trait,g/g,RW/SW,qtl_f2,plant,RSR,""
+RW,Root weight,trait,g/plot,"",multilocation,plot,"",""
+RW,Root weight,trait,g/plant,"",qtl_f2,plant,Root Biomass(g),PER PLANT - do not pool with multilocation g/plot
+RYE,Relative yield efficiency,trait,g/g,UNVERIFIED,multilocation,plot,"",dictionary says 'definition per field protocol'; not reproduced - CONFIRM
+RYE,Relative yield efficiency,trait,g/g,GYPP/RW,qtl_f2,plant,RYE,grain per unit root weight
+SD,Stem (culm) diameter,trait,cm,"",multilocation,plot-mean,"",""
+SD,Stem (culm) diameter,trait,cm,"",qtl_f2,plant,Culm Diameter(cm),""
+SW,Shoot dry weight,trait,g/plot,"",multilocation,plot,"","stover, excludes ear"
+SW,Shoot dry weight,trait,g/plant,"",qtl_f2,plant,shoot Dry mass (g),"PER PLANT; stover, excludes ear"
+TDM,Total dry mass,trait,g/plot,SW+RW,multilocation,plot,"",""
+TDM,Total dry mass,trait,g/plant,SW+RW,qtl_f2,plant,Total Dry mass weight (g),excludes ear; PER PLANT

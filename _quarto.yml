@@ -18,3 +18,4 @@ project:
     - variance_components.qmd
     - correlations_pue.qmd
     - stability_ammi_gge.qmd
+    - qtl_marker_pipeline.qmd

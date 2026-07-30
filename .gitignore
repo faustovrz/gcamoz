@@ -10,6 +10,9 @@ data/Malik2019.txt
 # personal working notes / scratch
 data/202060622_scholar_search.txt
 
+# raw DArTseq genotyping reports + QTL phenotypes (large, not redistributable)
+data/qtl/
+
 agent/
 /.quarto/
 **/*.quarto_ipynb

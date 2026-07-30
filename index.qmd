@@ -29,6 +29,23 @@ physiological** (HI, RSR, RW, SW, TDM), **C – auxiliary** (PH, DTA, DTS, ASI).
 5. [Trait correlations & PUE regression](correlations_pue.html)
 6. [Stability (AMMI / GGE biplot)](stability_ammi_gge.html)
 
+## F₂ QTL mapping series {#qtl-series}
+
+A **separate experiment** from the diallel above: a single biparental F₂ (186 plants,
+DArTseq order `DMz26-3123`) for mapping QTL under low phosphorus. Raw data is not
+redistributable and is gitignored; pipeline scripts are in `scripts/qtl/`.
+
+1. [Data provenance, marker QC and ABH encoding](qtl_marker_pipeline.html) — pre-mapping
+   record: F₂ verification, AGPv4 → v5 liftover, CML530 parental alleles, A/H/B for R/qtl.
+   *Mapping itself not yet done.*
+
+::: {.callout-note}
+Trait abbreviations for **both** experiments are defined in
+`data/phenotype_dictionary.csv` (long format, keyed `variable × project`). The F₂ trial
+received **20 kg P/ha** and reports biomass **per plant**, whereas the diallel used
+10/50 kg/ha and reports **per plot** — the shared abbreviations must not be pooled.
+:::
+
 ## Earlier notebooks {#earlier}
 
 Design, exploratory and teaching analyses that preceded the paper series.
