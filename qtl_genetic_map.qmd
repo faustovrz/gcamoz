@@ -53,6 +53,9 @@ theme_set(theme_classic(base_size = 12))
 
 # Summary
 
+Reference lengths come from the **Coe 2008 composite maize genetic map** projected to
+B73 v5 (`zealhmm/data/teonam/map_v5_coe2008.tsv`, 51,065 markers).
+
 ```{r summary}
 #| label: tbl-summary
 CML_LEN <- c(`1` = 312749524, `2` = 253527201, `3` = 248930463, `4` = 258114092,
@@ -75,6 +78,25 @@ cat(sprintf("total: %d markers, %.1f cM, %.1f%% physical coverage (%.0f of %.0f 
             nrow(map), sum(s$cM), 100 * sum(s$span_Mb) / sum(s$chr_Mb),
             sum(s$span_Mb), sum(s$chr_Mb)))
 ```
+
+## Length against the Coe 2008 composite
+
+```{r coe}
+#| label: tbl-coe
+COE <- c(`1` = 285.7, `2` = 181.6, `3` = 207.7, `4` = 187.2, `5` = 170.5,
+         `6` = 137.3, `7` = 156.0, `8` = 159.0, `9` = 160.2, `10` = 135.9)
+cmp <- copy(s)[, .(lg, f2_cM = cM)]
+cmp[, coe_cM := COE[as.character(lg)]]
+cmp[, ratio := round(f2_cM / coe_cM, 3)]
+kable(cmp[order(lg)], caption = "This map against the Coe 2008 composite maize genetic map, per linkage group.")
+cat(sprintf("total: F2 %.1f cM vs Coe %.1f cM  ->  ratio %.3f\n",
+            sum(cmp$f2_cM), sum(cmp$coe_cM), sum(cmp$f2_cM) / sum(cmp$coe_cM)))
+```
+
+Within 4.3 % of the composite overall. chr2 is the least consistent at 1.38 and chr3 at
+0.84; the rest sit between 0.93 and 1.22. A single F₂ against a composite of many
+populations will not match chromosome by chromosome, so the total is the meaningful
+comparison.
 
 # Ideogram
 
@@ -146,14 +168,35 @@ ggplot(g[gap < 10], aes(gap)) +
 
 # What this map cannot do
 
-- **It is ~20% too long** — 1,858 cM against a 1,348–1,596 cM expectation for maize. That
-  inflates cM positions and the *cM width* of support intervals. It does **not** affect
-  physical (Mb) intervals, which is what a candidate-gene search uses.
+- **Its length is right.** 1,858.4 cM against the **Coe 2008 composite maize genetic
+  map at 1,781.1 cM** — a ratio of **1.043**. Per-chromosome ratios have a median of 1.04
+  and range from 0.84 (chr3) to 1.38 (chr2). An earlier draft called this map "~20% too
+  long" by comparing it against 1,348–1,596 cM, which is Chen et al. 2019 Table 1: the
+  per-subpopulation range of TeoNAM, a *teosinte introgression BC1S4* design. That is not
+  a maize F₂ expectation, and the comparison was wrong.
 - **chr6 covers 78.4%**, losing 34.3 Mb off the start. A QTL there cannot be found.
 - **Resolution is limited by the population, not the map.** 372 meioses set a 0.27 cM
   quantum, and the map already resolves far finer than an F₂ of this size can exploit:
   QTL localisation precision is on the order of 10–20 cM for realistic effect sizes. At
   one marker per 1.9 Mb the map is well past saturation for this design.
+
+# The code that built this map
+
+Inserted from the script itself, so it cannot drift from what actually ran.
+
+```{r build-src}
+#| file: scripts/qtl/build_map.R
+#| eval: false
+#| code-fold: true
+#| code-summary: "scripts/qtl/build_map.R"
+```
+
+```{r encode-src}
+#| file: scripts/qtl/encode_abh.R
+#| eval: false
+#| code-fold: true
+#| code-summary: "scripts/qtl/encode_abh.R"
+```
 
 # Data availability
 

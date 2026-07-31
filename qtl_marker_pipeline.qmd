@@ -586,22 +586,23 @@ made after this notebook was written, all recorded with their evidence in
    time. Immaterial at scan time (r = 0.998 against 2.5 × 10⁻³).
 4. **Scans are done** for all 14 phenotypes with 1,000-permutation thresholds.
 
-::: {.callout-warning}
-## A length target that should not have been used
+::: {.callout-note}
+## The length guardrail was wrong, and has been replaced
 
-Earlier drafts of this notebook, and the `build_map.R` guardrail, compare total map
+Earlier drafts of this notebook, and the `build_map.R` guardrail, compared total map
 length against **1,348–1,596 cM**. That figure is **Chen et al. 2019 Table 1, the
-per-subpopulation range for TeoNAM** — a *teosinte introgression BC1S4* population with
-~13,733 SNPs per subpop. It is not a maize consensus map, not an F₂ expectation, and was
-inherited wholesale from `teonam_qtl_permap.R` without being checked.
+per-subpopulation range for TeoNAM** — a *teosinte introgression BC1S4* design with
+~13,733 SNPs per subpop, where 1,348 cM is simply the shortest of those subpopulations.
+It is not a maize consensus map and not an F₂ expectation; it was inherited from
+`teonam_qtl_permap.R` without being checked.
 
-It also points the wrong way: map length *estimates* grow with accumulated meioses
-(Teng & Xu show F₂ → F₃ → F₄ expansion), so a BC1S4 should read **longer** than an F₂ of
-the same genome, not equal. Any statement in this repo that 1,858 cM is "20 % above the
-maize expectation" is measured against a borrowed constant from the wrong design.
+The guardrail is now the **Coe 2008 composite maize genetic map**, projected to B73 v5
+(`zealhmm/data/teonam/map_v5_coe2008.tsv`, 51,065 markers): **1,781.1 cM**.
 
-Pending a proper reference (Coe composite, NAM consensus, or similar), length is best
-judged against **physical coverage and marker spacing**, which need no borrowed constant.
+Against that reference this map is **1,858.4 cM, a ratio of 1.043** — within 4.3 %, and
+it passes. The repeated claim that it was "~20 % too long" was an artifact of the wrong
+reference, and every sweep in this project reported as "in band" or "out of range" was
+measured against a borrowed constant from the wrong design.
 :::
 
 ## Outstanding questions for Stélio

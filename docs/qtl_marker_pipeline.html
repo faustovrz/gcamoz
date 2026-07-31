@@ -3173,19 +3173,19 @@ code 2 = H (verified above), &quot;-&quot; = missing</code></pre>
 <li><strong><code>error.prob = 0.01</code> throughout</strong> — both <code>est.map</code> rounds and <code>calc.genoprob</code> at scan time. Immaterial at scan time (r = 0.998 against 2.5 × 10⁻³).</li>
 <li><strong>Scans are done</strong> for all 14 phenotypes with 1,000-permutation thresholds.</li>
 </ol>
-<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>A length target that should not have been used
+<span class="screen-reader-only">Note</span>The length guardrail was wrong, and has been replaced
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Earlier drafts of this notebook, and the <code>build_map.R</code> guardrail, compare total map length against <strong>1,348–1,596 cM</strong>. That figure is <strong>Chen et al. 2019 Table 1, the per-subpopulation range for TeoNAM</strong> — a <em>teosinte introgression BC1S4</em> population with ~13,733 SNPs per subpop. It is not a maize consensus map, not an F₂ expectation, and was inherited wholesale from <code>teonam_qtl_permap.R</code> without being checked.</p>
-<p>It also points the wrong way: map length <em>estimates</em> grow with accumulated meioses (Teng &amp; Xu show F₂ → F₃ → F₄ expansion), so a BC1S4 should read <strong>longer</strong> than an F₂ of the same genome, not equal. Any statement in this repo that 1,858 cM is “20 % above the maize expectation” is measured against a borrowed constant from the wrong design.</p>
-<p>Pending a proper reference (Coe composite, NAM consensus, or similar), length is best judged against <strong>physical coverage and marker spacing</strong>, which need no borrowed constant.</p>
+<p>Earlier drafts of this notebook, and the <code>build_map.R</code> guardrail, compared total map length against <strong>1,348–1,596 cM</strong>. That figure is <strong>Chen et al. 2019 Table 1, the per-subpopulation range for TeoNAM</strong> — a <em>teosinte introgression BC1S4</em> design with ~13,733 SNPs per subpop, where 1,348 cM is simply the shortest of those subpopulations. It is not a maize consensus map and not an F₂ expectation; it was inherited from <code>teonam_qtl_permap.R</code> without being checked.</p>
+<p>The guardrail is now the <strong>Coe 2008 composite maize genetic map</strong>, projected to B73 v5 (<code>zealhmm/data/teonam/map_v5_coe2008.tsv</code>, 51,065 markers): <strong>1,781.1 cM</strong>.</p>
+<p>Against that reference this map is <strong>1,858.4 cM, a ratio of 1.043</strong> — within 4.3 %, and it passes. The repeated claim that it was “~20 % too long” was an artifact of the wrong reference, and every sweep in this project reported as “in band” or “out of range” was measured against a borrowed constant from the wrong design.</p>
 </div>
 </div>
 <section id="outstanding-questions-for-stélio" class="level2">
