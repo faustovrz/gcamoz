@@ -52,7 +52,7 @@ Marker order is `(cml_chr, ref_pos)` from `tags_vs_CML530.bam`.
 | drop inverted | markers anti-correlated with **both** neighbours | An inverted marker makes every individual read as a double recombinant, so rf → 0.5 both sides. Dropped rather than flipped — flipping assumes only the label is wrong. |
 | distortion | per-chromosome `renorm_z`, z > 1.96 | FVRZ's relative rule, verbatim from TeoNAM. |
 | `PRUNE_R` | **0.95** (= 2.565 cM) | LD prune replacing `findDupMarkers`, which needed identical genotypes and found only 28 markers. Teng & Xu 2026 Eq. 9: in an Fₜ, `r = 1 − 2θ`, so with Haldane `d = −50·ln(r)` — a genetic axis from correlation alone, which is what makes pruning *before* `est.map` possible. Thinning is Jena et al. 2018 MDdIS: on a 1-D axis it collapses to the exact O(n) interval-scheduling greedy. |
-| `ERROR_PROB` | **0.01** | Both `est.map` rounds **and** `calc.genoprob` at scan time. The two criteria disagree — median-gap calibration points at 5e-3, the 1348–1596 target band at 2e-2 — and 1% is what the map-inflation arithmetic implies independently. Immaterial at scan time (r = 0.9978 vs 2.5e-3). |
+| `ERROR_PROB` | **0.01** | Both `est.map` rounds **and** `calc.genoprob` at scan time. Against the Coe composite it is the closest value outright — 1,858.4 cM, ratio 1.043, where 5e-3 gives 1.37 and 2e-2 gives 0.87. Median-gap calibration still prefers 5e-3, so the two criteria disagree, but length now favours 1e-2. Immaterial at scan time (r = 0.9978 vs 2.5e-3). |
 | `MAP_FUN` | haldane | |
 | `FINE_THR` | 10 | **Inert** — the singleton pass flags nothing at ≥ 10. Only 2 or 5 bite. |
 | `ISLAND_GAP_CM` | **20** | 10 left a 55.4 cM hole on chr5 where `find_quirky` had removed three markers that were filling it. 20 is the only setting that clears the > 25 cM gaps without collapsing coverage. |
@@ -89,6 +89,7 @@ most of it and is deliberate.
 ## The map
 
 **1,152 markers, 1,858.4 cM, 96.7% physical coverage** (2,109 of 2,180 Mb).
+Length ratio against the Coe 2008 composite: **1.043**.
 Median gap 0.834 cM, max 29.0 cM, one interval over 25 cM.
 Marey maps monotonic and sigmoid on all ten chromosomes.
 
@@ -96,9 +97,12 @@ Published as `data/f2_genetic_map.tsv`.
 
 ## Known limitations
 
-- **Length.** 1,858 cM against a 1,348–1,596 expectation, ~20% long. Affects cM positions
-  and cM-width support intervals; **not** physical (Mb) intervals, which is what a
-  candidate-gene search uses.
+- **Length is fine.** 1,858.4 cM against the **Coe 2008 composite maize map, 1,781.1 cM**
+  (`zealhmm/data/teonam/map_v5_coe2008.tsv`, 51,065 markers projected to v5) — ratio
+  **1.043**. Per-chromosome ratios: median 1.04, range 0.84 (chr3) to 1.38 (chr2).
+  An earlier "~20% too long" claim compared against 1,348–1,596 cM, which is Chen et al.
+  2019 Table 1 — the per-subpopulation range of TeoNAM, a teosinte BC1S4 design with
+  ~13,733 SNPs per subpop. Wrong reference, wrong conclusion.
 - **chr6** covers 78.4%, losing 34.3 Mb off the start — a QTL there cannot be found.
 - **Power, not the map, is binding.** n = 166 phenotyped gives ~80% power only for QTL
   above 8–10% of variance. The two most heritable diallel traits (DTA/DTS, h² ≈ 0.60)

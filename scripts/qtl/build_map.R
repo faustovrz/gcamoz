@@ -14,7 +14,7 @@
 #   3. find_quirky on the round-1 map: fine_thr = smallest outlier gap,
 #      island_thr = 2 cM, island_max_n = 20                            (lines 158-170)
 #   4. ROUND 2 est.map                                                 (line 177)
-#   5. guardrails: drop rate > 10%; length 1348-1596 cM                (lines 188-201)
+#   5. guardrails: drop rate > 10%; length vs the Coe 2008 composite (see below)
 #
 # Only adaptation: expected genotype frequencies BC1S4 (0.734, 0.031, 0.234) -> F2
 # (0.25, 0.50, 0.25). Nothing else changed, nothing of mine added.
@@ -36,9 +36,12 @@ MAPTOOLS <- "/Users/fvrodriguez/repos/zealhmm/scripts/map_tools.R"
 #     1e-2         1858.4     0.834        1.289     0.65     29.0    96.7%
 #     2e-2         1552.0     0.658        1.286     0.51     27.8    97.9%
 #
-# The two criteria still disagree: median-gap calibration points at 5e-3 (ratio 0.93),
-# the 1348-1596 target band at 2e-2. 1e-2 sits between them. The 1% figure is also what
-# the map-inflation arithmetic implies independently (HANDOVER section 1.8).
+# Against the Coe 2008 composite (1781.1 cM, see LENGTH GUARDRAIL below) 1e-2 is the
+# CLOSEST value, not a compromise: 1858.4 cM, ratio 1.043. 5e-3 gives 2445.8 (ratio 1.37)
+# and 2e-2 gives 1552.0 (ratio 0.87). Median-gap calibration still points at 5e-3
+# (ratio 0.93 against expectation), so the two criteria disagree -- but the length
+# criterion now favours 1e-2 outright. The 1% figure is also what the map-inflation
+# arithmetic implies independently (HANDOVER section 1.8).
 #
 # WHAT THE RE-SWEEP CHANGED versus the original one: marker count is now stable across
 # the range (1,145-1,163) instead of moving with the parameter, coverage IMPROVES with
@@ -75,7 +78,25 @@ ISLAND_GAP_CM <- 20 # cluster isolation, cM -- set by FVRZ 2026-07-31 from the s
                     # only setting that clears the >25 cM gaps without collapsing
                     # coverage. fine_thr is inert at >= 10 -- island_thr is the live one.
 ISLAND_MAX_N  <- 5L # max markers in a flagged cluster (was 20)
-LEN_LO <- 1348; LEN_HI <- 1596
+# LENGTH GUARDRAIL -- the Coe 2008 composite maize genetic map, projected to B73 v5 and
+# read from zealhmm/data/teonam/map_v5_coe2008.tsv (51,065 markers). Per-chromosome spans
+# sum to 1781.1 cM. This REPLACES the 1348-1596 cM band used previously, which was Chen
+# et al. 2019 Table 1 -- the per-subpopulation range of TeoNAM, a teosinte-introgression
+# BC1S4 design with ~13,733 SNPs per subpop. That band was inherited from
+# teonam_qtl_permap.R and is not a maize F2 expectation; 1,348 cM is simply the shortest
+# of those TeoNAM subpopulations.
+#
+# The band below is +/- 15% of the Coe total, a tolerance for a single F2 against a
+# composite of many populations -- NOT a target to tune toward. Judge the per-chromosome
+# ratios and physical coverage alongside it.
+COE_FILE <- "/Users/fvrodriguez/repos/zealhmm/data/teonam/map_v5_coe2008.tsv"
+COE_CM <- local({
+  if (!file.exists(COE_FILE)) return(NULL)
+  co <- fread(COE_FILE)[!is.na(cm) & chr_v5 %in% 1:10]
+  co[, .(cM = max(cm) - min(cm)), by = .(chr = as.integer(chr_v5))][order(chr)]
+})
+COE_TOTAL <- if (is.null(COE_CM)) 1781.1 else sum(COE_CM$cM)
+LEN_LO <- round(0.85 * COE_TOTAL); LEN_HI <- round(1.15 * COE_TOTAL)
 # Markers exempted from the distortion filter, the LD prune and find_quirky, so a
 # specific set can be forced into the map to see what it does. Empty by default -- set
 # via the environment, e.g.
@@ -336,8 +357,15 @@ dr <- (n_in - totmar(cr2)) / n_in
 cat(sprintf("markers %d -> %d (inverted -%d, distortion -%d, LD prune -%d, quirky -%d, drop rate %.1f%%)\n",
             n_in, totmar(cr2), n_inverted, sum(dist_out), n_pruned, length(quirky), 100*dr))
 if (dr > 0.10) cat("WARN: drop rate exceeds 10%\n")
-cat(sprintf("length %.1f cM vs %d-%d cM: %s\n", sum(l2), LEN_LO, LEN_HI,
+cat(sprintf("length %.1f cM vs Coe 2008 composite %.1f cM (ratio %.3f); band %d-%d cM: %s\n",
+            sum(l2), COE_TOTAL, sum(l2) / COE_TOTAL, LEN_LO, LEN_HI,
             ifelse(sum(l2) >= LEN_LO & sum(l2) <= LEN_HI, "PASS", "OUT OF RANGE")))
+if (!is.null(COE_CM)) {
+  cmp <- merge(COE_CM, data.table(chr = as.integer(names(l2)), f2 = as.numeric(l2)), by = "chr")
+  cmp[, ratio := round(f2 / cM, 3)]
+  cat("\nper chromosome against Coe 2008:\n")
+  print(cmp[, .(chr, coe_cM = round(cM, 1), f2_cM = round(f2, 1), ratio)][order(chr)])
+}
 
 rule("6. OUTPUT + PLOT")
 saveRDS(cr2, file.path(D, "rqtl_cross_map_teonamqc.rds"))
