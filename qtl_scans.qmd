@@ -38,6 +38,33 @@ the permutation distribution depends on the trait's own distribution. `PAPP` is 
 1–4 score and was scanned non-parametrically (`model = "np"`); everything else used the
 normal model.
 
+## The code that ran the scans
+
+`scripts/qtl/scan_all_traits.R`, inserted from the script itself at render time so what
+is shown here cannot drift from what actually ran. The `scanone` and permutation calls,
+the model choice per trait, and the support-interval computation are all in it.
+
+```{r scan-src}
+#| file: scripts/qtl/scan_all_traits.R
+#| eval: false
+#| code-fold: show
+#| code-summary: "scripts/qtl/scan_all_traits.R — the scan itself"
+```
+
+For a single trait with effect estimates and a `fitqtl` summary,
+`scripts/qtl/scan_trait.R`:
+
+```{r scan1-src}
+#| file: scripts/qtl/scan_trait.R
+#| eval: false
+#| code-fold: true
+#| code-summary: "scripts/qtl/scan_trait.R — one trait, with effects"
+```
+
+## Reading the results back
+
+The chunks below re-plot the published output; they do **not** re-run the scans.
+
 ```{r setup}
 #| message: false
 #| warning: false
