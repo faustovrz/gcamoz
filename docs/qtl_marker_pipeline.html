@@ -2189,7 +2189,7 @@ vertical-align: -.125em;
   <li><a href="#liftover-agpv4-nam-v5" id="toc-liftover-agpv4-nam-v5" class="nav-link" data-scroll-target="#liftover-agpv4-nam-v5">Liftover AGPv4 → NAM v5</a></li>
   <li><a href="#parental-alleles-from-the-cml530-assembly" id="toc-parental-alleles-from-the-cml530-assembly" class="nav-link" data-scroll-target="#parental-alleles-from-the-cml530-assembly">Parental alleles from the CML530 assembly</a>
   <ul class="collapse">
-  <li><a href="#attrition-reconciled" id="toc-attrition-reconciled" class="nav-link" data-scroll-target="#attrition-reconciled">Attrition, reconciled</a></li>
+  <li><a href="#attrition" id="toc-attrition" class="nav-link" data-scroll-target="#attrition">Attrition</a></li>
   <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result">Result</a></li>
   </ul></li>
   <li><a href="#ahb-encoding-for-rqtl" id="toc-ahb-encoding-for-rqtl" class="nav-link" data-scroll-target="#ahb-encoding-for-rqtl">A/H/B encoding for R/qtl</a></li>
@@ -2400,16 +2400,29 @@ vertical-align: -.125em;
 </section>
 <section id="population" class="level1">
 <h1>Population</h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The tests below were run on an <strong>independent set of 1,398 informative markers</strong> selected for population verification. That set is not a stage of the mapping funnel in <em>Marker QC</em> below, and the two counts should not be reconciled against each other.</p>
+</div>
+</div>
 <section id="it-is-a-single-biparental-f₂" class="level2">
 <h2 class="anchored" data-anchor-id="it-is-a-single-biparental-f₂">It is a single biparental F₂</h2>
 <p>Stélio’s project description refers to F₂ populations from <em>all</em> 49 combinations (plural), which would invalidate the R/qtl <code>f2</code> cross type if the 186 plants were pooled across families. Three independent tests say they are not (<code>scripts/qtl/structure_check.R</code>):</p>
-<p><strong>Allele frequency.</strong> In a single selfed F₁ every informative marker must sit at <em>p</em> ≈ 0.5. Observed SD of <em>p</em>(ref) across 1,398 framework markers = <strong>0.028</strong>, against a pure binomial expectation at <em>n</em> = 186 of <strong>0.0259</strong> — a ratio of 1.08, i.e. sampling noise and nothing else. <strong>Zero</strong> markers fall outside <em>p</em> = 0.40–0.60.</p>
+<p><strong>Allele frequency.</strong> In a single selfed F₁ every informative marker must sit at <em>p</em> ≈ 0.5. Observed SD of <em>p</em>(ref) across the 1,398 informative markers used for this test = <strong>0.028</strong>, against a pure binomial expectation at <em>n</em> = 186 of <strong>0.0259</strong> — a ratio of 1.08, i.e. sampling noise and nothing else. <strong>Zero</strong> markers fall outside <em>p</em> = 0.40–0.60.</p>
 <p><strong>PCA.</strong> PC1 explains <strong>7.9 %</strong>, decaying smoothly (7.9, 7.0, 6.5, 6.1, 5.7 …), with PC1<sub>sd</sub>/PC2<sub>sd</sub> = 1.07. No dominant axis, no clusters. <em>k</em> pooled families would produce <em>k</em>−1 large separated components.</p>
 <p><strong>Relatedness.</strong> Median pairwise IBS <strong>0.376</strong> — the textbook F₂ full-sib value. No pair above 0.90, so no duplicated samples. No plate effect (<em>p</em> = 0.75).</p>
 </section>
 <section id="no-parent-was-genotyped-in-this-order" class="level2">
 <h2 class="anchored" data-anchor-id="no-parent-was-genotyped-in-this-order">No parent was genotyped in this order</h2>
-<p>The parents are inbred lines, so heterozygosity must be ≈ 0. Over the 1,398 informative markers the <strong>minimum</strong> observed heterozygosity across all 186 samples is <strong>0.267</strong>, and the median is <strong>0.5016</strong> — dead on the F₂ expectation of 0.50. Not one sample is consistent with an inbred. Combined with the sample naming (<code>plant 1</code> … <code>plant 188</code>, no line names) and uniform <code>none [Original species: Zea maize]</code> comments, no parental sample was submitted.</p>
+<p>The parents are inbred lines, so heterozygosity must be ≈ 0. Over the same 1,398 informative markers the <strong>minimum</strong> observed heterozygosity across all 186 samples is <strong>0.267</strong>, and the median is <strong>0.5016</strong> — dead on the F₂ expectation of 0.50. Not one sample is consistent with an inbred. Combined with the sample naming (<code>plant 1</code> … <code>plant 188</code>, no line names) and uniform <code>none [Original species: Zea maize]</code> comments, no parental sample was submitted.</p>
 <p>Incidentally, that median of 0.5016 also shows <strong>allelic dropout is not distorting the retained marker set</strong>, despite modest read depth (median 6.9× ref / 5.5× alt). The low-<code>FreqHets</code> tail is uninformative markers where the parents share the allele, not a dropout artefact.</p>
 </section>
 <section id="parents" class="level2">
@@ -2678,7 +2691,7 @@ vertical-align: -.125em;
 </div>
 </div>
 </div>
-<p><strong>n = 166.</strong> For an F₂ at a 5 % genome-wide threshold this gives roughly 80 % power for QTL explaining ≥ 8–10 % of phenotypic variance. Smaller effects will be missed and detected effects will be <strong>Beavis-inflated</strong>. There is <strong>no within-genotype replication</strong>, so no heritability can be estimated and genetic variance cannot be separated from micro-environmental variance.</p>
+<p><strong>The map is built on all 186 genotyped plants</strong> (<code>est.map</code> uses no phenotypes), but <strong>scans use n = 166</strong> — the plants with both genotype and phenotype. For an F₂ at a 5 % genome-wide threshold this gives roughly 80 % power for QTL explaining ≥ 8–10 % of phenotypic variance. Smaller effects will be missed and detected effects will be <strong>Beavis-inflated</strong>. There is <strong>no within-genotype replication</strong>, so no heritability can be estimated and genetic variance cannot be separated from micro-environmental variance.</p>
 <p>This was a deliberate design choice, not an oversight: in July 2025 Joe Gage set out both the F₂:₃ route (row-level BLUPs, replicable) and direct F₂ phenotyping, noting the latter <em>“will likely have more error in it, since the F₂ plants cannot be replicated.”</em> The faster route was taken.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2696,7 +2709,7 @@ vertical-align: -.125em;
 </section>
 <section id="marker-qc" class="level1">
 <h1>Marker QC</h1>
-<p><code>scripts/qtl/data_audit.R</code>. The 1:2:1 test stands in for “polymorphic between the parents”, which is otherwise unobservable because no parent was genotyped.</p>
+<p>The 1:2:1 test stands in for “polymorphic between the parents”, which is otherwise unobservable because no parent was genotyped.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="kable-table">
@@ -2709,7 +2722,7 @@ vertical-align: -.125em;
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">SNPs in report</td>
+<td style="text-align: left;">SNPs in the DArT report</td>
 <td style="text-align: right;">5208</td>
 </tr>
 <tr class="even">
@@ -2717,23 +2730,62 @@ vertical-align: -.125em;
 <td style="text-align: right;">3884</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">effectively monomorphic (MAF &lt; 0.05)</td>
-<td style="text-align: right;">2041</td>
+<td style="text-align: left;">lifted 1:1 to NAM v5, same chromosome</td>
+<td style="text-align: right;">3828</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">+ CallRate ≥ 0.90, RepAvg ≥ 0.95, MAF ≥ 0.15, 1:2:1 p &gt; 0.01</td>
-<td style="text-align: right;">1410</td>
+<td style="text-align: left;">CML530 allele defined (ref or alt)</td>
+<td style="text-align: right;">3728</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">− DArT secondaries (&gt;1 SNP per 69-bp tag)</td>
-<td style="text-align: right;">1398</td>
+<td style="text-align: left;">MAPQ ≥ 30, no XA, mapped</td>
+<td style="text-align: right;">2994</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">on CML530 chr 1–10</td>
+<td style="text-align: right;">2991</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MAF &gt; 0.15</td>
+<td style="text-align: right;">2067</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1:2:1 at BH FDR 0.05</td>
+<td style="text-align: right;">1698</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">one marker per 69-bp tag (CloneID)</td>
+<td style="text-align: right;">1692</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">|cor| ≥ 0.30 with a neighbour → <strong>encoded</strong></td>
+<td style="text-align: right;">1688</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<p>Per-sample call rate 0.64–0.97 (median 0.936); only <strong>plant 14</strong> below 0.80.</p>
+<p>Per-sample call rate 0.64–0.97 (median 0.936); only <strong>plant 14</strong> below 0.80. Missing genotypes in the encoded matrix: <strong>0.47 %</strong>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span><code>CallRate</code> and <code>RepAvg</code> are NOT used, and that was measured
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Earlier drafts filtered on <code>CallRate ≥ 0.90</code> and <code>RepAvg ≥ 0.95</code>. Neither survived testing against markers that actually misbehave — those that correlate with none of their neighbours (<code>scripts/qtl/report_callrate_repavg.R</code>):</p>
+<ul>
+<li><strong><code>RepAvg</code> is flat.</strong> The offender rate is 4.1 % in the lowest band against 3.6 % in the highest. A 0.95 cut takes 46 of 117 offenders while sacrificing <strong>768 sound markers</strong>.</li>
+<li><strong><code>CallRate</code> has a real gradient</strong> (19.3 % offenders at 0.90–0.95 vs 3.5 % above 0.95) but <strong>80 of the 117 offenders sit above 0.95</strong>, so it cannot reach them either.</li>
+</ul>
+<p><code>RepAvg</code> is in any case DArT’s <em>internal</em> technical-replicate repeatability — it cannot be recomputed from these 186 samples, which contain no duplicate pairs (max IBS 0.687).</p>
+<p>What replaced them is the <strong>alignment-quality filter</strong>, which does separate the two classes: markers anti-phase to both neighbours multi-map at 70.4 % against a 6.2 % baseline (median MAPQ 4 vs 60, Fisher <em>p</em> = 2.3 × 10⁻⁸).</p>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2783,8 +2835,8 @@ vertical-align: -.125em;
 <td style="text-align: left;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">framework markers surviving</td>
-<td style="text-align: left;">1,384 of 1,398 (99.0 %)</td>
+<td style="text-align: left;">carried into allele calling</td>
+<td style="text-align: left;">3,828</td>
 </tr>
 </tbody>
 </table>
@@ -2809,59 +2861,42 @@ vertical-align: -.125em;
 </section>
 <section id="parental-alleles-from-the-cml530-assembly" class="level1">
 <h1>Parental alleles from the CML530 assembly</h1>
-<p><code>scripts/qtl/cml530_genotypes_pileup.sh</code>. Because CML530 <strong>is</strong> a parent, this yields actual parental alleles and ABH polarity is directly determined rather than proxied.</p>
-<p>The join key is the <strong>B73 v5 coordinate</strong>, not a read name. Two mapping steps, because CML530 sequence must be obtained before it can be placed in v5:</p>
-<ol type="1">
-<li><code>minibwa map</code> the 3,828 tags → CML530 assembly — locates each tag’s homologous locus.</li>
-<li>Extract the <strong>aligned span only</strong> (no flanking sequence — the tag is the assay), map → B73 v5.</li>
-<li><code>bcftools mpileup -T markers_v5.bed</code> at the 3,828 known v5 positions.</li>
-</ol>
-<p>The genotype is taken positionally from the pileup rather than by walking the SNP offset by hand: if CML530 carries an indel near the site, the CIGAR keeps the base assignment honest where offset arithmetic would silently shift it.</p>
-<section id="attrition-reconciled" class="level2">
-<h2 class="anchored" data-anchor-id="attrition-reconciled">Attrition, reconciled</h2>
-<p><code>scripts/qtl/cml530_attrition.R</code> derives every stage from the BAMs and <strong>asserts</strong> that the losses sum to the observed <code>no-hit</code> total.</p>
+<p><code>scripts/qtl/cml530_alleles_direct.R</code>. Because CML530 <strong>is</strong> the female parent, this yields actual parental alleles and ABH polarity is directly determined rather than proxied.</p>
+<p><strong>The direct route is the one in the pipeline.</strong> The 3,828 tags are mapped to the CML530 assembly once (<code>tags_vs_CML530.bam</code>); for each tag the CIGAR is walked to the tag’s own <code>SnpPosition</code> and CML530’s base read there, reverse-complemented on reverse-strand alignments. Walking the CIGAR rather than computing an offset by hand keeps the base assignment honest if CML530 carries an indel near the site.</p>
+<p>A second, <strong>superseded</strong> route (<code>cml530_genotypes_pileup.sh</code>) extracted each aligned span, re-mapped it to B73 v5 and called the base from a pileup at the lifted v5 coordinate. It is retained only as an independent check — see the convergence test below — and is listed in <code>scripts/qtl/DELETE_CANDIDATES.md</code>.</p>
+<section id="attrition" class="level2">
+<h2 class="anchored" data-anchor-id="attrition">Attrition</h2>
+<p>The direct route loses only the tags that do not align at all: of 3,828 tags, <strong>88 are unmapped</strong> and the remainder yield a base. Two sites carry a third allele — CML530’s base matches neither of DArT’s — leaving <strong>3,728 markers with a defined <code>ref</code>/<code>alt</code> polarity</strong>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;">stage</th>
-<th style="text-align: right;">n</th>
+<th style="text-align: left;">cml_class</th>
+<th style="text-align: left;">n</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">no CML530 locus (unmapped, flag 0x4)</td>
-<td style="text-align: right;">88</td>
+<td style="text-align: left;">ref</td>
+<td style="text-align: left;">2,403</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">secondary / supplementary</td>
-<td style="text-align: right;">0</td>
+<td style="text-align: left;">alt</td>
+<td style="text-align: left;">1,325</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">mapped to CML530 but MAPQ &lt; 20</td>
-<td style="text-align: right;">563</td>
+<td style="text-align: left;">no-hit (unmapped tag)</td>
+<td style="text-align: left;">98</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">span failed to map back to B73 v5</td>
-<td style="text-align: right;">10</td>
+<td style="text-align: left;">third allele</td>
+<td style="text-align: left;">2</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">mapped to v5 but no pileup record at the marker position</td>
-<td style="text-align: right;">52</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>total losses</strong></td>
-<td style="text-align: right;">713</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">less markers sharing a v5 position (one VCF record serves two)</td>
-<td style="text-align: right;">-5</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>= no-hit</strong></td>
-<td style="text-align: right;">708</td>
+<td style="text-align: left;"><strong>A = CML530 defined</strong></td>
+<td style="text-align: left;"><strong>3,728</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2874,11 +2909,11 @@ vertical-align: -.125em;
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>The dominant loss is the MAPQ filter, not absence of a CML530 locus
+<span class="screen-reader-only">Important</span>Mappability is handled downstream, not by discarding here
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>563 versus 88. Only 88 of the 708 <code>no-hit</code> markers are genuine mapping failures — the rest are ambiguous placements, which is a <strong>mappability</strong> statement, not presence/absence variation. The flat per-chromosome <code>no-hit</code> distribution therefore mostly tracks repeat content. MAPQ 20 is a conventional default, not a considered choice; the MAPQ histogram was strongly bimodal (2,591 of 3,740 at exactly 60), so a lower threshold would recover part of the 563.</p>
+<p>The earlier pileup route discarded 563 markers at <code>MAPQ &lt; 20</code> before any genotype was read, and reported 708 <code>no-hit</code>. The direct route keeps them and <strong>carries MAPQ and the <code>XA</code> alternative-alignment tag forward into <code>encode_abh.R</code></strong>, where they became the filter that actually mattered: markers whose genotypes contradict their neighbours are overwhelmingly multi-mapping tags (70.4 % vs a 6.2 % baseline). Filtering there rather than here means the decision is made against evidence of misbehaviour, not against a conventional MAPQ default.</p>
 </div>
 </div>
 </section>
@@ -2891,37 +2926,33 @@ vertical-align: -.125em;
 <thead>
 <tr class="header">
 <th style="text-align: left;">cml_class</th>
-<th style="text-align: right;">all_markers</th>
-<th style="text-align: right;">framework</th>
+<th style="text-align: right;">N</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">ref</td>
-<td style="text-align: right;">2086</td>
-<td style="text-align: right;">698</td>
+<td style="text-align: right;">2403</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">alt</td>
-<td style="text-align: right;">1033</td>
-<td style="text-align: right;">533</td>
+<td style="text-align: right;">1325</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">no-hit</td>
-<td style="text-align: right;">708</td>
-<td style="text-align: right;">152</td>
+<td style="text-align: right;">98</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">het-call</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
+<td style="text-align: left;">third-allele</td>
+<td style="text-align: right;">2</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<p><strong>1,232 of 1,384 framework markers (89.0 %) carry real parental polarity.</strong> The <code>ref</code>/<code>alt</code> split confirms that CML530 carries the B73 allele at some sites and the alternate at others with no global pattern — polarity <strong>must</strong> be assigned per marker. ::: {.callout-important} ## Correction: DArT’s reference allele is <strong>not</strong> B73’s allele An earlier version of this notebook stated that DArT defined its reference allele by the AGPv4 alignment, so that <code>ref</code> meant “CML530 matches B73”. <strong>That is false</strong>, and it was measured (<code>scripts/qtl/test_pileup_coords.R</code>): the B73 v5 base equals the DArT ref allele at only <strong>~76%</strong> of markers.</p>
+<p><strong>3,728 of 3,828 tags (97.4 %) carry real parental polarity</strong>, and 1,688 of them survive into the encoded matrix (902 <code>ref</code>, 786 <code>alt</code>). The <code>ref</code>/<code>alt</code> split confirms that CML530 carries the DArT reference allele at some sites and the alternate at others with no global pattern — polarity <strong>must</strong> be assigned per marker.</p>
+<p>The tag-base check is exact: CML530’s base read from the assembly matched the tag’s own base at <strong>3,730 of 3,730</strong> alignments once strand was accounted for, with 1,850 of 3,740 alignments on the reverse strand. ::: {.callout-important} ## Correction: DArT’s reference allele is <strong>not</strong> B73’s allele An earlier version of this notebook stated that DArT defined its reference allele by the AGPv4 alignment, so that <code>ref</code> meant “CML530 matches B73”. <strong>That is false</strong>, and it was measured (<code>scripts/qtl/test_pileup_coords.R</code>): the B73 v5 base equals the DArT ref allele at only <strong>~76%</strong> of markers.</p>
 <p>DArT calls SNPs within its own tag clusters across the assayed panel, so ref/alt is a convention derived from <em>this germplasm</em>; the <code>Chrom_</code>/<code>ChromPosSnp_</code> columns are added afterwards by blasting the tag to B73. <code>ref</code> therefore means <strong>CML530 carries the DArT reference allele</strong> — a statement about the DArT panel, not about B73 and not about the ENxx tester.</p>
 <p>This mattered: it produced two routes to CML530’s allele that silently answered different questions and agreed on only 71% of markers. Where DArT’s ref happened to be B73’s base they agreed 98.7% of the time; where it did not, 20.8%. Coordinates were never the problem — the liftover position and the span’s independent v5 alignment agree exactly at 97.6% of markers. :::</p>
 <p>Exactly <strong>one <code>het-call</code></strong> across 3,828 tags. An inbred cannot be truly heterozygous, so that is the paralog / collapsed-repeat signal — and finding one says the tag alignments are behaving cleanly. It is treated as unresolved, never as a genotype.</p>
@@ -2929,13 +2960,11 @@ vertical-align: -.125em;
 </section>
 <section id="ahb-encoding-for-rqtl" class="level1">
 <h1>A/H/B encoding for R/qtl</h1>
-<p><code>scripts/qtl/make_abh_framework_only.R</code>, a reimplementation of TASSEL 5 <code>GenosToABHPlugin</code> (algorithm read from source). The TASSEL-equivalent core operates on diploid genotype strings — the same abstraction TASSEL uses — so the parity harness exercises the code that actually runs.</p>
-<p>Rules copied from TASSEL: reject a site if the parents are identical, either is unknown, or either is heterozygous; match <code>H</code> against either phase; exact diploid equality tested in order A, B, H, else missing.</p>
-<p>Two deliberate divergences:</p>
-<ol type="1">
-<li><strong>Missing data and off-parent third alleles are kept distinct.</strong> TASSEL collapses both into <code>NA</code> via its fall-through.</li>
-<li><strong>Unpolarizable markers are retained, not dropped.</strong> TASSEL deletes rejected sites. Recombination fractions are <strong>orientation-invariant</strong>, so a marker with no CML530 call still carries full mapping information under an arbitrary but internally consistent orientation — only the <em>sign</em> of its allele effect is unavailable. <code>polarity_source</code> in <code>abh_marker_info.tsv</code> records <code>CML530</code> or <code>arbitrary</code> per marker, so the assumption travels with the data.</li>
-</ol>
+<p><code>scripts/qtl/encode_abh.R</code>. Only markers with a defined CML530 allele are encoded, so <strong>A = CML530 on every marker</strong> and no arbitrary-polarity markers enter the matrix:</p>
+<pre><code>cml_class &quot;ref&quot;  -&gt;  CML530 carries REF  -&gt;  A = code 0, B = code 1
+cml_class &quot;alt&quot;  -&gt;  CML530 carries ALT  -&gt;  A = code 1, B = code 0
+code 2 = H (verified above), &quot;-&quot; = missing</code></pre>
+<p>Markers are ordered by <strong>CML530 coordinate</strong> (<code>cml_chr</code>, <code>ref_pos</code>), and all 186 genotyped plants are kept — <code>est.map</code> uses no phenotypes, so the map should use every genotyped plant, not only the 166 that were also phenotyped.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="kable-table">
@@ -2949,11 +2978,11 @@ vertical-align: -.125em;
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">individuals</td>
-<td style="text-align: left;">166</td>
+<td style="text-align: left;">186</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">markers</td>
-<td style="text-align: left;">1,384</td>
+<td style="text-align: left;">1,688</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">chromosomes</td>
@@ -2965,23 +2994,23 @@ vertical-align: -.125em;
 </tr>
 <tr class="odd">
 <td style="text-align: left;">percent genotyped</td>
-<td style="text-align: left;">99.6 %</td>
+<td style="text-align: left;">99.5 %</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">A</td>
-<td style="text-align: left;">25.0 %</td>
+<td style="text-align: left;">25.1 %</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">H</td>
-<td style="text-align: left;">50.3 %</td>
+<td style="text-align: left;">49.6 %</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">B</td>
-<td style="text-align: left;">24.7 %</td>
+<td style="text-align: left;">25.4 %</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">missing</td>
-<td style="text-align: left;">0.4 %</td>
+<td style="text-align: left;">0.47 %</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">off-parent calls</td>
@@ -2992,7 +3021,21 @@ vertical-align: -.125em;
 </div>
 </div>
 </div>
-<p>A/H/B at 25.0 / 50.3 / 24.7 against the F₂ expectation of 25/50/25, with <strong>zero</strong> off-parent calls, is an end-to-end check on the whole chain — DArT calls → filter → liftover → polarity → encoding. <code>read.cross(format = &quot;csvsr&quot;, crosstype = &quot;f2&quot;)</code> round-trips, asserted inside the script.</p>
+<p>A/H/B at 25.1 / 49.6 / 25.4 against the F₂ expectation of 25/50/25, with <strong>zero</strong> off-parent calls, is an end-to-end check on the whole chain — DArT calls → alignment filter → liftover → polarity → encoding. <code>read.cross(format = &quot;csvsr&quot;, crosstype = &quot;f2&quot;)</code> round-trips, asserted inside the script.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Correction: recombination fractions are <strong>not</strong> orientation-invariant
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An earlier draft kept unpolarisable markers on the grounds that “recombination fractions are orientation-invariant, so a marker with no CML530 call still carries full mapping information under an arbitrary orientation.” <strong>That is false.</strong> Flipping <em>one</em> marker of a pair turns θ into 1 − θ, so an out-of-phase marker looks <em>unlinked</em> to its neighbours and <code>est.map</code> saturates at rf = 0.5 (1001.5 cM). Only flipping <em>both</em> leaves θ unchanged.</p>
+<p>The consequence is visible in <code>build_map.R</code>, which drops markers anti-correlated with <strong>both</strong> neighbours: each one otherwise makes every individual read as a double recombinant. Encoding now admits only markers with a defined CML530 polarity, so the question does not arise for the matrix itself.</p>
+</div>
+</div>
 </section>
 <section id="reproduction" class="level1">
 <h1>Reproduction</h1>
@@ -3011,6 +3054,7 @@ vertical-align: -.125em;
 </div>
 </div>
 <p>Run order:</p>
+<p>Full parameter-by-parameter detail is in <strong><code>scripts/qtl/PROTOCOL.md</code></strong>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -3033,7 +3077,7 @@ vertical-align: -.125em;
 <tr class="even">
 <td>2</td>
 <td><code>data_audit.R</code></td>
-<td>inventory, marker + sample QC, geno × pheno join</td>
+<td><strong>inventory only</strong> — no filter it reports is applied downstream</td>
 </tr>
 <tr class="odd">
 <td>3</td>
@@ -3072,8 +3116,18 @@ vertical-align: -.125em;
 </tr>
 <tr class="even">
 <td>10</td>
+<td><code>encode_phenotypes.R</code></td>
+<td>phenotypes in csvsr → <code>rqtl_phe.csv</code></td>
+</tr>
+<tr class="odd">
+<td>11</td>
 <td><code>build_map.R</code></td>
-<td>drop inverted → distortion → LD prune → <code>est.map</code> → <code>find_quirky</code> → <code>est.map</code> → <strong>1,152 markers, 1,858 cM</strong></td>
+<td>drop inverted → distortion → LD prune → <code>est.map</code> → <code>find_quirky</code> → <code>est.map</code> → <strong>1,152 markers, 1,858 cM</strong>; writes <code>data/f2_genetic_map.tsv</code></td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td><code>scan_all_traits.R</code></td>
+<td>scanone + 1,000 permutations per trait → <code>data/f2_qtl_scan_*.tsv</code></td>
 </tr>
 </tbody>
 </table>
