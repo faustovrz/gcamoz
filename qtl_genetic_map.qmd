@@ -1,0 +1,173 @@
+---
+title: "F₂ Genetic Map"
+subtitle: "QTL series notebook 2 — the linkage map: 1,152 markers, 1,858 cM, CML530 coordinates"
+author: "Fausto Rodriguez Zapata"
+date: today
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**QTL series — notebook 2.** Follows [marker QC and ABH encoding](qtl_marker_pipeline.html).
+The full protocol with every parameter and its basis is in `scripts/qtl/PROTOCOL.md`.
+:::
+
+::: {.callout-note}
+**This notebook reads only public data.** The raw DArTseq genotypes are not
+redistributable and are gitignored, but the map itself — marker names, linkage group,
+genetic position and both coordinate systems — is published as
+[`data/f2_genetic_map.tsv`](https://github.com/faustovrz/gcamoz/blob/main/data/f2_genetic_map.tsv).
+Everything below is reproduced from that file alone.
+:::
+
+# What this map is
+
+A single biparental F₂ (186 genotyped plants, DArTseq order `DMz26-3123`) from the
+7 × 7 line × tester programme. **CML530 is the female parent** — established by the
+design, not assumed. The male is one of the seven `EN` testers; which one is still
+unknown and matters only for the sign of allele effects.
+
+**Positions are CML530's own**, from `Zm-CML530-REFERENCE-HiLo-1.0`. B73 is not a parent
+of this cross, and the two assemblies disagree about which chromosome carries a marker
+for 37 of them. Because `est.map` estimates distances along a *fixed* order and never
+reorders, a wrong order cannot be recovered downstream — so the order comes from a real
+parent of the cross. B73 v5 coordinates are carried alongside for cross-referencing.
+
+```{r setup}
+#| message: false
+#| warning: false
+library(data.table)
+library(ggplot2)
+library(knitr)
+map <- fread("data/f2_genetic_map.tsv")
+map[, lg := factor(lg, levels = 1:10)]
+theme_set(theme_classic(base_size = 12))
+```
+
+# Summary
+
+```{r summary}
+#| label: tbl-summary
+CML_LEN <- c(`1` = 312749524, `2` = 253527201, `3` = 248930463, `4` = 258114092,
+             `5` = 226836904, `6` = 187680145, `7` = 184149065, `8` = 188635608,
+             `9` = 166200635, `10` = 153755684)
+s <- map[, .(markers = .N,
+             cM = round(max(cM), 1),
+             mean_gap_cM = round(max(cM) / (.N - 1), 3),
+             first_Mb = round(min(cml_pos) / 1e6, 1),
+             last_Mb  = round(max(cml_pos) / 1e6, 1)), by = lg]
+s[, chr_Mb := round(CML_LEN[as.character(lg)] / 1e6, 1)]
+s[, span_Mb := round(last_Mb - first_Mb, 1)]
+s[, pct_covered := round(100 * span_Mb / chr_Mb, 1)]
+setorder(s, lg)
+kable(s, caption = "The map by linkage group. Coverage is the span of mapped markers against the CML530 chromosome length; lost ends are regions where a QTL cannot be found.")
+```
+
+```{r totals}
+cat(sprintf("total: %d markers, %.1f cM, %.1f%% physical coverage (%.0f of %.0f Mb)\n",
+            nrow(map), sum(s$cM), 100 * sum(s$span_Mb) / sum(s$chr_Mb),
+            sum(s$span_Mb), sum(s$chr_Mb)))
+```
+
+# Ideogram
+
+Each horizontal line is one marker. Solid black, no transparency — this map is sparse
+enough that individual markers should be readable rather than blended into a density.
+
+```{r ideogram}
+#| label: fig-ideogram
+#| fig-width: 9
+#| fig-height: 7
+#| fig-cap: "Marker positions on the ten linkage groups. Every marker is drawn as an opaque black tick."
+W <- 0.26   # half-width of the bar, in x units
+map[, xn := as.numeric(lg)]
+s[,   xn := as.numeric(lg)]
+ggplot() +
+  geom_segment(data = s, aes(x = xn, xend = xn, y = 0, yend = cM),
+               linewidth = 9, colour = "grey88", lineend = "butt") +
+  geom_segment(data = map, aes(x = xn - W, xend = xn + W, y = cM, yend = cM),
+               linewidth = 0.35, colour = "black") +
+  scale_x_continuous(breaks = 1:10, labels = 1:10) +
+  scale_y_reverse(expand = expansion(mult = c(0.02, 0.04))) +
+  labs(x = "linkage group (CML530 chromosome)", y = "position (cM)",
+       title = sprintf("F2 genetic map - %d markers, %.1f cM", nrow(map), sum(s$cM)))
+```
+
+# Marey map
+
+Genetic against physical position. The line must only ever rise: a reversal would mean
+two markers are in the wrong order. All ten are monotonic, and all show the classic
+maize sigmoid — steep near the chromosome ends where recombination is concentrated, flat
+through the pericentromeric middle where tens of megabases accumulate almost no cM.
+
+```{r marey}
+#| label: fig-marey
+#| fig-width: 12
+#| fig-height: 6
+#| fig-cap: "Marey map per linkage group. Monotonic throughout, confirming the marker order; the flat middles are pericentromeric recombination suppression."
+map[, Mb := cml_pos / 1e6]
+ggplot(map[order(lg, Mb)], aes(Mb, cM)) +
+  geom_line(colour = "grey65", linewidth = 0.4) +
+  geom_point(size = 0.7, colour = "black") +
+  facet_wrap(~lg, scales = "free", ncol = 5) +
+  labs(x = "physical position (Mb, CML530)", y = "genetic position (cM)",
+       title = "Marey map") +
+  theme_bw(base_size = 11)
+```
+
+# Marker spacing
+
+```{r gaps}
+#| label: fig-gaps
+#| fig-width: 9
+#| fig-height: 3.4
+#| fig-cap: "Distribution of inter-marker genetic distances. The single interval above 25 cM is on chr10."
+g <- map[order(lg, cM), .(gap = diff(cM)), by = lg]
+kable(data.table(
+  statistic = c("intervals", "median cM", "mean cM", "q95 cM", "max cM",
+                "intervals > 10 cM", "intervals > 25 cM"),
+  value = c(nrow(g), round(median(g$gap), 3), round(mean(g$gap), 3),
+            round(quantile(g$gap, .95), 3), round(max(g$gap), 2),
+            sum(g$gap > 10), sum(g$gap > 25))),
+  caption = "Inter-marker spacing.")
+
+ggplot(g[gap < 10], aes(gap)) +
+  geom_histogram(binwidth = 0.25, fill = "grey25", boundary = 0) +
+  labs(x = "inter-marker distance (cM), truncated at 10", y = "intervals",
+       title = "Marker spacing")
+```
+
+# What this map cannot do
+
+- **It is ~20% too long** — 1,858 cM against a 1,348–1,596 cM expectation for maize. That
+  inflates cM positions and the *cM width* of support intervals. It does **not** affect
+  physical (Mb) intervals, which is what a candidate-gene search uses.
+- **chr6 covers 78.4%**, losing 34.3 Mb off the start. A QTL there cannot be found.
+- **Resolution is limited by the population, not the map.** 372 meioses set a 0.27 cM
+  quantum, and the map already resolves far finer than an F₂ of this size can exploit:
+  QTL localisation precision is on the order of 10–20 cM for realistic effect sizes. At
+  one marker per 1.9 Mb the map is well past saturation for this design.
+
+# Data availability
+
+`data/f2_genetic_map.tsv` — 1,152 markers.
+
+| column | meaning |
+|---|---|
+| `marker` | DArT `AlleleID` |
+| `lg` | linkage group (= CML530 chromosome) |
+| `cM` | genetic position, Haldane, zeroed per group |
+| `cml_chr`, `cml_pos` | CML530 assembly coordinate (the mapping order) |
+| `b73v5_chr`, `b73v5_pos` | B73 v5 coordinate, for cross-referencing |
+| `cml_allele` | which DArT allele CML530 carries (`ref`/`alt`) — the A/H/B polarity |
+| `maf`, `p121` | minor allele frequency, 1:2:1 goodness-of-fit p |
+
+Raw genotypes are not redistributable. Pipeline scripts are in `scripts/qtl/`; the
+protocol with every parameter and its justification is `scripts/qtl/PROTOCOL.md`.

@@ -29,8 +29,10 @@ This notebook is the **record of everything done before QTL mapping begins** —
 inventory, population verification, marker QC, the AGPv4 → NAM v5 liftover, parental
 allele calling against the CML530 assembly, and the A/H/B encoding for R/qtl.
 
-**No QTL mapping is performed here.** No genetic map has been estimated yet: the R/qtl
-object carries placeholder positions and `est.map` has not been run.
+**No QTL mapping is performed here** — this notebook ends at the encoded marker matrix.
+The map itself is in **[the genetic map notebook](qtl_genetic_map.html)** (1,152 markers,
+1,858.4 cM, published as `data/f2_genetic_map.tsv`); the parameter-by-parameter protocol
+is `scripts/qtl/PROTOCOL.md`.
 
 The raw DArTseq reports and the phenotype workbook are **not redistributable** and are
 gitignored (`data/qtl/`). This notebook and `scripts/qtl/` are the tracked record; the
@@ -61,6 +63,53 @@ The SilicoDArT markers are **dominant** — they cannot separate a heterozygote 
 homozygote, so they carry no dominance information and are unusable for an F₂. They were
 excluded, not filtered.
 
+::: {.callout-important}
+## The genotype coding is undocumented in the delivery — and verified here
+
+`metadata.json` carries a `datafiles` block with format descriptions, and it contains
+exactly **two** entries: `Report_..._SilicoDArT_1.csv` and `Report_..._SNP_2.csv`.
+**`Report_..._SNP_mapping_2.csv` — the one-row file that every genotype in this
+analysis comes from — has no entry.** SEQART documented two formats and shipped a third
+without one.
+
+That matters because the three formats use *different* codings:
+
+| file | coding |
+|---|---|
+SilicoDArT | `1` = presence, `0` = absence, `-` = low count |
+two-row SNP | `0`/`1`/`-` per allele row — presence of that allele |
+**one-row SNP (undocumented)** | **`0` = hom ref, `1` = hom alt, `2` = HETEROZYGOTE, `-` = missing** |
+
+**It is NOT a minor-allele dosage.** A dosage would put the heterozygote at `1` and
+hom-alt at `2`. Reading it that way — the natural guess for a `0/1/2` column, and
+consistent with the habit the two documented files establish — swaps H and B on
+**every** marker. Because the swap is systematic, the resulting map still looks
+internally coherent while every heterozygote is mislabelled a homozygote.
+
+Verified directly against DArT's own per-marker summary columns
+(`scripts/qtl/verify_dart_codes.R`), not inferred:
+
+The test recomputes each genotype frequency from the raw calls and compares it to the
+column DArT reports. The number below is the **largest absolute disagreement across all
+5,208 markers** — not a p-value, and no statistical test is involved. Agreement at
+`5e-07` is DArT's printing precision, i.e. exact.
+
+| recomputed from the calls | DArT's column | largest absolute difference (5,208 markers) |
+|---|---|---|
+frequency of code `0` | `FreqHomRef` | 0.0000005 |
+frequency of code `1` | `FreqHomSnp` | 0.0000005 |
+frequency of code `2` | `FreqHets` | **0.0000005** |
+called ÷ n samples | `CallRate` | 0.0000005 |
+
+The dosage misreading, tested the same way, disagrees by **0.995** — frequency of code
+`1` against `FreqHets`, and code `2` against `FreqHomSnp`, both fail. So
+`code 2 = heterozygote` is established outright, not by inference.
+
+This was originally taken from the values themselves plus the fact that A/H/B came out
+near 25/50/25 — suggestive but not proof, and it was labelled in the scripts as though
+settled before it had been checked. Every genotype in the pipeline depends on it.
+:::
+
 The CML530 reference assembly (`Zm-CML530-REFERENCE-HiLo-1.0`, MaizeGDB, released June
 2024) is distributed under the **Toronto Agreement**, which restricts publishing
 genome-wide analyses ahead of the assembly producers. Relevant to manuscript timing.
@@ -72,7 +121,7 @@ genome-wide analyses ahead of the assembly producers. Relevant to manuscript tim
 Stélio's project description refers to F₂ populations from *all* 49 combinations
 (plural), which would invalidate the R/qtl `f2` cross type if the 186 plants were pooled
 across families. Three independent tests say they are not
-(`scripts/qtl/qtl_structure_check.R`):
+(`scripts/qtl/structure_check.R`):
 
 **Allele frequency.** In a single selfed F₁ every informative marker must sit at
 *p* ≈ 0.5. Observed SD of *p*(ref) across 1,398 framework markers = **0.028**, against a
@@ -111,11 +160,21 @@ incorrectly listed CML440"* — so **CML530 is a female parent of this programme
 earlier parent list circulated with CML440 in its place.
 
 ::: {.callout-warning}
-## Assumed, not confirmed
-That this specific F₂ derives from a **CML530 × ENxx** cross, and **which** tester.
+## The female parent is established; the tester is not
+**CML530 is the female parent** — it is one of the seven CIMMYT female donors in the
+7 × 7 line × tester design, so any F₂ from this programme with CML530 in its pedigree has
+it as the female. That is the design, not an assumption.
+
+**Which of the seven `EN` testers was the male is still open.**
 `paper/maize_pue_manuscript.md` lists CML530 × EN31 among the most stable high-yielding
-hybrids by WAASY, but stability ranking is not a phosphorus contrast — that is a lead,
-not evidence. **Confirm with Stélio before publishing allele-effect directions.**
+hybrids by WAASY, but stability ranking is not a phosphorus contrast — a lead, not
+evidence. **Confirm with Stélio before publishing allele-effect directions.**
+
+Worth noting from the pedigrees (`multilocation_alpha_lattice.qmd`): every tester is
+CIMMYT-derived on one side — EN17/20/21 from `CML491-1`, EN25/31/32 from `CLRCY034-1`,
+EN64 from `CML539-1`. So both parents share CIMMYT ancestry, and at loci where the tester
+inherited the CML haplotype the two parents carry the same allele by descent, making
+those markers monomorphic in this cross.
 :::
 
 # Phenotypes
@@ -213,7 +272,7 @@ genotyping. Worth asking Stélio.
 
 # Marker QC
 
-`scripts/qtl/qtl_data_audit.R`. The 1:2:1 test stands in for "polymorphic between the
+`scripts/qtl/data_audit.R`. The 1:2:1 test stands in for "polymorphic between the
 parents", which is otherwise unobservable because no parent was genotyped.
 
 ```{r mkqc}
@@ -238,7 +297,7 @@ map-geometry rule (see *Next steps*), and the CML530 `het-call` class below.
 
 # Liftover AGPv4 → NAM v5
 
-`scripts/qtl/qtl_liftover_v4_to_v5.R`, reusing `lift_unique()` from
+`scripts/qtl/liftover_v4_to_v5.R`, reusing `lift_unique()` from
 `zealhmm/R/teonam_liftover.R` verbatim — single hop, unique 1:1 mappings only.
 
 ```{r lift}
@@ -265,12 +324,12 @@ The chain file names chromosomes `1`…`10`; both FASTAs on disk name them
 empty result *without erroring*. Separately, a third leading column in an R/qtl `csvsr`
 genotype file is parsed as **an extra individual** whose values become unrecognised
 genotype codes silently converted to missing (verified in
-`scripts/qtl/qtl_rqtl_format_probe.R`). Both produce a wrong answer with a clean exit.
+`scripts/qtl/rqtl_format_probe.R`). Both produce a wrong answer with a clean exit.
 :::
 
 # Parental alleles from the CML530 assembly
 
-`scripts/qtl/qtl_cml530_genotypes.sh`. Because CML530 **is** a parent, this yields actual
+`scripts/qtl/cml530_genotypes_pileup.sh`. Because CML530 **is** a parent, this yields actual
 parental alleles and ABH polarity is directly determined rather than proxied.
 
 The join key is the **B73 v5 coordinate**, not a read name. Two mapping steps, because
@@ -287,7 +346,7 @@ honest where offset arithmetic would silently shift it.
 
 ## Attrition, reconciled
 
-`scripts/qtl/qtl_cml530_attrition.R` derives every stage from the BAMs and **asserts**
+`scripts/qtl/cml530_attrition.R` derives every stage from the BAMs and **asserts**
 that the losses sum to the observed `no-hit` total.
 
 ```{r attrition}
@@ -329,8 +388,25 @@ if (have(file.path(D, "CML530_marker_alleles.tsv"))) {
 **1,232 of 1,384 framework markers (89.0 %) carry real parental polarity.** The
 `ref`/`alt` split confirms that CML530 carries the B73 allele at some sites and the
 alternate at others with no global pattern — polarity **must** be assigned per marker.
-`ref` means CML530 matches B73, because DArT defined the reference allele by its AGPv4
-alignment; it says nothing about the ENxx tester.
+::: {.callout-important}
+## Correction: DArT's reference allele is **not** B73's allele
+An earlier version of this notebook stated that DArT defined its reference allele by the
+AGPv4 alignment, so that `ref` meant "CML530 matches B73". **That is false**, and it was
+measured (`scripts/qtl/test_pileup_coords.R`): the B73 v5 base equals the DArT ref
+allele at only **~76%** of markers.
+
+DArT calls SNPs within its own tag clusters across the assayed panel, so ref/alt is a
+convention derived from *this germplasm*; the `Chrom_`/`ChromPosSnp_` columns are added
+afterwards by blasting the tag to B73. `ref` therefore means **CML530 carries the DArT
+reference allele** — a statement about the DArT panel, not about B73 and not about the
+ENxx tester.
+
+This mattered: it produced two routes to CML530's allele that silently answered different
+questions and agreed on only 71% of markers. Where DArT's ref happened to be B73's base
+they agreed 98.7% of the time; where it did not, 20.8%. Coordinates were never the
+problem — the liftover position and the span's independent v5 alignment agree exactly at
+97.6% of markers.
+:::
 
 Exactly **one `het-call`** across 3,828 tags. An inbred cannot be truly heterozygous, so
 that is the paralog / collapsed-repeat signal — and finding one says the tag alignments
@@ -338,7 +414,7 @@ are behaving cleanly. It is treated as unresolved, never as a genotype.
 
 # A/H/B encoding for R/qtl
 
-`scripts/qtl/qtl_make_abh.R`, a reimplementation of TASSEL 5 `GenosToABHPlugin`
+`scripts/qtl/make_abh_framework_only.R`, a reimplementation of TASSEL 5 `GenosToABHPlugin`
 (algorithm read from source). The TASSEL-equivalent core operates on diploid genotype
 strings — the same abstraction TASSEL uses — so the parity harness exercises the code
 that actually runs.
@@ -389,14 +465,42 @@ Run order:
 | # | Script | Notes |
 |---|---|---|
 1 | `phenotype_dictionary_unify.R` | writes `data/phenotype_dictionary.csv` |
-2 | `qtl_data_audit.R` | inventory, marker + sample QC, geno × pheno join |
-3 | `qtl_structure_check.R` | F₂ verification, parent absence, duplicates |
-4 | `qtl_liftover_v4_to_v5.R` | writes `markers_v5.tsv`, `tags_for_cml530.fa` |
-5 | `install_minibwa_from_source.sh` | once |
-6 | `qtl_index_genomes.sh` | **~45 min**, ~9.5 GB, peak 7.2 GB RSS, single-threaded |
-7 | `qtl_cml530_genotypes.sh` | minutes; writes `CML530_marker_alleles.tsv` |
-8 | `qtl_cml530_attrition.R` | reconciles the funnel, asserts the arithmetic |
-9 | `qtl_make_abh.R` | writes `rqtl_gen_abh.csv`, `rqtl_phe.csv` |
+2 | `data_audit.R` | inventory, marker + sample QC, geno × pheno join |
+3 | `structure_check.R` | F₂ verification, parent absence, duplicates |
+4 | `verify_dart_codes.R` | **proves `2` = heterozygote** against `FreqHets`; run before trusting any genotype |
+5 | `liftover_v4_to_v5.R` | writes `markers_v5.tsv`, `tags_for_cml530.fa` |
+6 | `install_minibwa_from_source.sh` | once; must be the source build (GPL `-l`) |
+7 | `index_genomes.sh` | **~45 min**, ~9.5 GB, peak 7.2 GB RSS, single-threaded |
+8 | `cml530_alleles_direct.R` | A = CML530 read from the assembly at each tag's `SnpPosition`; **3,728 markers**; writes `tags_vs_CML530.bam` |
+9 | `encode_abh.R` | alignment-quality filter, MAF, FDR, A/H/B with A = CML530, **CML530 marker order** → **1,688**; writes `rqtl_gen_abh_all.csv` |
+10 | `build_map.R` | drop inverted → distortion → LD prune → `est.map` → `find_quirky` → `est.map` → **1,152 markers, 1,858 cM** |
+
+::: {.callout-note}
+## The map is built — see the next notebook
+
+This notebook ends at the encoded marker matrix. The map itself, its parameters and its
+limitations are in **[the genetic map notebook](qtl_genetic_map.html)**, and the full
+parameter-by-parameter protocol is `scripts/qtl/PROTOCOL.md`. The map is published as
+`data/f2_genetic_map.tsv`.
+
+Two things changed after this notebook was first written, and both mattered:
+
+**The marker order is CML530's, not B73's.** B73 is not a parent of this cross. The two
+assemblies place 37 markers on *different chromosomes*, and `est.map` estimates distances
+along a fixed order without ever reordering — so a wrong order cannot be recovered later.
+Within a chromosome the two orders barely differ (Spearman 0.9987); the gain is the
+chromosome assignment.
+
+**An alignment-quality filter was added.** Markers whose genotypes contradicted their
+neighbours turned out to be tags that align to several places in CML530, so the parental
+allele was read off an arbitrary copy: 70.4 % of them multi-map against a 6.2 % baseline
+(median MAPQ 4 vs 60; Fisher p = 2.3 × 10⁻⁸), and 11 of 27 carry an alternative hit on the
+very chromosome B73 assigns them to. Filtering on `MAPQ ≥ 30` with no `XA` tag cut that
+class from 27 markers to 5. **MAPQ and `XA` were available all along and never used** —
+`qc_pass` does not encode them.
+
+`scripts/qtl/DELETE_CANDIDATES.md` lists 13 dead-end scripts from routes that failed.
+:::
 
 Supporting: `qtl_minibwa_index_bench.sh`, `qtl_minibwa_index_threads_bench.sh` (why `-l`
 and why local rather than HPC), `qtl_rqtl_format_probe.R` (csvsr layout),
@@ -415,29 +519,44 @@ root silently skip `agent/` and `data/qtl/`. Use explicit paths for those.
 
 # Next steps
 
-Not yet done. The map has **not** been estimated; the R/qtl object carries placeholder
-positions.
+The map is built — **[genetic map notebook](qtl_genetic_map.html)**, 1,152 markers,
+1,858.4 cM, 96.7 % physical coverage, published as `data/f2_genetic_map.tsv`. Decisions
+made after this notebook was written, all recorded with their evidence in
+`scripts/qtl/PROTOCOL.md`:
 
-1. **Build the map on the fixed B73 physical order.** With 166 individuals, de novo
-   ordering of 1,384 markers is under-determined and would be worse than the physical
-   order. Use `est.rf` to flag markers whose recombination pattern *contradicts* the
-   physical order rather than reordering wholesale.
-2. **Apply the two-round `est.map` bootstrap** from `zealhmm/scripts/teonam_qtl_permap.R`:
-   segregation-distortion drop → preliminary map → `find_quirky` island drop → refined
-   map. Adapt the expected genotype frequencies from BC1S4 `(0.734, 0.031, 0.234)` to F₂
-   `(0.25, 0.50, 0.25)`. Use `error.prob ≈ 0.01`, not the 1e-4 default.
-   Note the distortion filter flags a fixed ~2.5 % upper tail by construction, so a low
-   drop rate is **not** validation — total map length is.
-3. **Sanity check:** total map length ~1,400–1,800 cM for maize. Much longer means
-   residual genotyping error is inflating distances.
-4. **Then** scans: `scanone` + 1,000-permutation thresholds, `stepwiseqtl`/`fitqtl` for
-   PVE and additive/dominance effects, support intervals for co-localization, and a v5
-   candidate-gene screen.
+1. **De novo grouping confirmed the chromosome assignment.** Connected components on the
+   rf/LOD graph give a perfectly block-diagonal linkage-group × chromosome table — 0 of
+   1,236 markers land in a component whose majority chromosome is not their own — so the
+   physical order was never reordered, only validated.
+2. **LD pruning replaced `findDupMarkers`**, which needs identical genotype patterns and
+   found only 28 markers. Pruning is at Pearson **r = 0.95** on a correlation-derived
+   genetic axis (Teng & Xu 2026: *r* = 1 − 2θ, so *d* = −50·ln *r*), thinned by the exact
+   1-D MDdIS greedy (Jena et al. 2018).
+3. **`error.prob = 0.01` throughout** — both `est.map` rounds and `calc.genoprob` at scan
+   time. Immaterial at scan time (r = 0.998 against 2.5 × 10⁻³).
+4. **Scans are done** for all 14 phenotypes with 1,000-permutation thresholds.
+
+::: {.callout-warning}
+## A length target that should not have been used
+
+Earlier drafts of this notebook, and the `build_map.R` guardrail, compare total map
+length against **1,348–1,596 cM**. That figure is **Chen et al. 2019 Table 1, the
+per-subpopulation range for TeoNAM** — a *teosinte introgression BC1S4* population with
+~13,733 SNPs per subpop. It is not a maize consensus map, not an F₂ expectation, and was
+inherited wholesale from `teonam_qtl_permap.R` without being checked.
+
+It also points the wrong way: map length *estimates* grow with accumulated meioses
+(Teng & Xu show F₂ → F₃ → F₄ expansion), so a BC1S4 should read **longer** than an F₂ of
+the same genome, not equal. Any statement in this repo that 1,858 cM is "20 % above the
+maize expectation" is measured against a borrowed constant from the wrong design.
+
+Pending a proper reference (Coe composite, NAM consensus, or similar), length is best
+judged against **physical coverage and marker spacing**, which need no borrowed constant.
+:::
 
 ## Outstanding questions for Stélio
 
-1. **Which cross** produced these 186 F₂s — which CML × which ENxx tester — and whether
-   one F₁ was selfed or several.
+X   one F₁ was selfed or several.
 2. **Field book:** design, plot coordinates, planting/harvest dates, soil test P. (The
    applied rate is already recovered: 20 kg P/ha.) Plot coordinates would allow a spatial
    trend to be fitted, partly compensating for the absent replication.

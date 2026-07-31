@@ -43,7 +43,12 @@ SNP1ROW   <- "data/qtl/Report_DMz26-3123_SNP_mapping_2.csv"
 DART_SKIP <- 6
 DERIVED   <- "data/qtl/derived"
 ROSTER    <- file.path(DERIVED, "markers_v5.tsv")
-CMLCALLS  <- file.path(DERIVED, "CML530_marker_alleles.tsv")
+# Prefer the DIRECT assembly read (qtl_cml530_alleles_direct.R) over the pileup
+# route: every pileup site was ~DP=1, where bcftools call -m defaults toward REF
+# and produced random polarity (53% phase-consistent, agent/qtl_diagnose_phase.log).
+CMLCALLS  <- if (file.exists(file.path(DERIVED, "CML530_marker_alleles_direct.tsv")))
+               file.path(DERIVED, "CML530_marker_alleles_direct.tsv") else
+               file.path(DERIVED, "CML530_marker_alleles.tsv")
 PHENO     <- "data/qtl/mozpue_phenotype.xlsx"
 DICT      <- "data/phenotype_dictionary.csv"   # single authority for trait names
 GENFILE   <- file.path(DERIVED, "rqtl_gen_abh.csv")
