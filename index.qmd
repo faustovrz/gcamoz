@@ -39,6 +39,9 @@ redistributable and is gitignored; pipeline scripts are in `scripts/qtl/`.
    record: F₂ verification, AGPv4 → v5 liftover, CML530 parental alleles, A/H/B for R/qtl.
 2. [The F₂ genetic map](qtl_genetic_map.html) — 1,152 markers, 1,858 cM, CML530
    coordinates. Map published as `data/f2_genetic_map.tsv`.
+3. [QTL scans across all 14 phenotypes](qtl_scans.html) — per-trait genome-wide
+   permutation thresholds. Three traits clear their own threshold; **none survives
+   correction for the number of traits scanned.**
 
 ::: {.callout-note}
 Trait abbreviations for **both** experiments are defined in

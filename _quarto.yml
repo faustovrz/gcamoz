@@ -20,3 +20,4 @@ project:
     - stability_ammi_gge.qmd
     - qtl_marker_pipeline.qmd
     - qtl_genetic_map.qmd
+    - qtl_scans.qmd

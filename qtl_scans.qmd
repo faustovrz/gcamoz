@@ -1,0 +1,208 @@
+---
+title: "F₂ QTL Scans — All Phenotypes"
+subtitle: "QTL series notebook 3 — scanone across 14 traits with per-trait genome-wide permutation thresholds"
+author: "Fausto Rodriguez Zapata"
+date: today
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+---
+
+::: {.callout-tip appearance="simple"}
+**QTL series — notebook 3.** Uses the map from
+[notebook 2](qtl_genetic_map.html); marker QC and encoding are in
+[notebook 1](qtl_marker_pipeline.html).
+:::
+
+::: {.callout-note}
+**Public data only.** Scan results — LOD by position and the per-trait permutation
+thresholds — are published as `data/f2_qtl_scan_summary.tsv` and
+`data/f2_qtl_scan_profiles.tsv`. No individual genotypes or phenotypes are included, and
+everything below is reproduced from those two files.
+:::
+
+# Method
+
+Every phenotype was scanned with `scanone` on the 1,152-marker map at a 1 cM pseudomarker
+step, with `error.prob = 0.01` in `calc.genoprob` to match the value the map was built at
+(measured immaterial at scan time: *r* = 0.998 against 2.5 × 10⁻³ across 3,005 positions).
+
+Thresholds are **per-trait**, from 1,000 permutations each — not a shared threshold, since
+the permutation distribution depends on the trait's own distribution. `PAPP` is an ordinal
+1–4 score and was scanned non-parametrically (`model = "np"`); everything else used the
+normal model.
+
+```{r setup}
+#| message: false
+#| warning: false
+library(data.table)
+library(ggplot2)
+library(knitr)
+res <- fread("data/f2_qtl_scan_summary.tsv")
+pr  <- fread("data/f2_qtl_scan_profiles.tsv")
+theme_set(theme_bw(base_size = 11))
+```
+
+# Results by trait
+
+```{r summary}
+#| label: tbl-scans
+setorder(res, -lod)
+kable(res[, .(trait, model, n, shapiro_p,
+              chr = peak_chr, `peak cM` = peak_cM, `peak Mb` = peak_Mb,
+              LOD = lod, `thr 5%` = `perm_thr_0.05`, `thr 10%` = `perm_thr_0.10`,
+              `sig 5%` = fifelse(sig05, "yes", ""),
+              `sig 10%` = fifelse(sig10, "yes", ""))],
+      caption = "Peak LOD per trait against its own 1,000-permutation genome-wide threshold. Ranked by LOD.")
+```
+
+```{r counts}
+cat(sprintf("traits scanned: %d\n", nrow(res)))
+cat(sprintf("clearing their own 5%% genome-wide threshold : %d (%s)\n",
+            sum(res$sig05), paste(res[sig05 == TRUE, trait], collapse = ", ")))
+cat(sprintf("clearing 10%% but not 5%%                     : %d (%s)\n",
+            sum(res$sig10 & !res$sig05),
+            paste(res[sig10 == TRUE & sig05 == FALSE, trait], collapse = ", ")))
+```
+
+# Scan profiles
+
+Dashed line is each trait's own 5 % genome-wide threshold.
+
+```{r profiles}
+#| label: fig-profiles
+#| fig-width: 12
+#| fig-height: 14
+#| fig-cap: "scanone profiles for all traits. Each panel carries its own permutation threshold."
+pr[, chrf := factor(chr, levels = 1:10)]
+pr <- merge(pr, res[, .(trait, thr = `perm_thr_0.05`, sig05)], by = "trait")
+pr[, trait := factor(trait, levels = res$trait)]
+ggplot(pr, aes(pos_cM, lod)) +
+  geom_line(aes(colour = sig05), linewidth = 0.35) +
+  geom_hline(aes(yintercept = thr), linetype = "dashed",
+             colour = "firebrick", linewidth = 0.3) +
+  facet_grid(trait ~ chrf, scales = "free_x", space = "free_x", switch = "y") +
+  scale_colour_manual(values = c(`TRUE` = "black", `FALSE` = "grey55"), guide = "none") +
+  labs(x = "position (cM)", y = "LOD") +
+  theme(panel.spacing.x = unit(0.04, "lines"),
+        strip.text.y.left = element_text(angle = 0), strip.placement = "outside")
+```
+
+# The traits that clear their own threshold
+
+```{r hits}
+#| label: tbl-hits
+hits <- res[sig05 == TRUE][order(-lod)]
+kable(hits[, .(trait, chr = peak_chr, `peak Mb` = peak_Mb, LOD = lod,
+               `thr 5%` = `perm_thr_0.05`,
+               margin = round(lod - `perm_thr_0.05`, 3),
+               `CI Mb` = paste0(ci_lo_Mb, "–", ci_hi_Mb),
+               `CI width Mb` = round(ci_hi_Mb - ci_lo_Mb, 1))],
+      caption = "Traits above their own 5% genome-wide threshold, with 1.5-LOD support intervals in CML530 megabases.")
+```
+
+**EW** (ear weight) is the strongest signal and by far the best localised — a 4.9 Mb
+support interval on chr1, against 13.6 Mb for PH and 7.4 Mb for HI. **PH** (plant height)
+peaks on chr5 at 19.6 Mb with a dominance-driven effect (*d* = 9.76 ± 2.46 against
+*a* = 3.82 ± 1.78). **HI** clears by 0.023 LOD.
+
+## Correlated traits share peaks by construction
+
+```{r shared}
+#| label: tbl-shared
+kable(res[order(peak_chr, peak_cM),
+          .(trait, chr = peak_chr, `peak cM` = peak_cM, LOD = lod)][
+          `peak cM` %in% res[, .N, by = peak_cM][N > 1, peak_cM]],
+      caption = "Traits peaking at identical map positions. These are not independent observations.")
+```
+
+`GY`, `GYPP` and `PUE` share an identical peak and identical LOD because they are
+arithmetic functions of one another; the same holds for `SW`, `TDM`, `SD` and `RW` at
+chr2. The handover records the algebra: `RYE/HI = 1/RSR`, and `TDM = SW + RW`. Counting
+these as separate findings would be double-counting.
+
+# Nothing survives correction for 14 traits
+
+```{r correction}
+#| label: tbl-correction
+k <- nrow(res)
+cat(sprintf("traits scanned: %d\n", k))
+cat(sprintf("expected traits clearing a per-trait 5%% threshold by chance: %.1f\n", 0.05 * k))
+cat(sprintf("observed: %d\n", sum(res$sig05)))
+cat(sprintf("P(at least one false positive) if traits were independent: %.1f%%\n",
+            100 * (1 - 0.95^k)))
+kable(hits[, .(trait, LOD = lod, `thr 5%` = `perm_thr_0.05`,
+               margin = round(lod - `perm_thr_0.05`, 3))],
+      caption = "How much room the significant traits actually have.")
+```
+
+Three traits clear their own 5 % genome-wide threshold. That is the correct threshold for
+**one** trait tested in isolation — it is not the right one here, because 14 traits were
+scanned.
+
+- Under the null, **0.7 traits** would be expected to clear a per-trait 5 % threshold by
+  chance. Three were observed, but the margins are **0.186, 0.059 and 0.023 LOD** — all
+  three sit essentially on the line.
+- The traits are **not independent**, so neither the naive 51 % family-wise error rate nor
+  a plain Bonferroni correction is right. The true rate lies between 5 % and 51 %.
+- Under any correction for 14 traits — Bonferroni gives a per-trait α of 0.0036 — **none
+  of the three survives.**
+
+::: {.callout-important}
+## Conclusion
+
+**No QTL in this experiment survives correction for the number of traits scanned.** Three
+traits reach their individual 5 % genome-wide thresholds, but by margins of 0.02–0.19 LOD,
+in a set of 14 correlated traits where ~0.7 such results are expected by chance.
+
+Localisation is a separate question from significance, and the intervals should be read
+on their own terms. Counted against the CML530 annotation:
+
+| trait | interval | width | protein-coding genes |
+|---|---|---|---|
+| EW | chr1:286.38–291.24 Mb | 4.9 Mb | **124** |
+| HI | chr5:215.97–223.40 Mb | 7.4 Mb | 329 |
+| PH | chr5:17.06–30.61 Mb | 13.6 Mb | 283 |
+| GY / GYPP / PUE | chr1:202.00–259.45 Mb | 57.5 Mb | 1,165 |
+
+EW's 124-gene interval is a workable starting point for a candidate search — that is a
+normal first-pass F₂ resolution, not a dead end. The 57 Mb suggestive intervals are not.
+What limits EW is therefore **not** its localisation but its significance: a 0.186 LOD
+margin in a 14-trait experiment.
+
+This is a property of the **experiment**, not of the map. With 166 phenotyped plants the
+detection floor is roughly 8–10 % of phenotypic variance, and the two most heritable
+traits in the parallel diallel — days to anthesis and silking, h² ≈ 0.60 with Baker's
+ratio ≈ 0.98, i.e. almost purely additive — **were never scored on these plants**. The
+best F₂-mappable trait available is TDM at h² = 0.266, and PUE, the trait of interest, is
+the least heritable of all at h² = 0.028.
+:::
+
+# What would change the answer
+
+- **Phenotype flowering time on the F₂**, or on F₂:₃ rows if seed was kept. h² ≈ 0.60 and
+  near-pure additivity is a completely different proposition from h² = 0.03.
+- **Replicated F₂:₃ families.** One season, no new genotyping, and replication would cut
+  the residual variance that currently sets the detection floor.
+- **More plants.** At n = 166 the floor is ~8–10 % PVE; QTL below that are undetectable
+  regardless of map quality.
+
+Improving the map further will not help. At one marker per 1.9 Mb it already resolves far
+finer than 372 meioses can exploit.
+
+# Data availability
+
+| file | contents |
+|---|---|
+| `data/f2_qtl_scan_summary.tsv` | one row per trait: peak position, LOD, permutation thresholds, support interval |
+| `data/f2_qtl_scan_profiles.tsv` | LOD at every scan position for every trait |
+| `data/f2_genetic_map.tsv` | the map the scans were run on |
+
+Scripts: `scripts/qtl/scan_all_traits.R` (all traits), `scripts/qtl/scan_trait.R` (one
+trait, with effect estimates). Protocol: `scripts/qtl/PROTOCOL.md`.
